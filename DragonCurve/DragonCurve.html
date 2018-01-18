@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Ahhhhh</title>
+<script src="jquery.min.js"></script>
+        <script src="SardineFish.Web.js"></script>
+        <script src="SardineFish.Engine2D.Web.js"></script>
+        
+        <!--<meta name="viewport" content="width=device-width,initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no,target-densitydpi=device-dpi" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="browsermode" content="application" />
+        <meta name="full-screen" content="true" />
+        <meta name="x5-fullscreen" content="true" />
+        <meta name="x5-page-mode" content="app" />
+        <meta name="360-fullscreen" content="true" />
+-->
+        <style>
+            html{
+                /*-ms-touch-action: none;  Direct all pointer events to JavaScript code.
+                overflow: hidden;*/
+            }
+            body{
+                margin: 0px;
+                padding: 0px;
+        </style>
+    </head>
+    <body>
+<!--        <a href="http://cdn.bootcss.com/jquery/2.1.4/jquery.min.js" download="jquery.min.js" >jquery.min.js</a>
+        -->
+        <canvas id="canvas" width="800" height="800" />
+        <script>
+try
+{
+//alert(Math.PI);
+//alert(LinkList);
+var width=1024;
+var height=1024;
+var lineLength=2;
+var deep=22;
+var Pi=Math.PI;
+var A=Pi/2;
+var sin=Math.sin;
+var cos=Math.cos;
+var canvas=document.getElementById("canvas");
+var lineList=new Array();
+function resize()
+{
+    //width=screen.availWidth;
+    //height =screen.availHeight;
+//alert("("+width+","+height+")");
+    $("body").css("width",width.toString()+"px");
+    document.getElementById("canvas").width=width;
+    document.getElementById("canvas").height=height;
+    init();
+}
+resize();
+
+function init()
+{
+//alert();
+    lineList=new LinkList();
+    var p1=new Point(width/2,height/2);
+    var p2=new Point(p1.x-lineLength,p1.y);
+    lineList.add(new Line(p1,p2));
+    Graphics.drawLine(canvas,p1.x,p1.y,p2.x,p2.y,"black");
+    setTimeout(function(){begin(0);}, 1000);
+}
+function begin(x)
+{
+try{
+//alert(x);
+    if(x==deep)
+        return;
+    var p=lineList.tail;
+    var o=p.object.p2;
+    while(p!=null)
+    {
+        var l=p.object;
+        var p1=l.p2.rotate(o,A);
+        var p2=l.p1.rotate(o,A);
+//alert(p2.x+","+p2.y);
+        var ln=new Line(p1,p2);
+        Graphics.drawLine(canvas,p1.x,p1.y,p2.x,p2.y,"black");
+        //ln.drawToCanvas(canvas);
+//alert(lineList.add);
+        lineList.add(ln);
+        p=p.last;
+    }
+    setTimeout(function(){begin(x+1);}, 30);
+    //begin(x+1);
+}catch(ex)
+{
+    alert(ex.message);
+}
+}
+
+}catch(ex)
+{
+    alert(ex.message);
+}
+        </script>
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

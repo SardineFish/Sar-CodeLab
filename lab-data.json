@@ -35,6 +35,12 @@
         "url":"RandomApp/Random.html"
     },
     {
+        "name":"Gomoku",
+        "description":"Just a Gomoku chessboard.",
+        "img":"http://img.sardinefish.com/NTE1NTc=",
+        "url":"Gomoku/Gomoku.html"
+    },
+    {
         "name":"Circle Collision",
         "description":"Simulate the collision between circles with my SarEngine2D.",
         "img":"http://img.sardinefish.com/NTA4Mjg0",
@@ -45,5 +51,23 @@
         "description":"Draw a spiral curve with HTML Canvas",
         "img":"http://img.sardinefish.com/NTA5NzM0",
         "url":"SpiralCurve/strangeLine.html"
+    },
+    {
+        "name":"Koch Snowflake",
+        "description":"Draw a Koch snowflake with HTML Canvas.",
+        "img":"http://img.sardinefish.com/NTEzODA=",
+        "url":"SnowFlower/snowFlower.html"
+    },
+    {
+        "name":"Random Lines",
+        "description":"Draw lines and arcs randomly with HTML Canvas.",
+        "img":"http://img.sardinefish.com/NTEyODg2",
+        "url":"ArcNLine/arcNline.html"
+    },
+    {
+        "name":"Dragon Curve",
+        "description":"Draw an infinite dragon curve with HTML Canvas.",
+        "img":"http://img.sardinefish.com/NTE0OTQ0",
+        "url":"DragonCurve/DragonCurve.html"
     }
 ]

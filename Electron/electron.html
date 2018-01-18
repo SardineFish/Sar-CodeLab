@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Collider Test</title>
+        <script src="jquery.min.js"></script>
+        <script src="SardineFish.Web.js"></script>
+        <script src="SardineFish.Web.UI.js"></script>
+        <script src="SardineFish.Web.Engine2D.js"></script>
+        <script src="SardineFish.Web.Engine2D.Colliders.js"></script>
+        <script src="SardineFish.Web.Engine2D.GUI.js"></script>
+        <meta name="viewport" content="width=device-width,initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no,target-densitydpi=device-dpi" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="browsermode" content="application" />
+        <meta name="full-screen" content="true" />
+        <meta name="x5-fullscreen" content="true" />
+        <meta name="x5-page-mode" content="app" />
+        <meta name="360-fullscreen" content="true" />
+        <style>
+            html{
+                -ms-touch-action: none;  /*Direct all pointer events to JavaScript code. */
+                overflow: hidden;
+            }
+            body{   
+                margin: 0px;
+                padding: 0px;
+                background-color: rgb(240,240,240);
+            }
+            #debug{
+                
+                position: fixed; 
+                top: 0px;
+                left: 0px;
+                z-index: 1000;
+                color: red;
+            }
+            #textCount{
+                position: fixed;
+                display: none;
+                float: left;
+                z-index: 1000;
+            }
+            #menu{
+                background-color: white;
+                position: fixed;
+                top: 0px;
+                display: block;
+                width: 100%;
+                height: 100%;
+                /*text-align: center;*/
+            }
+            #menuContent{
+                display: block;
+                position: fixed;
+                width: 100%;
+                height: 70%;
+                top: 30%;
+            }
+            #startMenu{
+                position: relative;
+                max-width: 200px;
+                margin: auto;
+                top: 15%;
+            }
+            #title{
+                text-align: center;
+                font-size: 1cm;
+            }
+            #score{
+                margin-top:3mm;
+                text-align: center;
+            }
+            #score:before{
+                content: "last: ";
+            }
+            #score:after{
+                content: "px";
+            }
+            #maxScore{
+                margin-top:5mm;
+                text-align: center;
+            }
+            #maxScore:before{
+                content: "Max distance: ";
+            }
+            #maxScore:after{
+                content: "px";
+            }
+            #buttonStart{
+                font-size: 5mm;
+            }
+        </style>
+        <link rel="stylesheet" type="text/css" href="runningGame.css" />
+    </head>
+    <body oncontextmenu="return false;">
+<!--        <a href="http://cdn.bootcss.com/jquery/2.1.4/jquery.min.js" download="jquery.min.js" >jquery.min.js</a>
+        -->
+        <p id="debug" >debug</p>
+        <p id="textCount">0</p>
+        <div>
+            <canvas id="canvas" width="480" height="500"></canvas>
+            <div style="height: 200px; background-color:black"></div>
+        </div>
+        
+        <script src="e.js">
+
+        </script>
+    </body>
+</html>
+
+
+
+
+
+
+
+

@@ -1,0 +1,146 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>雪花曲线</title>
+<script src="jquery.min.js"></script>
+    
+        <script src="SardineFish.Engine2D.Web.js"></script>
+        <!--<meta name="viewport" content="width=device-width,initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no,target-densitydpi=device-dpi" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="browsermode" content="application" />
+        <meta name="full-screen" content="true" />
+        <meta name="x5-fullscreen" content="true" />
+        <meta name="x5-page-mode" content="app" />Ph
+        <meta name="360-fullscreen" content="true" />
+-->
+        <style>
+            html{
+                /*-ms-touch-action: none;  Direct all pointer events to JavaScript code.
+                overflow: hidden;*/
+            }
+            body{
+                margin: 0px;
+                padding: 0px;
+        </style>
+    </head>
+    <body>
+<!--        <a href="http://cdn.bootcss.com/jquery/2.1.4/jquery.min.js" download="jquery.min.js" >jquery.min.js</a>
+        -->
+        <canvas id="canvas" width="800" height="800" />
+        <script>
+
+//alert(Math.PI);
+//alert(Engine2D.Web);
+function Point(x,y)
+{
+    this.x=x;
+    this.y=y;
+}
+function Line(p1,p2,ang)
+{
+    this.p1=p1;
+    this.p2=p2;
+    this.ang=ang;
+}
+var width=2048;
+var height=2048;
+var R=1024;
+var deep=6;
+var Pi=Math.PI;
+var A=Pi/3;
+var sin=Math.sin;
+var cos=Math.cos;
+var canvas=document.getElementById("canvas");
+SardineFish.Engine2D.Web.Graphics.canvas=canvas;
+var lineList=new Array();
+function resize()
+{
+    //width=screen.availWidth;
+    //height =screen.availHeight;
+//alert("("+width+","+height+")");
+    $("body").css("width",width.toString()+"px");
+    document.getElementById("canvas").width=width;
+    document.getElementById("canvas").height=height;
+    init();
+}
+resize();
+function drawLine(l){
+    ctx=canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.moveTo(l.p1.x,l.p1.y);
+    ctx.lineTo(l.p2.x,l.p2.y);
+    ctx.strokeStyle="blue";
+    //ctx.stroke();
+}
+
+function drawTriangle(p1,p2,p3)
+{
+    ctx=canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.moveTo(p1.x,p1.y);
+    ctx.lineTo(p2.x,p2.y);
+    ctx.lineTo(p3.x,p3.y);
+    ctx.lineTo(p1.x,p1.y);
+    ctx.fillStyle="#66CCFF";
+    ctx.fill();
+}
+function init()
+{
+    lineList=new Array();
+    for(var i=0;i<6;i++)
+    {
+        var ang=i*A;
+        var p1=new Point(width/2,height/2);
+        var p2=new Point(p1.x+R*cos(ang), p1.y+R*sin(ang));
+        lineList[i]=new Line(p1, p2, ang);
+        
+    }
+    drawTriangle(lineList[0].p2,lineList[2].p2,lineList[4].p2);
+    drawTriangle(lineList[1].p2,lineList[3].p2,lineList[5].p2);
+    R/=3;
+    setTimeout(function(){begin(0);}, 1000);
+}
+function begin(x)
+{
+//alert(x);
+    if(x==deep)
+        return;
+    var listNext=new Array();
+    listNext.add=function (item) { this[this.length]=item; }
+    for(var i=0;i<lineList.length;i++)
+    {
+        
+        var l=lineList[i];
+        drawLine(l);
+        var ang=l.ang;
+        var p0=new Point(l.p1.x+((l.p2.x-l.p1.x)/3*2), l.p1.y+((l.p2.y-l.p1.y)/3*2));
+        var p2=new Point(p0.x+R*cos(ang+A), p0.y+R*sin(ang+A));
+        var p3=new Point(p0.x+R*cos(ang-A), p0.y+R*sin(ang-A));
+        listNext.add(new Line(p0,p2,ang+A));
+        listNext.add(new Line(p0,p3,ang-A));
+        listNext.add(new Line(p0,l.p2,ang));
+        var p1=new Point(l.p1.x+((l.p2.x-l.p1.x)/3), l.p1.y+((l.p2.y-l.p1.y)/3));
+        drawTriangle(p1,p2,p3);
+    }
+    lineList=listNext;
+    R=R/3;
+    setTimeout(function(){begin(x+1);}, 1000);
+    //begin(x+1);
+}
+
+
+        </script>
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
