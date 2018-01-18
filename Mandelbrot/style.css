@@ -1,0 +1,35 @@
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Open Sans','Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: black;
+    
+}
+
+#top {
+    flex-shrink: 0;
+    background-color: #37474F;
+    height: 50px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+}
+
+#main {
+    position: relative;
+}
+
+#root {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+#canvas {
+    height: 100%;
+    width: 100%;
+}
