@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Solar System! --- by CSS!!</title>
+<script src="/lib/jQuery/jquery.min.js"></script>
+    <style>
+		
+        body{
+	margin: 0px;
+	padding: 0px;
+	background-color: black;
+        }
+#space {
+	background-color: transparent;
+	height: 100vh;
+	width: 100vw;
+	display: flex;
+	flex-flow: row;
+	justify-content: center;
+	align-content: center;
+	align-items: center;
+	perspective: 600px;
+	perspective-origin: center;
+}
+#solar-system {
+	width: 300px;
+	height: 300px;
+	position: relative;
+	transform-origin: center;
+	transform-style: preserve-3d;
+	transform: rotateX(80deg);
+}
+#sun {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background-color: #fff06b;
+	position: absolute;
+	top: calc(50% - 20px);
+	left: calc(50% - 20px);
+	transform-origin: center;
+	transform-style: preserve-3d;
+	transform: rotateX(-80deg);
+	z-index: 100;
+}
+#solar-system svg {
+	perspective: 300px;
+}
+#mercury {
+    height: 100px;
+    width: 100px;
+    top: calc(50% - 51px);
+    left: calc(50% - 51px);
+    animation-duration: 1.06s;
+}
+#mercury .antiRotate {
+	width: 10px;
+	height: 10px;
+	top: calc(50% - 5px);
+	left: -5px;
+    animation-duration: 1.06s;
+}
+#mercury .planet{
+	background-color: #a0a0a0;
+}
+#venus {
+	width: 140px;
+	height: 140px;
+	top: calc(50% - 71px);
+	left: calc(50% - 71px);
+    animation-duration: 1.757s;
+}
+#venus .antiRotate {
+	width: 14px;
+	height: 14px;
+	top: calc(50% - 7px);
+	left: -7px;
+    animation-duration: 1.757s;
+}
+#venus .planet{
+	background-color: #eae5cf;
+}
+#earth   {
+	width: 200px;
+	height: 200px;
+	top: calc(50% - 101px);
+	left: calc(50% - 101px);
+	animation-duration: 3s;
+}
+#earth .antiRotate {
+    width: 20px;
+    height: 20px;
+    top: calc(50% - 10px);
+    left: -10px;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    z-index: -1;
+}
+#earth .planet {
+	background-color: #6DB5FF;
+}
+
+#mars {
+	animation-duration: 4.96s;
+	width: 280px;
+	height: 280px;
+	top: calc(50% - 141px);
+	left: calc(50% - 141px);
+}
+#mars .planet {
+	background-color: #ffbe6d;
+}
+#mars .antiRotate{
+			
+	height: 14px;
+	width: 14px;
+	top: calc(50%  - 7px);
+	left: -7px;
+	animation-duration: 4.96s;
+}
+.planet {
+	border-radius: 50%;
+	transform-origin: center;
+	transform-style: preserve-3d;
+	transform: rotateX(-80deg);
+    width: 100%;
+    height: 100%;
+}
+.orbit {
+	border: solid 1px rgba(255,255,255,0.2);
+	border-radius: 50%;
+	position: absolute;
+	top: 0px;
+	left: auto;
+	animation-name: planetRotate;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+	transform-style: preserve-3d;
+	transform-origin: center;
+}
+.antiRotate {
+	animation-name: planetAntiRotate;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+	position: absolute;
+	transform-origin: center;
+	transform-style: preserve-3d;
+}
+#solar-system g {
+	transform-origin: 500px 500px;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+	perspective-origin: center;
+	transform-style: preserve-3d;
+	transform: rotateY(45deg);
+}
+@keyframes planetRotate {
+	from { 
+		transform: rotate(0deg);
+	}
+	to {  
+		transform: rotate(-360deg);
+	}
+}
+		@keyframes planetAntiRotate{
+			from {
+				transform: rotate(0deg);
+			}
+			to{
+				transform: rotate(360deg);
+			}
+		}
+    </style>
+</head>
+<body>
+    <div id="space">
+       <div id="solar-system">
+      	   <div id="sun"></div>
+       	   <div id="mercury" class="orbit">
+                  <div class="antiRotate">
+                      <div class="planet"></div>
+                  </div>
+		   </div>
+      	   <div id="venus" class="orbit">
+                 <div class="antiRotate">
+                     <div class="planet"></div>
+                 </div>
+      	   </div>
+      	   <div id="earth" class="orbit">
+     	   	   <div class="antiRotate">
+      	   	       <div class="planet"></div>
+     	   	   </div>
+      	   </div>
+      	   <div id="mars" class="orbit">
+     	   	   <div class="antiRotate">
+      	   	       <div class="planet"></div>
+     	   	   </div>
+      	   </div>
+       </div>
+        <svg width="1000" height="1000" style="display:none">
+            <circle id="sun" r="20" cx="500" cy="500" fill="#fff06b"></circle>
+            <g id="mercury">
+                <circle class="track" r="50" cx="500" cy="500" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="transparent"></circle>
+                <circle class="planet" r="5.47" cx="550" cy="500" fill="#a0a0a0"></circle>
+            </g>
+            <g id="venus">
+                <circle class="track" r="70" cx="500" cy="500" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="transparent"></circle>
+                <circle class="planet" r="7" cx="570" cy="500" fill="#eae5cf"></circle>
+            </g>
+            <g id="earth">
+                <circle class="track" r="100" cx="500" cy="500" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="transparent"></circle>
+                <circle class="planet" r="10" cx="600" cy="500" fill="#6db5ff"></circle>
+            </g>
+            <g id="mars">
+                <circle class="track" r="140" cx="500" cy="500" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="transparent"></circle>
+                <circle class="planet" r="7.3" cx="640" cy="500" fill="#ffbe6d"></circle>
+            </g>
+        </svg>
+    </div>
+</body>
+</html>
