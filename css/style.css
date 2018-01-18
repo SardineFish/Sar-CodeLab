@@ -1,0 +1,142 @@
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Open Sans','Segoe UI','Roboto', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #37474F;
+    color: #DDD;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.block {
+    color: #333;
+    border-radius: 5px;
+    margin: 10px;
+    width: 400px;
+    height: 280px;
+    overflow: hidden;
+    background-color: #ECEFF1;
+    box-shadow: 0 0 40px rgba(0,0,0,0.1);
+    transition: all .3s;
+}
+.block:hover{
+    margin: 0;
+    width: 420px;
+    height: 300px;
+    box-shadow: 0 0 60px rgba(0,0,0,0.4);
+}
+
+#wrapper {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: stretch;
+    justify-content: flex-start;
+    margin-top: 100px;
+    padding: 100px;
+    
+}
+
+.name {
+    font-size: 1.6em;
+    font-weight: bold;
+}
+
+.content {
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 10px 30px 30px 30px;
+    z-index: 10;
+    background-color: #ECEFF1;
+    transition: all .3s;
+    height: 70px;
+}
+.block:hover .content{
+    height: 120px;
+}
+
+.description {
+    color: #888;
+    text-overflow:ellipsis;
+    
+    white-space: nowrap;
+    overflow: hidden;
+}
+.block:hover .description{
+    white-space: normal;
+}
+
+
+.img {
+    width: 100%;
+}
+
+.link-wrapper {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+    justify-content: center;
+    height: 100%;
+}
+
+.img-wrapper {
+    flex: 1 0;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+}
+.block:hover .img-wrapper{
+}
+
+.root {
+    display: flex;
+    height: 100vh;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.logo {
+    font-family: "Titillium Web";
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: center;
+    height: 64px;
+    cursor: default;
+}
+
+.logo h1 {
+    margin: 0;
+    padding: 0;
+    font-size: 36px;
+    font-weight: lighter;
+    line-height: 1;
+}
+
+.logo h2 {
+    margin: 0;
+    padding: 0;
+    font-size: 1em;
+    font-weight: lighter;
+    color: rgba(255,255,255,0.5);
+}
+
+.top {
+    display: flex;
+    flex-flow: row nowrap;
+    padding: 20px 100px;
+}
+
+.logo img {
+    height: 100%;
+}
+
+#logo-text {
+    margin-left: 20px;
+}

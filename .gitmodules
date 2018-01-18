@@ -1,0 +1,3 @@
+[submodule "lib/HTMLTemplate"]
+	path = lib/HTMLTemplate
+	url = https://github.com/MagicalDevelopersZyosouZone/HTMLTemplate.git
