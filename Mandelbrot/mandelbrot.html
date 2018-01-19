@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,22 +8,69 @@
     <link href="favicon.png" rel="icon" type="image/png">
     <title>Mandelbrot Set</title>
     <link href="/font/Open_Sans/OpenSans.css" rel="stylesheet" type="text/css">
+    <link href="/font/material-design-icons-3.0.1/material-icons.css" rel="stylesheet" type="text/css">
     <link href="style.css" rel="stylesheet" type="text/css">
+    <link href="/lib/UI-Improve/UI.css" rel="stylesheet" type="text/css">
+    <script src="/lib/Tools-for-Web/parts/color.js"></script>
     <script src="script.js"></script>
 </head>
+
 <body>
-   <div id="root">
-    <header id="top">
-        
-    </header>
-    <main id="main">
-        <canvas id="canvas">
-            
-        </canvas>
-    </main>
-    <footer id="footer">
-        
-    </footer>
-   </div>
+    <div id="root">
+        <header id="top" class="show-menu">
+            <div id="button-menu" class="material-icons icon-button toggle" onselectstart="return false;">
+                <span>menu</span>
+                <input type="checkbox">
+            </div>
+            <aside id="menu">
+                <section class="item">
+                    <header class="header">Iteration</header>
+                    <input type="number" id="iteration" class="textbox" value="20">
+                </section>
+                <section class="item">
+                    <header class="header">In Set Color</header>
+                    <input type="text" id="bg-color" class="textbox" value="#000000">
+                </section>
+                <section class="item">
+                    <header class="header">Out Set Color</header>
+                    <input type="text" id="fg-color" class="textbox" value="#FFFFFF">
+                </section>
+                <section class="item setting-switch">
+                    <header class="header">Rotate</header>
+                    <section class="switch-wrapper">
+                        <div class="switch">
+                            <input type="checkbox" id="rotate" checked="true">
+                            <div class="switch-bg">
+                                <div class="switch-button"></div>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+                <section class="item setting-switch">
+                    <header class="header">Linear Color</header>
+                    <section class="switch-wrapper">
+                        <div class="switch">
+                            <input type="checkbox" id="linear-color">
+                            <div class="switch-bg">
+                                <div class="switch-button"></div>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+                <section class="item button-wrapper" onselectstart="return false;">
+                    <a id="button-render" class="button">Render</a>
+                </section>
+            </aside>
+        </header>
+        <main id="main">
+            <canvas id="canvas">
+
+            </canvas>
+        </main>
+        <footer id="footer">
+
+        </footer>
+    </div>
 </body>
+
 </html>

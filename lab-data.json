@@ -1,4 +1,11 @@
-[{
+[
+    {
+        "name":"Mandelbrot Set",
+        "description":"Render a Mandelbrot set.",
+        "img": "http://img.sardinefish.com/NTE2ODk1",
+        "url":"Mandelbrot/mandelbrot.html"
+    },
+    {
         "name": "Land Sim",
         "description": "Simulate the animals' behavior in a grass land using FSM.",
         "img": "http://img.sardinefish.com/NTAzNzI1",

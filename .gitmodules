@@ -2,3 +2,6 @@
 	path = lib/HTMLTemplate
 	url = https://github.com/MagicalDevelopersZyosouZone/HTMLTemplate.git
 
+[submodule "lib/Tools-for-Web"]
+	path = lib/Tools-for-Web
+	url = https://github.com/SardineFish/Tools-for-Web.git

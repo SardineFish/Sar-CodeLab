@@ -1,7 +1,11 @@
 const $ = selector => document.querySelector(selector);
 const $$ = selector => document.querySelectorAll(selector);
 const int = number => Math.floor(number);
-var iteration = 10;
+var iteration = 20;
+var bgColor = new Color(0, 0, 0, 1);
+var fgColor = new Color(255, 255, 255, 1);
+var rotate = true;
+var linearColor = false;
 var width, height;
 /**
  * @type {HTMLCanvasElement}
@@ -15,6 +19,7 @@ var imgData;
 window.onload = function ()
 {
     init();
+    initMenu();
 };
 function init()
 {
@@ -31,8 +36,29 @@ function init()
     {
         render(ctx, width, height, iteration);
     });
+    $("#button-render").addEventListener("click", function ()
+    {
+        iteration = parseInt($("#iteration").value);
+        bgColor = new Color($("#bg-color").value);
+        fgColor = new Color($("#fg-color").value);
+        $("#canvas").style.backgroundColor = bgColor.toString();
+        rotate = $("#rotate").checked;
+        linearColor = $("#linear-color").checked;
+        render(ctx, width, height, iteration);
+    });
 }
-
+function initMenu()
+{
+    let show = true;
+    $("#button-menu").addEventListener("click", function ()
+    {
+        if (show)
+            $("#top").className = "hide-menu";
+        else 
+            $("#top").className = "show-menu";
+        show = !show;
+    });
+}
 /**
  * 
  * @param {ComplexNumber} x 
@@ -71,6 +97,9 @@ function Mandellbrot(z, iteration)
 function render(ctx, width, height, iteration)
 {
     console.log("Start render. Iterate:" + iteration);
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = fgColor;
+    ctx.fillRect(0, 0, width, height);
     let imgData = ctx.getImageData(0, 0, width, height);
     const size = Math.floor(Math.min(width, height));
     const half = size / 2;
@@ -82,13 +111,18 @@ function render(ctx, width, height, iteration)
         for (let x = 0; x < size; x++)
         {
             let z = new ComplexNumber((x - half) / size * 4, (y - half) / size * 4);
+            
             let m = Mandellbrot(z, iteration);
-            let idx = (x + startY) * width * 4 + (y + startX) * 4;
-            let color = 255 - Math.floor(255 * Math.log(m * iteration + 1) / D);
+            let idx = (y + startY) * width * 4 + (x + startX) * 4;
+            if (rotate)
+                idx = (x + startY) * width * 4 + (y + startX) * 4
+            let color = 255 - Math.floor(255 * m);
+            if (!linearColor)
+                color = 255 - Math.floor(255 * Math.log(m * iteration + 1) / D);  
             //imgData.data[idx] = imgData.data[idx + 1] = color;
-            imgData.data[idx] = 253;
-            imgData.data[idx + 1] = 255;
-            imgData.data[idx + 2] = 227;
+            imgData.data[idx] = fgColor.red;
+            imgData.data[idx + 1] = fgColor.green;
+            imgData.data[idx + 2] = fgColor.blue;
             imgData.data[idx + 3] = color;
         }
     }
