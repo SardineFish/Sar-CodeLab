@@ -20,7 +20,7 @@ a {
     width: 400px;
     height: 280px;
     overflow: hidden;
-    background-color: #ECEFF1;
+    background-color: #263238;
     box-shadow: 0 0 40px rgba(0,0,0,0.1);
     transition: all .3s;
 }
