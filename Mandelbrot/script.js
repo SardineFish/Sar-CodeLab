@@ -67,6 +67,7 @@ function initMenu()
 function f(x, c)
 {
     return ComplexNumber.multi(x, x).plus(c);
+    //return ComplexNumber.plus(x, c);
 }
 
 /**
