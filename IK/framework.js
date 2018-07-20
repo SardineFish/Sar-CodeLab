@@ -45,12 +45,12 @@
         for (let i = 0; i < pos.length-1; i++)
         {
             bones[i] = new Bone(pos[i], minus(pos[i + 1], pos[i]));
-            bones[i].angle = Math.atan2(bones[i].direction.y, bones[i].direction.x);
+            bones[i].angle = Math.atan2(bones[i].direction.y, bones[i].direction.x) / Math.PI * 180;
             bones[i].length = bones[i].direction.magnitude;
             if (i > 0)
             {
-                bones[i].angle -= bones[i - 1].angle;
-                bones[i].last = bones[i - 1];
+                bones[i].angle -= Math.atan2(bones[i-1].direction.y, bones[i-1].direction.x) / Math.PI * 180;
+                bones[i].previous = bones[i - 1];
                 bones[i - 1].next = bones[i];
             }
             bones[i].render();
@@ -76,7 +76,7 @@
             /**
              * @type {Bone}
              */
-            this.last = null;
+            this.previous = null;
             /**
              * @type {Bone}
              */
@@ -189,28 +189,39 @@
     window.mult = mult;
     window.dot = dot;
     window.cross = cross;
+	window.init = init;
     window.clear = () =>
     {
         ctx.clearRect(0, 0, width, height);
     };
-    window.test = (IKCCD,iteration = 10) =>
+    window.test = (IKCCD,iteration = 100) =>
     {
-        init();
-        let rotation = IKCCD(bones, bones.length, iteration, new vec2(400, 300));
-        init();
-        let lastAng = 0;
-        let lastEnd = new vec2(0, 0);
-        clear();
-        for (let i = 0; i < bones.length; i++)
+        function draw(x, y)
         {
-            let dir = new vec2(Math.cos((lastAng + rotation[i])/180*Math.PI), Math.sin((lastAng + rotation[i])/180*Math.PI ));
-            dir = mult(dir, bones[i].length);
-            lastAng += rotation[i];
-            let bone = new Bone(lastEnd, dir);
-            bone.render();
-            lastEnd = plus(lastEnd, dir);
+            init();
+            let rotation = IKCCD(bones, bones.length, iteration, new vec2(x, y));
+            //init();
+            let lastAng = 0;
+            let lastEnd = new vec2(0, 0);
+            clear();
+            for (let i = 0; i < bones.length; i++)
+            {
+                let dir = new vec2(Math.cos((lastAng + rotation[i]) / 180 * Math.PI), Math.sin((lastAng + rotation[i]) / 180 * Math.PI));
+                dir = mult(dir, bones[i].length);
+                lastAng += rotation[i];
+                let bone = new Bone(lastEnd, dir);
+                bone.render();
+                lastEnd = plus(lastEnd, dir);
+            }
         }
+        window.onmousemove = function (e)
+        {
+            var x = e.clientX;
+            var y = height - e.clientY;
+            draw(x, y);
+        }    
     }
+
 
     load();
 })();

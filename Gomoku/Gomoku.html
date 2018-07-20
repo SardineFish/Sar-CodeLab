@@ -96,12 +96,14 @@ scene.onClick=function(e)
         scene.removeGameObject(black.id);
         scene.addGameObject(white);
         o.fillStyle=new Color(0,0,0,1);
+        console.log(`Black at ${x},${y}`);
     }
     else
     {
         scene.removeGameObject(white.id);
         scene.addGameObject(black);
         o.fillStyle=new Color(255,255,255,1);
+        console.log(`White at ${x},${y}`);
     }
     var obj=new GameObject();
     obj.graphic=o;
