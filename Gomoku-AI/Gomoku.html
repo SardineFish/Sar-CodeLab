@@ -160,6 +160,7 @@ function init()
     black=obj;
     black.hitTest=true;
     black.onClick=function(e){
+        e.handled=true;
 
         var step = inputList[++currentIdx];
         var x = step[0][0];
