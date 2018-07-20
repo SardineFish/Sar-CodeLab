@@ -140,8 +140,8 @@ function init()
         size=parseInt(width*0.9/w);
         black=new Circle(size);
         white=new Circle(size);
-        black.setPosition(size,-size*1.5);
-        white.setPosition(size,-size*1.5);
+        black.setPosition(size,-size*2);
+        white.setPosition(size,-size*2);
         
     }
     else
@@ -149,8 +149,8 @@ function init()
         size=parseInt(height*0.9/h);
         black=new Circle(size);
         white=new Circle(size);
-        black.setPosition(-size*1.5,size);
-        white.setPosition(-size*1.5,size);
+        black.setPosition(-size*2,size);
+        white.setPosition(-size*2,size);
     }
     black.fillStyle=new Color(0,0,0,1);
     var obj=new GameObject();
@@ -191,6 +191,11 @@ function init()
     map=[];
     for(var x=0;x<w;x++)
     {
+        let idX = new Text(x.toString());
+        let idObj = new GameObject();
+        idObj.graphic = idX;
+        scene.addGameObject(idObj);
+        idObj.moveTo(x*size,-20);
         var lx=new Line(new Point(x*size,0),new Point(x*size,(h-1)*size));
         lx.strokeStyle=new Color(81, 58, 32, 1);
         var obj=new GameObject();
@@ -199,6 +204,15 @@ function init()
         map[x]=[];
         for(var y=0;y<h;y++)
         {
+            if(x==0)
+            {
+                let idY = new Text(y.toString());
+                let idObj = new GameObject();
+                idObj.graphic = idY;
+                scene.addGameObject(idObj);
+                idObj.moveTo(-40,y*size+10);
+            }
+
             var lx=new Line(new Point(0,y*size),new Point((w-1)*size,y*size));
             lx.strokeStyle=new Color(81, 58, 32, 1);
             var obj=new GameObject();
