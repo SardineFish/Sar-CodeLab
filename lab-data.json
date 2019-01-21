@@ -6,6 +6,12 @@
         "url": "https://ray-trace-2d.sardinefish.com/"
     },
     {
+        "name": "Pixel-Art Particle",
+        "description": "A simple pixel-art particle system generator & renderer.",
+        "img": "http://img.sardinefish.com/NjY0ODA0",
+        "url": "https://sardinefish.github.io/pixel-particle-system/"
+    },
+    {
         "name":"Mandelbrot Set",
         "description":"Render a Mandelbrot set.",
         "img": "http://img.sardinefish.com/NTE2ODk1",
