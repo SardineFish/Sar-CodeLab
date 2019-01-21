@@ -1,5 +1,11 @@
 [
     {
+        "name":"Raytrace 2D",
+        "description": "A simple ray tracing renderer with SDF graphics in 2D space.",
+        "img": "http://img.sardinefish.com/NjYzNDU5",
+        "url": "https://ray-trace-2d.sardinefish.com/"
+    },
+    {
         "name":"Mandelbrot Set",
         "description":"Render a Mandelbrot set.",
         "img": "http://img.sardinefish.com/NTE2ODk1",
