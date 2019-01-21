@@ -38,9 +38,12 @@
         var starList = SarEngine.ArrayList();
         function drawStar()
         {
-            var point = new Point(Math.random() * 2000 - (2000 / 2), Math.random() * 2000 - (2000 / 2));
-            var r = Math.sqrt(point.x * point.x + point.y * point.y);
-            var startAng = Math.atan2(point.y, point.x);
+            //var point = new Point(Math.random() * 2000 - (2000 / 2), Math.random() * 2000 - (2000 / 2));
+            
+            //var r = Math.sqrt(point.x * point.x + point.y * point.y);
+            //var startAng = Math.atan2(point.y, point.x);
+            var r = Math.pow(Math.random(), 1) * 1000;
+            var startAng = Math.random()*Math.PI*2;
             var star = new Arc(r, startAng, startAng, false);
             star.strokeStyle = new Color(255, 255, 255, 0.0);
             star.strokeWidth = Math.pow(100, Math.random()) / 100 * 3 + 1;
