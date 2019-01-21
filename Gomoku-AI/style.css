@@ -1,0 +1,69 @@
+
+#backgounrd {
+    background-color: burlywood;
+}
+
+#root {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#main {
+    height: 100%;
+    width: 100%;
+    
+}
+
+#board-wrapper {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+#board {
+    width: 800px;
+    height: 800px;
+    position: relative;
+    padding: 4px;
+}
+
+#horizontal {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content:space-between;
+}
+
+.bg {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.line {
+    background-color: rgba(0,0,0,0.6);    
+}
+#horizontal > .line{
+    width: 100%;
+    height: 2px;
+}
+#vertical > .line{
+    height: 100%;
+    width: 2px;
+}
+
+#vertical {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content:space-between;
+}
