@@ -1,0 +1,16 @@
+{
+  "name": "gravity-sim",
+  "version": "1.0.0",
+  "description": "Simple gravity simulatior.",
+  "main": "index.html",
+  "scripts": {
+    "test": "npx tsc",
+    "start": "npx browser-sync start -s -f **/*"
+  },
+  "author": "SardineFish",
+  "license": "MIT",
+  "devDependencies": {
+    "browser-sync": "^2.26.7",
+    "typescript": "^3.5.3"
+  }
+}

@@ -1,5 +1,11 @@
 [
     {
+        "name": "Gravity Simulator",
+        "description": "A simple gravity simulator with HTML Canvas.",
+        "img": "https://i.loli.net/2019/08/26/rpTvWS7PiMy8H2k.png",
+        "url": "gravity-sim/"
+    },
+    {
         "name":"Raytrace 2D",
         "description": "A simple ray tracing renderer with SDF graphics in 2D space.",
         "img": "http://img.sardinefish.com/NjYzNDU5",
