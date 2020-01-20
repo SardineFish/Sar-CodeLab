@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>RL2 to PNG</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Open Sans", Roboto, Segoe UI, Microsoft Yahei UI, Tahoma, Geneva, Verdana, sans-serif;
+            width: 100vw;
+            height: 100vh;
+        }
+        #root {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            flex-flow: row nowrap;
+        }
+        #input {
+            width: 100%;
+            height: 100%;
+            font-family: Consolas, Courier New, Courier, monospace;
+            outline: none;
+            width: 40%;
+            padding: 1em;
+            box-sizing: border-box;
+            background-color: #EEE;
+            border: none 0;
+            font-size: 1em;
+        }
+        .preview {
+            flex: 1 0;
+            display: flex;
+            flex-flow: column nowrap;
+            align-items: center;
+            justify-content: center;
+            background-position: 0px 0px,
+            16px 16px;
+            background-size: 32px 32px;
+            background-image: linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee 100%),
+            linear-gradient(45deg, #eee 25%, white 25%, white 75%, #eee 75%, #eee 100%);
+        }
+        #canvas {
+            max-width: 100%;
+            max-height: 100%;
+            min-width: 50%;
+            box-shadow: 0 0 20px rgba(0,0,0,0.15);
+            image-rendering: pixelated;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <textarea name="" id="input" spellcheck="false">
+#N Gosper glider gun
+#C This was the first gun discovered.
+#C As its name suggests, it was discovered by Bill Gosper.
+x = 36, y = 9, rule = B3/S23
+24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4b
+obo$10bo5bo7bo$11bo3bo$12b2o!</textarea>
+        <div class="preview">
+            <canvas id="canvas" width="100" height="100"></canvas>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
