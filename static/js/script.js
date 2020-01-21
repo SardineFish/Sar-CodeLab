@@ -25,3 +25,4 @@ window.onload = function ()
     };
     request.send();
 };
+$("#current-year").innerText = new Date().getFullYear().toString();

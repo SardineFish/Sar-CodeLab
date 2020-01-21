@@ -7,20 +7,18 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="favicon.png" rel="icon" type="image/png">
     <title>Sar's CodeLab</title>
-    <link href="css/style.css" rel="stylesheet" type="text/css">
-    <link href="font/Open_Sans/OpenSans.css" rel="stylesheet" type="text/css">
-    <link href="font/Titillium_Web/TitilliumWeb.css" rel="stylesheet" type="text/css">
-    <script src="lib/jQuery/jquery.min.js"></script>
-    <script src="lib/HTMLTemplate/src/ObserveList.js"></script>
-    <script src="lib/HTMLTemplate/src/HTMLTemplate.js"></script>
-    <script src="js/script.js"></script>
+    <link href="static/css/style.css" rel="stylesheet" type="text/css">
+    <link href="static/font/Open_Sans/OpenSans.css" rel="stylesheet" type="text/css">
+    <link href="static/font/Titillium_Web/TitilliumWeb.css" rel="stylesheet" type="text/css">
+    <script src="static/lib/HTMLTemplate/src/ObserveList.js"></script>
+    <script src="static/lib/HTMLTemplate/src/HTMLTemplate.js"></script>
 </head>
 
 <body>
     <div class="root">
         <header class="top" onselectstart="return false;">
             <header class="logo">
-                <img src="img/logo-white.png">
+                <img src="static/img/logo-white.png">
                 <section id="logo-text">
                     <h1>CodeLab</h1>
                     <h2>By SardineFish</h2>
@@ -44,10 +42,11 @@
         </main>
         <footer id="footer">
             <div id="copyright">
-                Copyright © 2015-2018 SardineFish, All Rights Reserved
+                Copyright © 2015-<span id="current-year">1970</span> SardineFish, All Rights Reserved
             </div>
         </footer>
     </div>
+    <script src="static/js/script.js"></script>
 </body>
 
 </html>

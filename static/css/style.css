@@ -73,6 +73,7 @@ a {
 
 .img {
     width: 100%;
+    position: absolute;
 }
 
 .link-wrapper {
@@ -89,6 +90,7 @@ a {
     flex-flow: row nowrap;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 .block:hover .img-wrapper{
 }

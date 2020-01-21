@@ -2,13 +2,13 @@
     {
         "name": "Life by WebGL",
         "description": "Game of Life implement with WebGL",
-        "img": "img/life-gl.png",
+        "img": "static/img/life-gl.png",
         "url": "LifeGL/?fps=30"
     },
     {
         "name": "RLE to PNG",
         "description": "Render a RLE formated code.",
-        "img": "img/rle-to-png.png",
+        "img": "static/img/rle-to-png.png",
         "url": "RLE2PNG/"
     },
     {

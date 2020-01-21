@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>HTML Template Test</title>
+    <script src="../lib/jquery.min.js"></script>
+    <script src="../src/HTMLTemplate.js"></script>
+    <script src="../src/ObserveList.js"></script>
+    <style>
+        body{
+            background-color: #FAFAFA;
+            font-family: sans-serif;
+        }
+        .shadow {
+            background-color: white;
+            box-shadow: 0px 3px 6px rgba(0,0,0,0.2);
+        }
+        .node {
+            display: inline-block;
+            float: left;
+            padding: 20px;
+            margin: 10px;
+        }
+        .title {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <template id="templateTest" class="class1 class2">
+        <div class="node shadow">
+            <img class="img" src="{{imgUrl}}"/>
+            <p class="title">{title}</p>
+            <template id="templateTest" class="class1 class2" datasource="{{list}}">
+                <div class="node shadow">
+                    <img class="img" src="{{imgUrl}}" />
+                    <p class="title">{{title}}</p>
+                </div>
+            </template>
+        </div>
+    </template>
+    <script>
+        HTMLTemplate.Init();
+        var template = document.getElementById("templateTest");
+        //template.dataSource = [{ imgUrl: "http://www.sardinefish.com/account/user/face/getFace.php?uid=SardineFish", title: "SardineFish" }, { imgUrl: "http://www.sardinefish.com/account/user/face/getFace.php?uid=SardineFish", title: "SardineFish" }, { imgUrl: "http://www.sardinefish.com/account/user/face/getFace.php?uid=SardineFish", title: "SardineFish" }, { imgUrl: "http://www.sardinefish.com/account/user/face/getFace.php?uid=SardineFish", title: "SardineFish" }];
+        var list = new ObserveList();
+        template.dataSource = list;
+        for (var i = 0; i < 10; i++)
+        {
+            var item = {
+                imgUrl: "http://www.sardinefish.com/account/user/face/getFace.php?uid=SardineFish",
+                title: i
+            };
+            item.list = new ObserveList();
+            for (var j = 0; j < 2; j++)
+            {
+                item.list.add({ title: "j" + j });
+            }
+            list.add(item);
+        }
+        template.dataSource = list;
+        function add()
+        {
+            var i = parseInt(Math.random() * list.length);
+            var item = {
+                imgUrl: "http://www.sardinefish.com/account/user/face/getFace.php?uid=SardineFish",
+                title: i
+            };
+            list.insert(item, i);
+            //list.removeAt(i);
+            setTimeout(add, 10000);
+        }
+        add();
+    </script>
+</body>
+</html>
