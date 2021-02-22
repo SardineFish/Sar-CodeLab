@@ -5,3 +5,9 @@
 [submodule "lib/Tools-for-Web"]
 	path = lib/Tools-for-Web
 	url = https://github.com/SardineFish/Tools-for-Web.git
+[submodule "rain/zogra-renderer"]
+	path = rain/zogra-renderer
+	url = https://github.com/SardineFish/zogra-renderer.git
+[submodule "procedural-texture/lib/ace-builds"]
+	path = procedural-texture/lib/ace-builds
+	url = https://github.com/ajaxorg/ace-builds.git

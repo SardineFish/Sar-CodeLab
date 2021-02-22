@@ -1,0 +1,25 @@
+{
+  "name": "procedural-texture",
+  "version": "1.0.0",
+  "description": "A playground to create procedural texture",
+  "main": "script.js",
+  "devDependencies": {
+    "browser-sync": "^2.26.3",
+    "ts-loader": "^4.5.0",
+    "typescript": "^4.1.5",
+    "webpack": "^4.28.4",
+    "webpack-cli": "^3.2.1"
+  },
+  "scripts": {
+    "start": "npx browser-sync start -s -f *.*",
+    "build": "npx webpack --mode production",
+    "build:watch": "npx webpack --watch --mode development",
+    "build:user-lib": "npx tsc -p ./lib/user-lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SardineFish/SarCodeLab"
+  },
+  "author": "SardineFish",
+  "license": "MIT"
+}
