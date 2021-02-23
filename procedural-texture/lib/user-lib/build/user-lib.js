@@ -350,7 +350,7 @@ class Color extends Vector4 {
     static get gray() { return new Color(.5, .5, .5); }
 }
 const rgba = (r, g, b, a = 1) => new Color(r, g, b, a);
-const rgb = (r, g, b) => new Color(r, g, b, 1);
+const rgb = (r, g = r, b = r) => new Color(r, g, b, 1);
 Number.prototype.__to = function (type) {
     switch (type) {
         case Vector4:
@@ -388,6 +388,9 @@ function div(a, b) {
     return invert
         ? rhs.__to(lhs.constructor).div(lhs)
         : rhs.__to(lhs.constructor).div(lhs).inversed;
+}
+function distance(a, b) {
+    return minus(a, b).magnitude;
 }
 function dot(a, b) {
     return a.dot(b);

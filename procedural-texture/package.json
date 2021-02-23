@@ -12,7 +12,7 @@
   },
   "scripts": {
     "start": "npx browser-sync start -s -f *.*",
-    "build": "npx webpack --mode production",
+    "build": "npx webpack --mode production && npm run build:user-lib",
     "build:watch": "npx webpack --watch --mode development",
     "build:user-lib": "npx tsc -p ./lib/user-lib"
   },

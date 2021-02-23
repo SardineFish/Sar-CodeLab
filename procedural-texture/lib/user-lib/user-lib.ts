@@ -1,8 +1,13 @@
+interface Vector
+{
+    magnitude: number;
+    normalized: ThisType<this>;
+}
 
 type vec2 = Vector2;
 
 const V2Constructor: new (...p: [number, number]) => [number, number] = Array as any;
-class Vector2 extends V2Constructor
+class Vector2 extends V2Constructor implements Vector
 {
     get x() { return this[0]; }
     set x(x: number) { this[0] = x; }
@@ -154,7 +159,7 @@ vec2.up = Vector2.up;
 type vec3 = Vector3;
 
 const V3Constructor: new (...p: [number, number, number]) => [number, number, number] = Array as any;
-class Vector3 extends V3Constructor
+class Vector3 extends V3Constructor implements Vector
 {
     get x() { return this[0]; }
     set x(x: number) { this[0] = x; }
@@ -306,7 +311,7 @@ vec3.one = Vector3.one;
 type vec4 = Vector4;
 
 const V4Constructor: new (...p: [number, number, number, number]) => [number, number, number, number] = Array as any;
-class Vector4 extends V4Constructor
+class Vector4 extends V4Constructor implements Vector
 {
     get x() { return this[0]; }
     set x(x: number) { this[0] = x; }
@@ -473,7 +478,7 @@ class Color extends Vector4
 }
 
 const rgba = (r: number, g: number, b: number, a: number = 1) => new Color(r, g, b, a);
-const rgb = (r: number, g: number, b: number) => new Color(r, g, b, 1);
+const rgb = (r: number, g: number = r, b: number = r) => new Color(r, g, b, 1);
 
 
 
@@ -488,7 +493,7 @@ type Larger<U extends vec, V extends vec> =
     V extends vec2 ? vec2 :
     number;
 
-type ArithmeticType<U extends vec, V extends vec> = Larger<U, V>
+type ArithmeticType<U extends vec, V extends vec> = Larger<U, V> & Vector;
 
 (Number as any).prototype.__to = function (type: Function)
 {
@@ -538,6 +543,10 @@ function div<U extends vec, V extends vec>(a: U, b: V): ArithmeticType<U, V>
     return invert
         ? rhs.__to(lhs.constructor).div(lhs)
         : rhs.__to(lhs.constructor).div(lhs).inversed;
+}
+function distance<V extends vec>(a: V, b: V): number
+{
+    return minus(a, b).magnitude;
 }
 
 function dot(a: vec3, b: vec3): number

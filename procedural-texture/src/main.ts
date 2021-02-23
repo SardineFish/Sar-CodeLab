@@ -83,6 +83,7 @@ function renderCaller(code: string)
 		}
 		ctx.putImageData(data, 0, 0);
 	}
+	
 	eval(code);
 
 
