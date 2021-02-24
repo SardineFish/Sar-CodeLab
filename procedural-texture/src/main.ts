@@ -5,11 +5,7 @@ import { Color, vec2 } from "./lib";
 const $ = (selector: string) => <HTMLElement>document.querySelector(selector);
 
 type RenderFn = (x: number, y: number) => Color | [number, number, number, number] | number;
-
-function main()
-{
-
-}
+let userlib: string;
 
 interface Config
 {
@@ -17,6 +13,7 @@ interface Config
 	height?: number,
 	background?: string | Color,
 	normalizedInput?: boolean,
+	livePreview?: boolean,
 }
 
 function initCanvas(config: Config)
@@ -25,6 +22,14 @@ function initCanvas(config: Config)
 	canvas.width = config.width ?? 256;
 	canvas.height = config.height ?? 256;
 }
+const onEditorChanged = () =>
+{
+	setTimeout(() =>
+	{
+		const code = editor.session.getDocument().getValue();
+		renderCaller(userlib + code);
+	});
+}
 function renderCaller(code: string)
 {
 	let _userConfig: Config = {
@@ -32,6 +37,7 @@ function renderCaller(code: string)
 		height: 256,
 		background: Color.transparent,
 		normalizedInput: false,
+		livePreview: false,
 	};
 
 	initCanvas(_userConfig);
@@ -40,6 +46,14 @@ function renderCaller(code: string)
 	{
 		_userConfig = config;
 		initCanvas(config);
+		if (config.livePreview)
+		{
+			editor.on("change", onEditorChanged);
+		}
+		else
+		{
+			editor.off("change", onEditorChanged);
+		}
 	}
 	function render(func: RenderFn)
 	{
@@ -83,56 +97,49 @@ function renderCaller(code: string)
 		}
 		ctx.putImageData(data, 0, 0);
 	}
-	
+
 	eval(code);
 
 
 }
-async function init()
-{
-	ace.config.set("basePath", "lib/ace-builds/src-min-noconflict");
-	const editor = ace.edit($("#editor-wrapper"));
-	editor.setOptions({
-		enableBasicAutocompletion: true,
-		enableLiveAutocompletion: true,
-		autoScrollEditorIntoView: true,
-		hScrollBarAlwaysVisible: true,
-		vScrollBarAlwaysVisible: true,
-		fontSize: "11pt",
-		fontFamily: "consolas",
-	});
-	editor.setTheme("ace/theme/monokai");
-	editor.session.setMode("ace/mode/javascript");
-	fetch("lib/user-lib/build/demo.js")
-		.then(response => response.text())
-		.then(code =>
-		{
-			editor.session.getDocument().setValue(code);
-			fetch("lib/user-lib/build/user-lib.js")
-				.then((response) => response.text())
-				.then((lib) =>
+ace.config.set("basePath", "lib/ace-builds/src-min-noconflict");
+const editor = ace.edit($("#editor-wrapper"));
+editor.setOptions({
+	enableBasicAutocompletion: true,
+	enableLiveAutocompletion: true,
+	autoScrollEditorIntoView: true,
+	hScrollBarAlwaysVisible: true,
+	vScrollBarAlwaysVisible: true,
+	fontSize: "11pt",
+	fontFamily: "consolas",
+});
+editor.setTheme("ace/theme/monokai");
+editor.session.setMode("ace/mode/javascript");
+fetch("lib/user-lib/build/demo.js")
+	.then(response => response.text())
+	.then(code =>
+	{
+		editor.session.getDocument().setValue(code);
+		fetch("lib/user-lib/build/user-lib.js")
+			.then((response) => response.text())
+			.then((lib) =>
+			{
+				$("#button-render").addEventListener("click", () =>
 				{
-					$("#button-render").addEventListener("click", () =>
-					{
-						const code = editor.session.getDocument().getValue();
-						renderCaller(lib + code);
-					});
-					// editor.on("change", (e) =>
-					// {
-					// 	setTimeout(() =>
-					// 	{
-					// 		const code = editor.session.getDocument().getValue();
-					// 		renderCaller(lib + code);
-					// 	});
-					// });
-
-					var code = editor.session.getDocument().getValue();
+					const code = editor.session.getDocument().getValue();
 					renderCaller(lib + code);
 				});
-		});
-}
-window.onload = () =>
-{
-	init();
-	main();
-};
+				userlib = lib;
+				// editor.on("change", (e) =>
+				// {
+				// 	setTimeout(() =>
+				// 	{
+				// 		const code = editor.session.getDocument().getValue();
+				// 		renderCaller(lib + code);
+				// 	});
+				// });
+
+				var code = editor.session.getDocument().getValue();
+				renderCaller(lib + code);
+			});
+	});

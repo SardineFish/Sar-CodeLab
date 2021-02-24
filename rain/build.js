@@ -5,6 +5,7 @@ require("esbuild").build({
     bundle: true,
     loader: {
         ".png": "file",
+        ".jpg": "file",
         ".glsl": "text",
     },
     watch: true,
