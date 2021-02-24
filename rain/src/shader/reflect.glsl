@@ -14,13 +14,24 @@ out vec4 fragColor;
 
 void main()
 {
-    vec4 normal = texture(uNormalTex, vUV.xy).rgba;
-    float mask = smoothstep(0.2, 0.3, normal.a);
-    float normalMask = smoothstep(0.2, 1.0, normal.a);
-    // vec2 offset = clamp(normalize(normal.xy), vec2(0), vec2(1)) * (1.0 - normalMask);// + vec2(0) * normalMask;
-    vec2 uv = vUV.xy + -normal.xy * vec2(0.6);//clamp(-normal.xy + vec2(0.5), vec2(0), vec2(1));
+    // vec3 lightPos = vec3(0.5, 1, 1);
+
+    vec4 raindrop = texture(uNormalTex, vUV.xy).rgba;
+    float mask = smoothstep(0.6, 0.9, raindrop.a);
+    float normalMask = smoothstep(0.2, 1.0, raindrop.a);
+    
+    vec2 uv = vec2(1) - raindrop.xy;
+    vec3 normal = normalize(vec3((raindrop.xy - vec2(0.5)) * vec2(2), 1));
+
+    // vec3 lightDir = lightPos - vec3(vUV, 0);
+    vec3 lightDir = vec3(1, -1, 2);
+    float lambertian = clamp(dot(normalize(lightDir), normal), 0.0, 1.0);
+
+
     // offset = pow(offset, vec2(2));
     vec4 color = texture(uMainTex, uv.xy).rgba;
+
+    color.rgb += vec3(lambertian - 0.7);
     
 
     // fragColor = vec4(mask, mask, mask, 1);

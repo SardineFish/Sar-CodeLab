@@ -2,10 +2,11 @@ import { Blending, DepthTest, materialDefine, MaterialFromShader, Shader, shader
 import defaultVert from "./shader/2d-vert.glsl";
 import raindropNormal from "./shader/raindrop-normal.glsl";
 import raindropReflect from "./shader/reflect.glsl";
+import blur from "./shader/blur.glsl";
 
 export const MaterialRaindropNormal = SimpleTexturedMaterial(new Shader(defaultVert, raindropNormal, {
-    blendAlpha: [Blending.One, Blending.One],
-    blendRGB: [Blending.One, Blending.One],
+    // blendAlpha: [Blending.SrcAlpha, Blending.OneMinusSrcAlpha],
+    blendRGB: [Blending.One, Blending.OneMinusSrcAlpha],
     depth: DepthTest.Disable,
     zWrite: false,
 }));

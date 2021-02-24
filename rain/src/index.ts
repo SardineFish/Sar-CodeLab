@@ -10,6 +10,7 @@ import { RenderTarget } from "zogra-renderer/dist/core/render-target";
 import { Time } from "./utils";
 import background from "../assets/img/87747832_p0.jpg";
 import { TextureFormat } from "zogra-renderer/dist/core/texture-format";
+import { BlurRenderer } from "./blur";
 
 export interface Options
 {
@@ -26,6 +27,9 @@ export class RaindropFX
 
     private spawner: Spawner;
     private physics: RaindropSimulator = new RaindropSimulator();
+    private blurRenderer: BlurRenderer;
+
+
     private projectionMatrix: mat4;
     private mesh: Mesh = MeshBuilder.quad();
 
@@ -41,6 +45,7 @@ export class RaindropFX
     constructor(canvas: HTMLCanvasElement, options: Options)
     {
         this.renderer = new ZograRenderer(canvas);
+        this.renderer.gl.getExtension("EXT_color_buffer_float");
 
         this.options = options;
 
@@ -48,6 +53,8 @@ export class RaindropFX
             options.spawnInterval,
             options.spawnSize,
             new Rect(vec2.zero(), vec2(canvas.width, canvas.height)));
+        this.blurRenderer = new BlurRenderer(this.renderer);
+        
         this.projectionMatrix = mat4.ortho(0, canvas.width, 0, canvas.height, 1, -1);
 
         this.normalTexture = new RenderTexture(canvas.width, canvas.height, false, TextureFormat.RGBA16F);
@@ -58,12 +65,15 @@ export class RaindropFX
     {
         if (typeof (bgSource) === "string")
         {
+
             const asset = await AssetsImporter.url(bgSource).then(r => r.img({}));
             const texture = asset.mainAsset as Texture2D;
             this.backgroundOringinal = texture;
             this.background = this.backgroundOringinal;
             this.background.resize(this.renderer.canvasSize.x, this.renderer.canvasSize.y, TextureResizing.Cover);
             this.background.generateMipmap();
+
+            this.renderer.blit(this.background, RenderTarget.CanvasTarget);
         }
     }
     async start()
@@ -72,6 +82,11 @@ export class RaindropFX
         this.raindropNormalMat.texture = asset.mainAsset as Texture2D;
 
         let lastFrameTime = 0;
+
+
+        // this.renderer.blit(this.background, RenderTarget.CanvasTarget);
+
+        // return;
 
         // const backgroundAsset = await AssetsImporter.url(background).then(t => t.img({}));
         // const backgroundTex = backgroundAsset.mainAsset as Texture2D;
@@ -109,6 +124,8 @@ export class RaindropFX
     
     update(time: Time)
     {
+        this.renderer.blit(this.background, RenderTarget.CanvasTarget);
+        // return;
         let newDrop = this.spawner.update(time.dt).trySpawn();
         if (newDrop)
         {
@@ -132,13 +149,15 @@ export class RaindropFX
 
         if (this.background)
         {
-            this.matReflect.background = this.background;
+            let bluredBackground = this.blurRenderer.blur(this.background);
+            this.renderer.blit(bluredBackground, RenderTarget.CanvasTarget);
+
+            this.matReflect.background = bluredBackground;
             this.matReflect.backgroundSize = vec4(this.background.width, this.background.height, 1 / this.background.width, 1 / this.background.height);
         }
         this.matReflect.raindropNormal = this.normalTexture;
 
-        this.renderer.blit(this.background, RenderTarget.CanvasTarget);
-        this.renderer.blit(this.background, RenderTarget.CanvasTarget, this.matReflect);
+        this.renderer.blit(null, RenderTarget.CanvasTarget, this.matReflect);
     }
 }
 

@@ -14,9 +14,9 @@ const raindropFx = new SarRaindropFX(canvas, {
     },
     spawnSize: {
         base: 100,
-        jitter: 20
+        jitter: 40
     }
 });
 
-raindropFx.setBackground("./assets/img/87747832_p0.jpg");
+raindropFx.setBackground("./assets/img/84765992_p0.jpg");
 raindropFx.start();

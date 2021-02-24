@@ -14,7 +14,7 @@ void main()
 {
     vec4 color = texture(uMainTex, vUV.xy).rgba;
     // color = color * vec3(uColor);
-    vec2 dir = color.rg - vec2(.5);
+    vec2 dir = color.rg; //- vec2(.5);
     // dir = normalize(dir);
     dir = dir * color.a;
     fragColor = vec4(dir.xy, 0, color.a);
