@@ -5941,9 +5941,10 @@
   var require_asset = __commonJS((exports) => {
     "use strict";
     Object.defineProperty(exports, "__esModule", {value: true});
-    exports.AssetManager = exports.Asset = void 0;
+    exports.AssetManager = exports.LazyInitAsset = exports.Asset = void 0;
     var util_1 = require_util();
     var event_1 = require_event();
+    var global_1 = require_global();
     var Asset = class {
       constructor(name) {
         this.destroyed = false;
@@ -5956,6 +5957,33 @@
       }
     };
     exports.Asset = Asset;
+    var LazyInitAsset = class extends Asset {
+      constructor(ctx = global_1.GlobalContext()) {
+        super();
+        this.initialzed = false;
+        this.ctx = ctx;
+      }
+      tryInit(required = false) {
+        if (this.initialzed)
+          return true;
+        const ctx = this.ctx || global_1.GlobalContext();
+        if (!ctx) {
+          if (required)
+            throw new Error("Failed to initialize GPU resource withou a global GL context.");
+          return false;
+        }
+        this.ctx = ctx;
+        if (this.init()) {
+          this.initialzed = true;
+          return true;
+        } else {
+          if (required)
+            throw new Error("Failed to initialize required GPU resource.");
+          return false;
+        }
+      }
+    };
+    exports.LazyInitAsset = LazyInitAsset;
     var AssetManagerType = class {
       constructor() {
         this.assetsMap = new Map();
@@ -6002,7 +6030,7 @@
   var require_shader = __commonJS((exports) => {
     "use strict";
     Object.defineProperty(exports, "__esModule", {value: true});
-    exports.Shader = exports.DefaultShaderAttributes = exports.Culling = exports.Blending = exports.DepthTest = void 0;
+    exports.Shader = exports.DefaultShaderAttributeNames = exports.Culling = exports.Blending = exports.DepthTest = void 0;
     var util_1 = require_util();
     var global_1 = require_global();
     var shaders_1 = require_shaders();
@@ -6041,7 +6069,7 @@
       Culling2[Culling2["Front"] = WebGL2RenderingContext.FRONT] = "Front";
       Culling2[Culling2["Both"] = WebGL2RenderingContext.FRONT_AND_BACK] = "Both";
     })(Culling = exports.Culling || (exports.Culling = {}));
-    exports.DefaultShaderAttributes = {
+    exports.DefaultShaderAttributeNames = {
       vert: "aPos",
       color: "aColor",
       uv: "aUV",
@@ -6051,13 +6079,13 @@
     var Shader3 = class extends asset_1.Asset {
       constructor(vertexShader, fragmentShader, options = {}, gl = global_1.GL()) {
         super(options.name);
+        this.attributes = null;
         this.initialized = false;
         this.gl = null;
         this.program = null;
         this.vertexShader = null;
         this.fragmentShader = null;
         this.settings = null;
-        this.attributes = null;
         this.builtinUniformLocations = null;
         this._compiled = false;
         if (!options.name)
@@ -6132,14 +6160,11 @@
         this.fragmentShader = util_1.panicNull(gl.createShader(gl.FRAGMENT_SHADER), "Failed to create fragment shader");
         this.compile();
         gl.useProgram(this.program);
-        const attributes = this.options.attributes || exports.DefaultShaderAttributes;
-        this.attributes = {
-          vert: this.gl.getAttribLocation(this.program, attributes.vert),
-          color: this.gl.getAttribLocation(this.program, attributes.color),
-          uv: this.gl.getAttribLocation(this.program, attributes.uv),
-          uv2: this.gl.getAttribLocation(this.program, attributes.uv2),
-          normal: this.gl.getAttribLocation(this.program, attributes.normal)
-        };
+        const attributeNames = Object.assign(Object.assign({}, exports.DefaultShaderAttributeNames), this.options.attributes);
+        this.attributes = {};
+        for (const key in attributeNames) {
+          this.attributes[key] = gl.getAttribLocation(this.program, attributeNames[key]);
+        }
         let blend = false;
         let blendRGB = [Blending2.One, Blending2.Zero];
         let blendAlpha = [Blending2.One, Blending2.OneMinusSrcAlpha];
@@ -7816,6 +7841,26 @@ void main()
           matMV_IT: mvit
         });
       }
+      drawMeshInstance(mesh, buffer, material, count) {
+        if (!material)
+          material = this.assets.materials.error;
+        const gl = this.gl;
+        const data = {
+          assets: this.assets,
+          gl,
+          nextTextureUnit: 0,
+          size: vec2_1.vec2(this.width, this.height)
+        };
+        this.target.bind(this.ctx);
+        this.setupScissor();
+        this.useShader(material.shader);
+        material.setup(data);
+        this.setupTransforms(material.shader, mat4_1.mat4.identity());
+        mesh.bind(material.shader);
+        buffer.bind(material.shader);
+        gl.drawElementsInstanced(gl.TRIANGLES, mesh.triangles.length, gl.UNSIGNED_INT, 0, count);
+        material.unbindRenderTextures();
+      }
       drawMesh(mesh, transform, material) {
         if (!material)
           material = this.assets.materials.error;
@@ -7981,6 +8026,160 @@ void main()
     exports.LineBuilder = LineBuilder;
   });
 
+  // zogra-renderer/dist/core/buffer.js
+  var require_buffer = __commonJS((exports) => {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", {value: true});
+    exports.InstanceBuffer = void 0;
+    var util_1 = require_util();
+    var global_1 = require_global();
+    var InstanceBuffer2 = class extends Array {
+      constructor(structure, items, ctx = global_1.GlobalContext()) {
+        super(items);
+        this.static = false;
+        this.dirty = false;
+        this.initialized = false;
+        this.glBuf = null;
+        this.structure = structure;
+        this.ctx = ctx;
+        let elementSize = 0;
+        for (const key in structure) {
+          switch (structure[key]) {
+            case "float":
+              elementSize += 1;
+              break;
+            case "vec2":
+              elementSize += 2;
+              break;
+            case "vec3":
+              elementSize += 3;
+              break;
+            case "vec4":
+              elementSize += 4;
+              break;
+            case "mat4":
+              elementSize += 16;
+              break;
+          }
+        }
+        const elementBytes = elementSize * 4;
+        this.buffer = new Float32Array(elementSize * items);
+        this.byteSize = elementBytes * items;
+        this.elementByteSize = elementBytes;
+        for (let i = 0; i < this.length; i++) {
+          const element = {};
+          let offset = 0;
+          for (const key in structure) {
+            switch (structure[key]) {
+              case "float":
+                element[key] = new Float32Array(this.buffer.buffer, i * elementBytes + offset * 4, 1);
+                offset += 1;
+                break;
+              case "vec2":
+                element[key] = new Float32Array(this.buffer.buffer, i * elementBytes + offset * 4, 2);
+                offset += 2;
+                break;
+              case "vec3":
+                element[key] = new Float32Array(this.buffer.buffer, i * elementBytes + offset * 4, 3);
+                offset += 3;
+                break;
+              case "vec4":
+                element[key] = new Float32Array(this.buffer.buffer, i * elementBytes + offset * 4, 4);
+                offset += 4;
+                break;
+              case "mat4":
+                element[key] = new Float32Array(this.buffer.buffer, i * elementBytes + offset * 4, 16);
+                offset += 16;
+                break;
+            }
+          }
+          this[i] = element;
+        }
+        this.dirty = true;
+        this.tryInit(false);
+      }
+      tryInit(required = false) {
+        var _a;
+        if (this.initialized)
+          return true;
+        const ctx = this.ctx || global_1.GlobalContext();
+        if (!ctx) {
+          if (required)
+            throw new Error("Failed to init render buffer without a global GL context.");
+          return false;
+        }
+        this.ctx = ctx;
+        const gl = ctx.gl;
+        this.glBuf = (_a = gl.createBuffer()) !== null && _a !== void 0 ? _a : util_1.panic("Failed to create render buffer");
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuf);
+        gl.bufferData(gl.ARRAY_BUFFER, this.byteSize, this.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW);
+        this.initialized = true;
+        return true;
+      }
+      markDirty() {
+        this.dirty = true;
+      }
+      upload(force = false) {
+        this.tryInit(true);
+        if (!this.dirty && !force && this.static)
+          return false;
+        const gl = this.ctx.gl;
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuf);
+        gl.bufferData(gl.ARRAY_BUFFER, this.buffer, this.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW);
+        this.dirty = false;
+        return true;
+      }
+      bind(shader) {
+        this.tryInit(true);
+        const gl = this.ctx.gl;
+        this.upload() || gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuf);
+        const locations = shader.attributes;
+        let floatOffset = 0;
+        for (const key in this.structure) {
+          const loc = locations[key];
+          loc >= 0 && gl.enableVertexAttribArray(loc);
+          switch (this.structure[key]) {
+            case "float":
+              loc >= 0 && gl.vertexAttribPointer(loc, 1, gl.FLOAT, false, this.elementByteSize, floatOffset * 4);
+              floatOffset += 1;
+              break;
+            case "vec2":
+              loc >= 0 && gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, this.elementByteSize, floatOffset * 4);
+              floatOffset += 2;
+              break;
+            case "vec3":
+              loc >= 0 && gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, this.elementByteSize, floatOffset * 4);
+              floatOffset += 3;
+              break;
+            case "vec4":
+              loc >= 0 && gl.vertexAttribPointer(loc, 4, gl.FLOAT, false, this.elementByteSize, floatOffset * 4);
+              floatOffset += 4;
+              break;
+            case "mat4":
+              if (loc >= 0) {
+                gl.enableVertexAttribArray(loc + 0);
+                gl.enableVertexAttribArray(loc + 1);
+                gl.enableVertexAttribArray(loc + 2);
+                gl.enableVertexAttribArray(loc + 3);
+                gl.vertexAttribPointer(loc + 0, 4, gl.FLOAT, false, this.elementByteSize, (floatOffset + 0) * 4);
+                gl.vertexAttribPointer(loc + 1, 4, gl.FLOAT, false, this.elementByteSize, (floatOffset + 4) * 4);
+                gl.vertexAttribPointer(loc + 2, 4, gl.FLOAT, false, this.elementByteSize, (floatOffset + 8) * 4);
+                gl.vertexAttribPointer(loc + 3, 4, gl.FLOAT, false, this.elementByteSize, (floatOffset + 12) * 4);
+                gl.vertexAttribDivisor(loc + 0, 1);
+                gl.vertexAttribDivisor(loc + 1, 1);
+                gl.vertexAttribDivisor(loc + 2, 1);
+                gl.vertexAttribDivisor(loc + 3, 1);
+              }
+              floatOffset += 16;
+              break;
+          }
+          loc >= 0 && gl.vertexAttribDivisor(loc, 1);
+        }
+      }
+    };
+    exports.InstanceBuffer = InstanceBuffer2;
+  });
+
   // zogra-renderer/dist/core/core.js
   var require_core = __commonJS((exports) => {
     "use strict";
@@ -8010,6 +8209,7 @@ void main()
     __exportStar2(require_asset(), exports);
     __exportStar2(require_lines(), exports);
     __exportStar2(require_event(), exports);
+    __exportStar2(require_buffer(), exports);
   });
 
   // zogra-renderer/dist/engine/transform.js
@@ -8368,7 +8568,7 @@ void main()
     var color_1 = require_color();
     var mat4_1 = require_mat42();
     var vec2_1 = require_vec22();
-    var DebugLayerRenderer = class {
+    var DebugLayerRenderer2 = class {
       constructor() {
         this.lines = new core_1.Lines();
       }
@@ -8395,7 +8595,7 @@ void main()
         this.lines.clear();
       }
     };
-    exports.DebugLayerRenderer = DebugLayerRenderer;
+    exports.DebugLayerRenderer = DebugLayerRenderer2;
   });
 
   // zogra-renderer/dist/render-pipeline/preview-renderer.js
@@ -9198,17 +9398,24 @@ void main()
     }
   };
 
+  // src/shader/raindrop-vert.glsl
+  var raindrop_vert_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec3 aPos;\r\nin vec4 aColor;\r\nin vec2 aUV;\r\nin vec3 aNormal;\r\n\r\nin float aSize;\r\nin mat4 aModelMatrix;\r\n\r\nuniform mat4 uTransformM;\r\nuniform mat4 uTransformVP;\r\nuniform mat4 uTransformMVP;\r\nuniform mat4 uTransformM_IT;\r\n\r\nout vec4 vColor;\r\nout vec4 vPos;\r\nout vec2 vUV;\r\nout vec3 vNormal;\r\nout vec3 vWorldPos;\r\nout float vSize;\r\n\r\nvoid main()\r\n{\r\n    mat4 mvp = uTransformVP * aModelMatrix;\r\n    gl_Position = mvp * vec4(aPos, 1);\r\n    vPos = gl_Position;\r\n    vColor = aColor;\r\n    vUV = aUV;\r\n    vNormal = (uTransformM_IT *  vec4(aNormal, 0)).xyz;\r\n    vWorldPos = (uTransformM * vec4(aPos, 1)).xyz;\r\n    vSize = aSize;\r\n}";
+
   // src/shader/raindrop-normal.glsl
-  var raindrop_normal_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform float uSize;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    \r\n    fragColor = vec4(color.rg * color.a, uSize * color.a, color.a);\r\n}";
+  var raindrop_normal_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\nin float vSize;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform float uSize;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    \r\n    fragColor = vec4(color.rg * color.a, vSize * color.a, color.a);\r\n}";
 
   // src/shader/reflect.glsl
-  var reflect_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uBackgroundSize; // (x, y, 1/x, 1/y)\r\nuniform sampler2D uNormalTex;\r\nuniform vec4 uColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    // vec3 lightPos = vec3(0.5, 1, 1);\r\n\r\n    vec4 raindrop = texture(uNormalTex, vUV.xy).rgba;\r\n    float mask = smoothstep(0.8, 0.99, raindrop.a);\r\n    float normalMask = smoothstep(0.2, 1.0, raindrop.a);\r\n    \r\n    vec2 uv = vUV.xy + -(raindrop.xy - vec2(0.5)) * vec2(raindrop.b * 0.6 + 0.4);\r\n    vec3 normal = normalize(vec3((raindrop.xy - vec2(0.5)) * vec2(2), 1));\r\n\r\n    // vec3 lightDir = lightPos - vec3(vUV, 0);\r\n    vec3 lightDir = vec3(-1, 1, 2);\r\n    float lambertian = clamp(dot(normalize(lightDir), normal), 0.0, 1.0);\r\n\r\n\r\n    // offset = pow(offset, vec2(2));\r\n    vec4 color = texture(uMainTex, uv.xy).rgba;\r\n\r\n    // color.rgb += vec3((lambertian - 0.7) * 0.3);\r\n    \r\n\r\n    // fragColor = vec4(mask, mask, mask, 1);\r\n    // color = color * vec3(uColor);\r\n    fragColor = vec4(color.rgb, mask);// vec4(color.rgb, mask);\r\n}";
+  var reflect_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uBackgroundSize; // (x, y, 1/x, 1/y)\r\nuniform sampler2D uNormalTex;\r\nuniform vec4 uColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    // vec3 lightPos = vec3(0.5, 1, 1);\r\n\r\n    vec4 raindrop = texture(uNormalTex, vUV.xy).rgba;\r\n    float mask = smoothstep(0.8, 0.99, raindrop.a);\r\n    float normalMask = smoothstep(0.2, 1.0, raindrop.a);\r\n    \r\n    vec2 uv = vUV.xy + -(raindrop.xy - vec2(0.5)) * vec2(raindrop.b * 0.6 + 0.4);\r\n    vec3 normal = normalize(vec3((raindrop.xy - vec2(0.5)) * vec2(2), 1));\r\n\r\n    // vec3 lightDir = lightPos - vec3(vUV, 0);\r\n    vec3 lightDir = vec3(-1, 1, 2);\r\n    float lambertian = clamp(dot(normalize(lightDir), normal), 0.0, 1.0);\r\n\r\n\r\n    // offset = pow(offset, vec2(2));\r\n    vec4 color = texture(uMainTex, uv.xy).rgba;\r\n\r\n    // color.rgb += vec3((lambertian - 0.7) * 0.3);\r\n    \r\n\r\n    // fragColor = vec4(mask, mask, mask, 1);\r\n    // color = color * vec3(uColor);\r\n\r\n    fragColor = vec4(color.rgb, mask);// vec4(color.rgb, mask);\r\n}";
 
   // src/renderer.ts
-  var MaterialRaindropNormal = class extends import_zogra_renderer2.MaterialFromShader(new import_zogra_renderer2.Shader(d_vert_default, raindrop_normal_default, {
+  var MaterialRaindropNormal = class extends import_zogra_renderer2.MaterialFromShader(new import_zogra_renderer2.Shader(raindrop_vert_default, raindrop_normal_default, {
     blendRGB: [import_zogra_renderer2.Blending.OneMinusDstColor, import_zogra_renderer2.Blending.OneMinusSrcColor],
     depth: import_zogra_renderer2.DepthTest.Disable,
-    zWrite: false
+    zWrite: false,
+    attributes: {
+      size: "aSize",
+      modelMatrix: "aModelMatrix"
+    }
   })) {
     constructor() {
       super(...arguments);
@@ -9250,6 +9457,10 @@ void main()
       this.matRefract = new RaindropCompose();
       this.matRaindrop = new MaterialRaindropNormal();
       this.mesh = import_zogra_renderer2.MeshBuilder.quad();
+      this.buffer = new import_zogra_renderer2.InstanceBuffer({
+        size: "float",
+        modelMatrix: "mat4"
+      }, 3e3);
       this.renderer = new import_zogra_renderer2.ZograRenderer(options.canvas);
       this.options = options;
       this.projectionMatrix = import_zogra_renderer2.mat4.ortho(0, options.width, 0, options.height, 1, -1);
@@ -9273,10 +9484,13 @@ void main()
       this.renderer.setRenderTarget(this.raindropComposeTex);
       this.renderer.clear(import_zogra_renderer2.Color.black.transparent());
       this.renderer.setViewProjection(import_zogra_renderer2.mat4.identity(), this.projectionMatrix);
-      for (const raindrop of raindrops) {
-        this.matRaindrop.size = raindrop.size.x / 100;
-        this.renderer.drawMesh(this.mesh, import_zogra_renderer2.mat4.rts(import_zogra_renderer2.quat.identity(), raindrop.pos.toVec3(), raindrop.size.toVec3(1)), this.matRaindrop);
+      for (let i = 0; i < raindrops.length; i++) {
+        const raindrop = raindrops[i];
+        const model = import_zogra_renderer2.mat4.rts(import_zogra_renderer2.quat.identity(), raindrop.pos.toVec3(), raindrop.size.toVec3(1));
+        this.buffer[i].modelMatrix.set(model);
+        this.buffer[i].size[0] = 1;
       }
+      this.renderer.drawMeshInstance(this.mesh, this.buffer, this.matRaindrop, raindrops.length);
       this.renderer.setRenderTarget(import_render_target.RenderTarget.CanvasTarget);
       this.renderer.clear(import_zogra_renderer2.Color.black);
       let bluredBackground = this.blurRenderer.blur(this.background);
@@ -9334,9 +9548,9 @@ void main()
       return this._size;
     }
     get mergeDistance() {
-      return this.size.x * 0.2;
+      return this.size.x * (1 + this.spread.x) * 0.16;
     }
-    update(time) {
+    updateRaindrop(time) {
       if (this.nextRandomTime <= time.total) {
         this.nextRandomTime = time.total + Math.random() * 0.4;
         this.randomMotion();
@@ -9360,7 +9574,7 @@ void main()
       if (this.mass < 1e3)
         return;
       let mass = randomRange(0.05, 0.1) * this.mass;
-      this.mass -= mass * 0.5;
+      this.mass -= mass;
       const pos = import_zogra_renderer4.plus(import_zogra_renderer4.vec2(randomRange(-5, 5), this.size.y / 4), this.pos);
       let trailDrop = this.simulator.spawner.spawn(pos.clone(), mass);
       trailDrop.spread = import_zogra_renderer4.vec2(1, Math.abs(this.velocity.y) * 6e-3);
@@ -9370,7 +9584,7 @@ void main()
       this.nextTrailDistance = randomRange(20, 30);
     }
     randomMotion() {
-      this.resistance = randomRange(0.6, 1) * this.gravity * 6e3;
+      this.resistance = randomRange(0.3, 1) * this.gravity * 9e3;
       this.shifting = random() * 0.1;
     }
     merge(target) {
@@ -9426,7 +9640,7 @@ void main()
       this.resize();
     }
     get gridSize() {
-      return this.options.spawnSize[1];
+      return this.options.spawnSize[1] * 0.3;
     }
     resize() {
       const w = Math.ceil(this.options.viewport.size.x / this.gridSize);
@@ -9466,9 +9680,22 @@ void main()
       let newDrop = this.spawner.update(time.dt).trySpawn();
       if (newDrop)
         this.raindrops.push(newDrop);
+      this.raindropUpdate(time);
+      this.collisionUpdate();
+      for (let i = 0; i < this.raindrops.length; i++) {
+        if (this.raindrops[i].destroied) {
+          this.raindrops[i].grid?.delete(this.raindrops[i]);
+          this.raindrops[i] = this.raindrops[this.raindrops.length - 1];
+          this.raindrops.length--;
+        }
+      }
+    }
+    raindropUpdate(time) {
       for (let i = 0; i < this.raindrops.length; i++) {
         const raindrop = this.raindrops[i];
-        raindrop.update(time);
+        if (raindrop.destroied)
+          continue;
+        raindrop.updateRaindrop(time);
         if (raindrop.pos.y < -100)
           raindrop.destroied = true;
         if (raindrop.destroied)
@@ -9480,13 +9707,24 @@ void main()
           grid?.add(raindrop);
           raindrop.grid = grid;
         }
+      }
+    }
+    collisionUpdate() {
+      for (let i = 0; i < this.raindrops.length; i++) {
+        const raindrop = this.raindrops[i];
+        if (raindrop.destroied)
+          continue;
+        const [gridX, gridY] = this.worldToGrid(raindrop.pos.x, raindrop.pos.y);
         for (let x = -1; x <= 1; x++) {
           for (let y = -1; y <= 1; y++) {
-            const grid2 = this.gridAt(gridX + x, gridY + y);
-            if (!grid2)
+            const grid = this.gridAt(gridX + x, gridY + y);
+            if (!grid)
               continue;
-            for (const other of grid2) {
-              if (other.destroied || other.parent === raindrop || other === raindrop.parent || other.parent === raindrop.parent)
+            for (const other of grid) {
+              const isSame = other === raindrop;
+              const isParent = other.parent === raindrop || raindrop.parent === other;
+              const isAdjacent = raindrop.parent && raindrop.parent === other.parent;
+              if (other.destroied || isParent || isAdjacent || isSame)
                 continue;
               let dx = raindrop.pos.x - other.pos.x;
               let dy = raindrop.pos.y - other.pos.y;
@@ -9504,13 +9742,6 @@ void main()
           }
         }
       }
-      for (let i = 0; i < this.raindrops.length; i++) {
-        if (this.raindrops[i].destroied) {
-          this.raindrops[i].grid?.delete(this.raindrops[i]);
-          this.raindrops[i] = this.raindrops[this.raindrops.length - 1];
-          this.raindrops.length--;
-        }
-      }
     }
   };
 
@@ -9520,8 +9751,8 @@ void main()
       this.animFrameId = -1;
       const canvas = options.canvas;
       const defaultOptions = {
-        spawnInterval: [0.2, 0.4],
-        spawnSize: [20, 160],
+        spawnInterval: [0.1, 0.1],
+        spawnSize: [30, 100],
         viewport: new import_zogra_renderer5.Rect(import_zogra_renderer5.vec2.zero(), import_zogra_renderer5.vec2(canvas.width, canvas.height)),
         canvas,
         width: canvas.width,

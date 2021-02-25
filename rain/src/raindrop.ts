@@ -59,10 +59,10 @@ export class RainDrop
 
     get mergeDistance()
     {
-        return this.size.x * 0.2;
+        return this.size.x * (1 + this.spread.x) * 0.16;
     }
 
-    update(time: Time)
+    updateRaindrop(time: Time)
     {
         if (this.nextRandomTime <= time.total)
         {
@@ -92,10 +92,11 @@ export class RainDrop
 
     split()
     {
+        // return;
         if (this.mass < 1000)
             return;
         let mass = randomRange(0.05, 0.1) * this.mass;
-        this.mass -= mass * 0.5;
+        this.mass -= mass;
         const pos = plus(vec2(randomRange(-5, 5), this.size.y / 4), this.pos);
         let trailDrop = this.simulator.spawner.spawn(pos.clone(), mass);
         trailDrop.spread = vec2(1, Math.abs(this.velocity.y) * 0.006);
@@ -107,7 +108,7 @@ export class RainDrop
 
     randomMotion()
     {
-        this.resistance = randomRange(0.6, 1) * this.gravity * 6000;
+        this.resistance = randomRange(0.3, 1) * this.gravity * 9000;
         this.shifting = random() * 0.1;
     }
 

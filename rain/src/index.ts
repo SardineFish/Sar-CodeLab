@@ -19,8 +19,8 @@ export class RaindropFX
     {
         const canvas = options.canvas;
         const defaultOptions = <Options>{
-            spawnInterval: [0.2, 0.4],
-            spawnSize: [20, 160],
+            spawnInterval: [0.1, 0.1],
+            spawnSize: [30, 100],
             viewport: new Rect(vec2.zero(), vec2(canvas.width, canvas.height)),
             canvas: canvas,
             width: canvas.width,

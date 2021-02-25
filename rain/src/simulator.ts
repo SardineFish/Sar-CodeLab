@@ -25,7 +25,7 @@ export class RaindropSimulator
 
         this.resize();
     }
-    get gridSize() { return this.options.spawnSize[1] }
+    get gridSize() { return this.options.spawnSize[1] * 0.3 } // max collide distance
 
     resize()
     {
@@ -71,21 +71,41 @@ export class RaindropSimulator
 
     update(time: Time)
     {
-
         let newDrop = this.spawner.update(time.dt).trySpawn();
         if (newDrop)
             this.raindrops.push(newDrop); 
 
+        this.raindropUpdate(time);
+        this.collisionUpdate();
+
+        for (let i = 0; i < this.raindrops.length; i++)
+        {
+            if (this.raindrops[i].destroied)
+            {
+                this.raindrops[i].grid?.delete(this.raindrops[i]);
+                this.raindrops[i] = this.raindrops[this.raindrops.length - 1];
+                this.raindrops.length--;
+            }
+        }
+    }
+
+    raindropUpdate(time: Time)
+    {
         for (let i = 0; i < this.raindrops.length; i++)
         {
             const raindrop = this.raindrops[i];
-            raindrop.update(time);
-            if (raindrop.pos.y < -100)
-                raindrop.destroied = true;
-            
             if (raindrop.destroied)
                 continue;
             
+            raindrop.updateRaindrop(time);
+            if (raindrop.pos.y < -100)
+                raindrop.destroied = true;
+            
+
+            if (raindrop.destroied)
+                continue;
+
+
             const [gridX, gridY] = this.worldToGrid(raindrop.pos.x, raindrop.pos.y);
             const grid = this.gridAt(gridX, gridY);
             if (grid !== raindrop.grid)
@@ -94,8 +114,19 @@ export class RaindropSimulator
                 grid?.add(raindrop);
                 raindrop.grid = grid;
             }
+        }
+    }
+
+    collisionUpdate()
+    {
+        for (let i = 0; i < this.raindrops.length; i++)
+        {
+            const raindrop = this.raindrops[i];
+
+            if (raindrop.destroied)
+                continue;
             
-            // continue;
+            const [gridX, gridY] = this.worldToGrid(raindrop.pos.x, raindrop.pos.y);
 
             for (let x = -1; x <= 1; x++)
             {
@@ -104,13 +135,16 @@ export class RaindropSimulator
                     const grid = this.gridAt(gridX + x, gridY + y);
                     if (!grid)
                         continue;
-                    
+
                     for (const other of grid)
                     {
-                        if (other.destroied || other.parent === raindrop || other === raindrop.parent || other.parent === raindrop.parent)
+                        const isSame = other === raindrop;
+                        const isParent = other.parent === raindrop || raindrop.parent === other;
+                        const isAdjacent = raindrop.parent && (raindrop.parent === other.parent);
+                        if (other.destroied || isParent || isAdjacent || isSame)
                             continue;
-                        
-                        let dx = (raindrop.pos.x - other.pos.x);
+
+                        let dx = raindrop.pos.x - other.pos.x;
                         let dy = raindrop.pos.y - other.pos.y;
                         let distance = Math.sqrt(dx * dx + dy * dy);
                         if (distance - raindrop.mergeDistance - other.mergeDistance < 0)
@@ -128,16 +162,6 @@ export class RaindropSimulator
                         }
                     }
                 }
-            }
-        }
-
-        for (let i = 0; i < this.raindrops.length; i++)
-        {
-            if (this.raindrops[i].destroied)
-            {
-                this.raindrops[i].grid?.delete(this.raindrops[i]);
-                this.raindrops[i] = this.raindrops[this.raindrops.length - 1];
-                this.raindrops.length--;
             }
         }
     }

@@ -36,5 +36,6 @@ void main()
 
     // fragColor = vec4(mask, mask, mask, 1);
     // color = color * vec3(uColor);
+
     fragColor = vec4(color.rgb, mask);// vec4(color.rgb, mask);
 }
