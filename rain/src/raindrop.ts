@@ -14,6 +14,7 @@ export class RainDrop
     destroied = false;
     evaporate = 0;
     parent?: RainDrop;
+    grid?: Set<RainDrop>;
 
     // mergeRadius = 0.1;
 
@@ -106,7 +107,7 @@ export class RainDrop
 
     randomMotion()
     {
-        this.resistance = randomRange(0.4, 1) * this.gravity * 6000;
+        this.resistance = randomRange(0.6, 1) * this.gravity * 6000;
         this.shifting = random() * 0.1;
     }
 

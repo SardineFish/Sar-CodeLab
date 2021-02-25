@@ -9211,7 +9211,7 @@ void main()
       this.nextTrailDistance = randomRange(20, 30);
     }
     randomMotion() {
-      this.resistance = randomRange(0.4, 1) * this.gravity * 6e3;
+      this.resistance = randomRange(0.6, 1) * this.gravity * 6e3;
       this.shifting = random() * 0.1;
     }
     merge(target) {
@@ -9261,11 +9261,47 @@ void main()
   var RaindropSimulator = class {
     constructor(options) {
       this.raindrops = [];
+      this.grid = [];
       this.options = options;
       this.spawner = new Spawner(this, options);
+      this.resize();
+    }
+    get gridSize() {
+      return this.options.spawnSize[1];
+    }
+    resize() {
+      const w = Math.ceil(this.options.viewport.size.x / this.gridSize);
+      const h = Math.ceil(this.options.viewport.size.y / this.gridSize);
+      let base = 0;
+      if (this.grid.length < w * h) {
+        base = this.grid.length;
+        this.grid.length = w * h;
+      }
+      for (let i = base; i < this.grid.length; i++)
+        this.grid[i] = new Set();
+    }
+    gridAt(gridX, gridY) {
+      if (gridX < 0 || gridY < 0)
+        return void 0;
+      const gridWidth = Math.ceil(this.options.viewport.size.x / this.gridSize);
+      const idx = gridY * gridWidth + gridX;
+      if (idx >= this.grid.length)
+        return void 0;
+      return this.grid[idx];
+    }
+    gridAtWorldPos(x, y) {
+      return this.gridAt(...this.worldToGrid(x, y));
+    }
+    worldToGrid(x, y) {
+      const gridX = Math.floor(x / this.gridSize);
+      const gridY = Math.floor(y / this.gridSize);
+      return [gridX, gridY];
     }
     add(raindrop) {
       this.raindrops.push(raindrop);
+      let grid = this.gridAtWorldPos(raindrop.pos.x, raindrop.pos.y);
+      grid?.add(raindrop);
+      raindrop.grid = grid;
     }
     update(time) {
       let newDrop = this.spawner.update(time.dt).trySpawn();
@@ -9278,25 +9314,40 @@ void main()
           raindrop.destroied = true;
         if (raindrop.destroied)
           continue;
-        for (let j = i + 1; j < this.raindrops.length; j++) {
-          if (this.raindrops[j].parent === raindrop || this.raindrops[j].destroied)
-            continue;
-          let dx = raindrop.pos.x - this.raindrops[j].pos.x;
-          let dy = raindrop.pos.y - this.raindrops[j].pos.y;
-          let distance2 = Math.sqrt(dx * dx + dy * dy);
-          if (distance2 - raindrop.mergeDistance - this.raindrops[j].mergeDistance < 0) {
-            if (raindrop.mass >= this.raindrops[j].mass) {
-              raindrop.merge(this.raindrops[j]);
-              this.raindrops[j].destroied = true;
-            } else {
-              this.raindrops[j].merge(raindrop);
-              raindrop.destroied = true;
+        const [gridX, gridY] = this.worldToGrid(raindrop.pos.x, raindrop.pos.y);
+        const grid = this.gridAt(gridX, gridY);
+        if (grid !== raindrop.grid) {
+          raindrop.grid?.delete(raindrop);
+          grid?.add(raindrop);
+          raindrop.grid = grid;
+        }
+        for (let x = -1; x <= 1; x++) {
+          for (let y = -1; y <= 1; y++) {
+            const grid2 = this.gridAt(gridX + x, gridY + y);
+            if (!grid2)
+              continue;
+            for (const other of grid2) {
+              if (other.destroied || other.parent === raindrop || other === raindrop.parent || other.parent === raindrop.parent)
+                continue;
+              let dx = raindrop.pos.x - other.pos.x;
+              let dy = raindrop.pos.y - other.pos.y;
+              let distance2 = Math.sqrt(dx * dx + dy * dy);
+              if (distance2 - raindrop.mergeDistance - other.mergeDistance < 0) {
+                if (raindrop.mass >= other.mass) {
+                  raindrop.merge(other);
+                  other.destroied = true;
+                } else {
+                  other.merge(raindrop);
+                  raindrop.destroied = true;
+                }
+              }
             }
           }
         }
       }
       for (let i = 0; i < this.raindrops.length; i++) {
         if (this.raindrops[i].destroied) {
+          this.raindrops[i].grid?.delete(this.raindrops[i]);
           this.raindrops[i] = this.raindrops[this.raindrops.length - 1];
           this.raindrops.length--;
         }
