@@ -1,5 +1,5 @@
 import { trimEnd } from "*.png";
-import { minus, mul, plus, vec2 } from "zogra-renderer";
+import { div, minus, mul, plus, vec2 } from "zogra-renderer";
 import { goldNoise, random, randomRange } from "./random";
 import { RaindropSimulator } from "./simulator";
 import { clamp, Time } from "./utils";
@@ -11,10 +11,14 @@ export class RainDrop
     seed: number;
     velocity: vec2 = vec2.zero();
     spread: vec2;
-    destroy = false;
+    destroied = false;
     evaporate = 0;
-    mass: number = 0;
+    parent?: RainDrop;
 
+    // mergeRadius = 0.1;
+
+    private _mass: number = 0;
+    private _size: vec2 = vec2.zero();
     private simulator: RaindropSimulator;
     private resistance = 0;
     private shifting = 0;
@@ -39,10 +43,22 @@ export class RainDrop
 
         this.mass = size ** 2;
     }
+
+    get mass() { return this._mass; }
+    set mass(m: number)
+    {
+        this._mass = m;
+        this._size = mul(plus(this.spread, vec2.one()), Math.sqrt(m));
+    }
     
     get size(): vec2
     {
-        return mul(plus(this.spread, vec2.one()), Math.sqrt(this.mass));
+        return this._size;
+    }
+
+    get mergeDistance()
+    {
+        return this.size.x * 0.2;
     }
 
     update(time: Time)
@@ -82,6 +98,7 @@ export class RainDrop
         const pos = plus(vec2(randomRange(-5, 5), this.size.y / 4), this.pos);
         let trailDrop = this.simulator.spawner.spawn(pos.clone(), mass);
         trailDrop.spread = vec2(1, Math.abs(this.velocity.y) * 0.006);
+        trailDrop.parent = this;
         this.simulator.add(trailDrop);
         this.lastTrailPos = this.pos.clone();
         this.nextTrailDistance = randomRange(20, 30);
@@ -89,7 +106,16 @@ export class RainDrop
 
     randomMotion()
     {
-        this.resistance = randomRange(0.1, 1) * this.gravity * 3000;
+        this.resistance = randomRange(0.4, 1) * this.gravity * 6000;
         this.shifting = random() * 0.1;
+    }
+
+    merge(target: RainDrop)
+    {
+        const selfMomentum = mul(this.velocity, this.mass);
+        const targetMomentum = mul(target.velocity, target.mass);
+        const momentum = plus(selfMomentum, targetMomentum);
+        this.mass += target.mass;
+        this.velocity = div(momentum, this.mass);
     }
 }
