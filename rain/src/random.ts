@@ -44,6 +44,17 @@ export function tentNoise(t: number, seed: number)
 {
     let frac = fract(t);
     let grid = Math.floor(t += seed);
+}
 
+/**
+ * Get random value in (-1, 1)
+ */
+export function random()
+{
+    return Math.random() * 2 - 1;
+}
 
+export function randomRange(min: number, max: number)
+{
+    return Math.random() * (max - min) + min;
 }

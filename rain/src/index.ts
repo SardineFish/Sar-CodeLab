@@ -4,7 +4,7 @@ import vert from "./shader/2d-vert.glsl";
 import frag from "./shader/2d-frag.glsl";
 import { JitterOption } from "./random";
 import { Spawner } from "./spawner";
-import { RaindropSimulator } from "./physics";
+import { RaindropSimulator, SimulatorOptions } from "./simulator";
 import { MaterialRaindropNormal, RaindropCompose } from "./materials";
 import { RenderTarget } from "zogra-renderer/dist/core/render-target";
 import { Time } from "./utils";
@@ -12,10 +12,8 @@ import background from "../assets/img/87747832_p0.jpg";
 import { TextureFormat } from "zogra-renderer/dist/core/texture-format";
 import { BlurRenderer } from "./blur";
 
-export interface Options
+export interface Options extends SimulatorOptions
 {
-    spawnInterval: JitterOption<number>;
-    spawnSize: JitterOption<number>;
 }
 
 export class RaindropFX
@@ -25,8 +23,8 @@ export class RaindropFX
 
     private options: Options;
 
-    private spawner: Spawner;
-    private physics: RaindropSimulator = new RaindropSimulator();
+    // private spawner: Spawner;
+    private simulator: RaindropSimulator;
     private blurRenderer: BlurRenderer;
 
 
@@ -42,22 +40,26 @@ export class RaindropFX
 
 
 
-    constructor(canvas: HTMLCanvasElement, options: Options)
+    constructor(canvas: HTMLCanvasElement, options: Partial<Options>)
     {
         this.renderer = new ZograRenderer(canvas);
         this.renderer.gl.getExtension("EXT_color_buffer_float");
 
-        this.options = options;
+        const defaultOptions = <Options>{
+            spawnInterval: [0.2, 0.4],
+            spawnSize: [20, 160],
+            viewport: new Rect(vec2.zero(), this.renderer.canvasSize),
+        };
 
-        this.spawner = new Spawner(
-            options.spawnInterval,
-            options.spawnSize,
-            new Rect(vec2.zero(), vec2(canvas.width, canvas.height)));
+        this.options = { ...defaultOptions, ...options };
+
+        this.simulator = new RaindropSimulator(this.options);
+
         this.blurRenderer = new BlurRenderer(this.renderer);
         
         this.projectionMatrix = mat4.ortho(0, canvas.width, 0, canvas.height, 1, -1);
 
-        this.normalTexture = new RenderTexture(canvas.width, canvas.height, false, TextureFormat.RGBA16F);
+        this.normalTexture = new RenderTexture(canvas.width, canvas.height, false, TextureFormat.RGBA);
 
         this.mesh = MeshBuilder.quad();
     }
@@ -110,7 +112,7 @@ export class RaindropFX
             const dt = (delay - lastFrameTime) / 1000;
             lastFrameTime = delay;
             const time = <Time>{
-                dt: dt,
+                dt: 0.03,
                 total: delay / 1000
             };
 
@@ -126,13 +128,13 @@ export class RaindropFX
     {
         this.renderer.blit(this.background, RenderTarget.CanvasTarget);
         // return;
-        let newDrop = this.spawner.update(time.dt).trySpawn();
-        if (newDrop)
-        {
-            this.physics.add(newDrop);
-        }
+        // let newDrop = this.spawner.update(time.dt).trySpawn();
+        // if (newDrop)
+        // {
+        //     this.simulator.add(newDrop);
+        // }
 
-        this.physics.update(time);
+        this.simulator.update(time);
 
         if (this.background)
             this.renderer.blit(this.background, RenderTarget.CanvasTarget);
@@ -140,9 +142,10 @@ export class RaindropFX
         this.renderer.setRenderTarget(this.normalTexture);
         this.renderer.clear(Color.black.transparent());
         this.renderer.setViewProjection(mat4.identity(), this.projectionMatrix);
-        for (const raindrop of this.physics.raindrops)
+        for (const raindrop of this.simulator.raindrops)
         {
-            this.renderer.drawMesh(this.mesh, mat4.rts(quat.identity(), raindrop.pos.toVec3(), vec3(raindrop.size)), this.raindropNormalMat);
+            this.raindropNormalMat.size = raindrop.size.x / this.options.spawnSize[1];
+            this.renderer.drawMesh(this.mesh, mat4.rts(quat.identity(), raindrop.pos.toVec3(), raindrop.size.toVec3(1)), this.raindropNormalMat);
         }
         this.renderer.setRenderTarget(RenderTarget.CanvasTarget);
         this.renderer.clear(Color.black);

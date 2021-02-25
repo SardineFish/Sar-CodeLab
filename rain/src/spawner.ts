@@ -1,23 +1,26 @@
 import { Rect, vec2 } from "zogra-renderer";
 import { RainDrop } from "./raindrop";
-import { randomJittered, JitterOption, randomInRect } from "./random";
+import { randomJittered, JitterOption, randomInRect, randomRange } from "./random";
+import { RaindropSimulator, SimulatorOptions } from "./simulator";
 
 export class Spawner
 {
-    interval: JitterOption<number>;
-    size: JitterOption<number>;
-    spawnRect: Rect;
 
 
     currentTime = 0;
     nextSpawn = 0;
 
-    constructor(spawnInterval: JitterOption<number>, spawnSize: JitterOption<number>, spawnRect: Rect)
+    private simulator: RaindropSimulator;
+
+    constructor(simulator: RaindropSimulator, options: SimulatorOptions)
     {
-        this.interval = spawnInterval;
-        this.size = spawnSize;
-        this.spawnRect = spawnRect;
+
+        this.simulator = simulator;
     }
+    
+    get interval() { return this.simulator.options.spawnInterval }
+    get size() { return this.simulator.options.spawnSize }
+    get spawnRect() { return this.simulator.options.viewport }
 
     update(dt: number): this
     {
@@ -28,12 +31,16 @@ export class Spawner
     {
         if (this.currentTime >= this.nextSpawn)
         {
-            this.nextSpawn = this.currentTime + randomJittered(this.interval);
+            this.nextSpawn = this.currentTime + randomRange(...this.interval);
 
-            const size = randomJittered(this.size);
+            const size = randomRange(...this.size);
             const pos = randomInRect(this.spawnRect.shrink(100));
-            return new RainDrop(pos, size);
+            return new RainDrop(this.simulator, pos, size);
         }
         return undefined;
+    }
+    spawn(pos: vec2, mass: number)
+    {
+        return new RainDrop(this.simulator, pos, Math.pow(mass, 1 / 2));
     }
 }

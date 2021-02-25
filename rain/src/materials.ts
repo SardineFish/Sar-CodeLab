@@ -4,12 +4,25 @@ import raindropNormal from "./shader/raindrop-normal.glsl";
 import raindropReflect from "./shader/reflect.glsl";
 import blur from "./shader/blur.glsl";
 
-export const MaterialRaindropNormal = SimpleTexturedMaterial(new Shader(defaultVert, raindropNormal, {
-    // blendAlpha: [Blending.SrcAlpha, Blending.OneMinusSrcAlpha],
-    blendRGB: [Blending.One, Blending.OneMinusSrcAlpha],
+// export const MaterialRaindropNormal = SimpleTexturedMaterial(new Shader(defaultVert, raindropNormal, {
+//     // blendAlpha: [Blending.SrcAlpha, Blending.OneMinusSrcAlpha],
+//     blendRGB: [Blending.One, Blending.OneMinusSrcAlpha],
+//     depth: DepthTest.Disable,
+//     zWrite: false,
+// }));
+
+export class MaterialRaindropNormal extends MaterialFromShader(new Shader(defaultVert, raindropNormal, {
+    blendRGB: [Blending.OneMinusDstColor, Blending.OneMinusSrcColor],
     depth: DepthTest.Disable,
     zWrite: false,
-}));
+}))
+{
+    @shaderProp("uMainTex", "tex2d")
+    texture: Texture | null = null;
+
+    @shaderProp("uSize", "float")
+    size: number = 0;
+}
 
 export class RaindropCompose extends MaterialFromShader(new Shader(defaultVert, raindropReflect, {
     blend: [Blending.SrcAlpha, Blending.OneMinusSrcAlpha],
