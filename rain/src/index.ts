@@ -1,112 +1,42 @@
-import { AssetsImporter, Blending, Color, Culling, Default2DRenderPipeline, DepthTest, mat4, Material, materialDefine, MaterialFromShader, Mesh, MeshBuilder, quat, Rect, RenderTexture, Shader, shaderProp, Texture, Texture2D, TextureData, TextureResizing, vec2, vec3, vec4, ZograEngine, ZograRenderer } from "zogra-renderer";
-import image from "../assets/img/raindrop.png";
-import vert from "./shader/2d-vert.glsl";
-import frag from "./shader/2d-frag.glsl";
-import { JitterOption } from "./random";
-import { Spawner } from "./spawner";
+import { Rect, vec2 } from "zogra-renderer";
+import { RaindropRenderer, RenderOptions } from "./renderer";
 import { RaindropSimulator, SimulatorOptions } from "./simulator";
-import { MaterialRaindropNormal, RaindropCompose } from "./materials";
-import { RenderTarget } from "zogra-renderer/dist/core/render-target";
 import { Time } from "./utils";
-import background from "../assets/img/87747832_p0.jpg";
-import { TextureFormat } from "zogra-renderer/dist/core/texture-format";
-import { BlurRenderer } from "./blur";
 
-export interface Options extends SimulatorOptions
+export interface Options extends SimulatorOptions, RenderOptions
 {
 }
 
 export class RaindropFX
 {
-    renderer: ZograRenderer;
-    animFrameId: number = -1;
+    public options: Options;
+    public renderer: RaindropRenderer;
+    public simulator: RaindropSimulator;
 
-    private options: Options;
+    private animFrameId: number = -1;
 
-    // private spawner: Spawner;
-    private simulator: RaindropSimulator;
-    private blurRenderer: BlurRenderer;
-
-
-    private projectionMatrix: mat4;
-    private mesh: Mesh = MeshBuilder.quad();
-
-    private raindropNormalMat = new MaterialRaindropNormal();
-    private matReflect = new RaindropCompose();
-    private normalTexture: RenderTexture;
-
-    private backgroundOringinal: Texture2D | null = null;
-    private background: Texture2D | null = null;
-
-
-
-    constructor(canvas: HTMLCanvasElement, options: Partial<Options>)
+    constructor(options: Partial<Options> & {canvas: HTMLCanvasElement})
     {
-        this.renderer = new ZograRenderer(canvas);
-        this.renderer.gl.getExtension("EXT_color_buffer_float");
-
+        const canvas = options.canvas;
         const defaultOptions = <Options>{
             spawnInterval: [0.2, 0.4],
             spawnSize: [20, 160],
-            viewport: new Rect(vec2.zero(), this.renderer.canvasSize),
+            viewport: new Rect(vec2.zero(), vec2(canvas.width, canvas.height)),
+            canvas: canvas,
+            width: canvas.width,
+            height: canvas.height
         };
-
         this.options = { ...defaultOptions, ...options };
 
         this.simulator = new RaindropSimulator(this.options);
-
-        this.blurRenderer = new BlurRenderer(this.renderer);
-        
-        this.projectionMatrix = mat4.ortho(0, canvas.width, 0, canvas.height, 1, -1);
-
-        this.normalTexture = new RenderTexture(canvas.width, canvas.height, false, TextureFormat.RGBA);
-
-        this.mesh = MeshBuilder.quad();
+        this.renderer = new RaindropRenderer(this.options);
     }
-    async setBackground(bgSource: string | TextureData)
-    {
-        if (typeof (bgSource) === "string")
-        {
-
-            const asset = await AssetsImporter.url(bgSource).then(r => r.img({}));
-            const texture = asset.mainAsset as Texture2D;
-            this.backgroundOringinal = texture;
-            this.background = this.backgroundOringinal;
-            this.background.resize(this.renderer.canvasSize.x, this.renderer.canvasSize.y, TextureResizing.Cover);
-            this.background.generateMipmap();
-
-            this.renderer.blit(this.background, RenderTarget.CanvasTarget);
-        }
-    }
+    
     async start()
     {
-        const asset = await AssetsImporter.url(image).then(t => t.img({}));
-        this.raindropNormalMat.texture = asset.mainAsset as Texture2D;
+        await this.renderer.loadAssets();
 
         let lastFrameTime = 0;
-
-
-        // this.renderer.blit(this.background, RenderTarget.CanvasTarget);
-
-        // return;
-
-        // const backgroundAsset = await AssetsImporter.url(background).then(t => t.img({}));
-        // const backgroundTex = backgroundAsset.mainAsset as Texture2D;
-        // const f = () =>
-        // {
-        //     let rect = this.renderer.canvas.getBoundingClientRect();
-        //     this.renderer.setSize(rect.width, rect.height);
-        //     backgroundTex.resize(this.renderer.canvasSize.x, this.renderer.canvasSize.y, TextureResizing.Cover);
-        //     this.renderer.setRenderTarget(RenderTarget.CanvasTarget);
-        //     // console.log(backgroundTex);
-        //     this.renderer.clear(Color.white);
-        //     this.renderer.blit(backgroundTex, RenderTarget.CanvasTarget);
-        //     requestAnimationFrame(f);
-        // };
-        // requestAnimationFrame(f);
-
-        // return;
-
         const update = (delay: number) =>
         {
             const dt = (delay - lastFrameTime) / 1000;
@@ -126,41 +56,9 @@ export class RaindropFX
     
     update(time: Time)
     {
-        this.renderer.blit(this.background, RenderTarget.CanvasTarget);
-        // return;
-        // let newDrop = this.spawner.update(time.dt).trySpawn();
-        // if (newDrop)
-        // {
-        //     this.simulator.add(newDrop);
-        // }
-
         this.simulator.update(time);
 
-        if (this.background)
-            this.renderer.blit(this.background, RenderTarget.CanvasTarget);
-
-        this.renderer.setRenderTarget(this.normalTexture);
-        this.renderer.clear(Color.black.transparent());
-        this.renderer.setViewProjection(mat4.identity(), this.projectionMatrix);
-        for (const raindrop of this.simulator.raindrops)
-        {
-            this.raindropNormalMat.size = raindrop.size.x / this.options.spawnSize[1];
-            this.renderer.drawMesh(this.mesh, mat4.rts(quat.identity(), raindrop.pos.toVec3(), raindrop.size.toVec3(1)), this.raindropNormalMat);
-        }
-        this.renderer.setRenderTarget(RenderTarget.CanvasTarget);
-        this.renderer.clear(Color.black);
-
-        if (this.background)
-        {
-            let bluredBackground = this.blurRenderer.blur(this.background);
-            this.renderer.blit(bluredBackground, RenderTarget.CanvasTarget);
-
-            this.matReflect.background = bluredBackground;
-            this.matReflect.backgroundSize = vec4(this.background.width, this.background.height, 1 / this.background.width, 1 / this.background.height);
-        }
-        this.matReflect.raindropNormal = this.normalTexture;
-
-        this.renderer.blit(null, RenderTarget.CanvasTarget, this.matReflect);
+        this.renderer.render(this.simulator.raindrops);
     }
 }
 
