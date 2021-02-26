@@ -18,13 +18,15 @@ export class RaindropFX
     constructor(options: Partial<Options> & {canvas: HTMLCanvasElement})
     {
         const canvas = options.canvas;
-        const defaultOptions = <Options>{
+        const defaultOptions: Options = {
             spawnInterval: [0.1, 0.1],
-            spawnSize: [30, 100],
+            spawnSize: [60, 100],
             viewport: new Rect(vec2.zero(), vec2(canvas.width, canvas.height)),
             canvas: canvas,
             width: canvas.width,
-            height: canvas.height
+            height: canvas.height,
+            background: "",
+            dropletSize: [10, 30],
         };
         this.options = { ...defaultOptions, ...options };
 

@@ -4,8 +4,8 @@
   "description": "Rain drop effect with WebGL",
   "main": "index.js",
   "scripts": {
-    "build": "npx esbuild ./src/index.js --bundle --minify --outfile=dist/index.js",
-    "build:watch": "npx esbuild ./src/index.js --bundle --outfile=dist/index.js --watch --sourcemap",
+    "build": "node ./build.js",
+    "build:watch": "node ./build.js --dev -w",
     "start": "npx esbuild --servedir=./",
     "check": "npx tsc",
     "check:watch": "npx tsc -w"

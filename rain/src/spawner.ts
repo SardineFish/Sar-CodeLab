@@ -34,7 +34,7 @@ export class Spawner
             this.nextSpawn = this.currentTime + randomRange(...this.interval);
 
             const size = randomRange(...this.size);
-            const pos = randomInRect(this.spawnRect.shrink(100));
+            const pos = randomInRect(this.spawnRect);
             return new RainDrop(this.simulator, pos, size);
         }
         return undefined;

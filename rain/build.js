@@ -1,3 +1,7 @@
+const process = require("process");
+const dev = process.argv.includes("--dev");
+const watch = process.argv.find(arg => arg === "-w" || arg === "--watch") !== undefined;
+
 require("esbuild").build({
     entryPoints: [
         "./src/index.ts"
@@ -8,7 +12,8 @@ require("esbuild").build({
         ".jpg": "file",
         ".glsl": "text",
     },
-    watch: true,
+    minify: !dev,
+    watch: watch,
     sourcemap: true,
     outdir: "./dist",
     publicPath: "dist"
