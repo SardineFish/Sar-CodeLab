@@ -17,7 +17,7 @@ void main()
     // vec3 lightPos = vec3(0.5, 1, 1);
 
     vec4 raindrop = texture(uNormalTex, vUV.xy).rgba;
-    float mask = smoothstep(0.8, 0.99, raindrop.a);
+    float mask = smoothstep(0.85, 0.99, raindrop.a);
     float normalMask = smoothstep(0.2, 1.0, raindrop.a);
     
     vec2 uv = vUV.xy + -(raindrop.xy - vec2(0.5)) * vec2(raindrop.b * 0.6 + 0.4);

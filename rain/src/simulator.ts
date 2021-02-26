@@ -44,7 +44,7 @@ export class RaindropSimulator
     {
         if (gridX < 0 || gridY < 0)
             return undefined;
-        const gridWidth = Math.ceil(this.options.viewport.size.x / this.gridSize);
+        const gridWidth = Math.ceil((this.options.viewport.xMax - this.options.viewport.xMin) / this.gridSize);
         const idx = gridY * gridWidth + gridX;
         if (idx >= this.grid.length)
             return undefined;
@@ -71,9 +71,12 @@ export class RaindropSimulator
 
     update(time: Time)
     {
-        let newDrop = this.spawner.update(time.dt).trySpawn();
-        if (newDrop)
-            this.raindrops.push(newDrop); 
+        if (this.raindrops.length < 2000)
+        {
+            let newDrop = this.spawner.update(time.dt).trySpawn();
+            if (newDrop)
+                this.raindrops.push(newDrop); 
+        }
 
         this.raindropUpdate(time);
         this.collisionUpdate();

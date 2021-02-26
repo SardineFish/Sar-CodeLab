@@ -1,5 +1,5 @@
 import { trimEnd } from "*.png";
-import { div, minus, mul, plus, vec2 } from "zogra-renderer";
+import { div, minus, mul, plus, vec2, Vector2 } from "zogra-renderer";
 import { goldNoise, random, randomRange } from "./random";
 import { RaindropSimulator } from "./simulator";
 import { clamp, Time } from "./utils";
@@ -12,7 +12,7 @@ export class RainDrop
     velocity: vec2 = vec2.zero();
     spread: vec2;
     destroied = false;
-    evaporate = 0;
+    evaporate = 60;
     parent?: RainDrop;
     grid?: Set<RainDrop>;
 
@@ -49,7 +49,10 @@ export class RainDrop
     set mass(m: number)
     {
         this._mass = m;
-        this._size = mul(plus(this.spread, vec2.one()), Math.sqrt(m));
+        const sqrtM = Math.sqrt(m);
+        this._size.x = (this.spread.x + 1) * sqrtM;
+        this._size.y = (this.spread.y + 1) * sqrtM;
+        // this._size = mul(plus(this.spread, vec2.one()), Math.sqrt(m));
     }
     
     get size(): vec2
@@ -77,14 +80,16 @@ export class RainDrop
         if (this.velocity.y > 0)
             this.velocity.y = 0;
         this.velocity.x = Math.abs(this.velocity.y) * this.shifting;
-        this.pos.plus(mul(this.velocity, vec2(time.dt)));
+        this.pos.x += this.velocity.x * time.dt;
+        this.pos.y += this.velocity.y * time.dt;
+        // this.pos.plus(mul(this.velocity, vec2(time.dt)));
 
         this.spread.y = Math.max(this.spread.y, 0.3 * 2 * Math.atan(Math.abs(this.velocity.y * 0.005)) / Math.PI);
         this.spread.x *= 0.7;
         this.spread.y *= 0.85;
         // this.spread.y +=  Math.abs(this.velocity.y) * 0.0001;
 
-        if (minus(this.lastTrailPos, this.pos).magnitude > this.nextTrailDistance)
+        if (Vector2.distanceSquared(this.lastTrailPos, this.pos) > this.nextTrailDistance * this.nextTrailDistance)
         {
             this.split();
         }

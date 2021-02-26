@@ -8,7 +8,6 @@ canvas.width = rect.width;
 canvas.height = rect.height;
 
 const raindropFx = new SarRaindropFX({
-    spawnInterval: [0.1, 0.1],
     canvas: canvas,
     background: "./assets/img/84765992_p0.jpg"
 });

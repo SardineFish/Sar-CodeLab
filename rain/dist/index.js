@@ -4483,7 +4483,7 @@
     var vec4_1 = require_vec42();
     var vec3_1 = require_vec32();
     var V2Constructor = Array;
-    var Vector22 = class extends V2Constructor {
+    var Vector23 = class extends V2Constructor {
       get x() {
         return this[0];
       }
@@ -4513,22 +4513,28 @@
         super(x, y);
       }
       static zero() {
-        return new Vector22(0, 0);
+        return new Vector23(0, 0);
       }
       static one() {
-        return new Vector22(1, 1);
+        return new Vector23(1, 1);
       }
       static up() {
-        return new Vector22(0, 1);
+        return new Vector23(0, 1);
       }
       static down() {
-        return new Vector22(0, -1);
+        return new Vector23(0, -1);
       }
       static left() {
-        return new Vector22(-1, 0);
+        return new Vector23(-1, 0);
       }
       static right() {
-        return new Vector22(1, 0);
+        return new Vector23(1, 0);
+      }
+      static distance(u, v) {
+        return Math.sqrt((u.x - v.x) * (u.x - v.x) + (u.y - v.y) * (u.y - v.y));
+      }
+      static distanceSquared(u, v) {
+        return (u.x - v.x) * (u.x - v.x) + (u.y - v.y) * (u.y - v.y);
       }
       plus(v) {
         this[0] += v[0];
@@ -4591,9 +4597,9 @@
         return v[0] === this[0] && v[1] === this[1];
       }
     };
-    exports.Vector2 = Vector22;
+    exports.Vector2 = Vector23;
     function vec25(x, y = x) {
-      return new Vector22(x, y);
+      return new Vector23(x, y);
     }
     exports.vec2 = vec25;
     vec25.from = (src) => {
@@ -4601,12 +4607,12 @@
       return vec25(x, y);
     };
     vec25.floor = (v) => vec25(Math.floor(v.x), Math.floor(v.y));
-    vec25.zero = Vector22.zero;
-    vec25.one = Vector22.one;
-    vec25.left = Vector22.left;
-    vec25.right = Vector22.right;
-    vec25.down = Vector22.down;
-    vec25.up = Vector22.up;
+    vec25.zero = Vector23.zero;
+    vec25.one = Vector23.one;
+    vec25.left = Vector23.left;
+    vec25.right = Vector23.right;
+    vec25.down = Vector23.down;
+    vec25.up = Vector23.up;
   });
 
   // zogra-renderer/dist/types/color.js
@@ -9405,7 +9411,7 @@ void main()
   var raindrop_normal_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\nin float vSize;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform float uSize;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    \r\n    fragColor = vec4(color.rg * color.a, vSize * color.a, color.a);\r\n}";
 
   // src/shader/reflect.glsl
-  var reflect_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uBackgroundSize; // (x, y, 1/x, 1/y)\r\nuniform sampler2D uNormalTex;\r\nuniform vec4 uColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    // vec3 lightPos = vec3(0.5, 1, 1);\r\n\r\n    vec4 raindrop = texture(uNormalTex, vUV.xy).rgba;\r\n    float mask = smoothstep(0.8, 0.99, raindrop.a);\r\n    float normalMask = smoothstep(0.2, 1.0, raindrop.a);\r\n    \r\n    vec2 uv = vUV.xy + -(raindrop.xy - vec2(0.5)) * vec2(raindrop.b * 0.6 + 0.4);\r\n    vec3 normal = normalize(vec3((raindrop.xy - vec2(0.5)) * vec2(2), 1));\r\n\r\n    // vec3 lightDir = lightPos - vec3(vUV, 0);\r\n    vec3 lightDir = vec3(-1, 1, 2);\r\n    float lambertian = clamp(dot(normalize(lightDir), normal), 0.0, 1.0);\r\n\r\n\r\n    // offset = pow(offset, vec2(2));\r\n    vec4 color = texture(uMainTex, uv.xy).rgba;\r\n\r\n    // color.rgb += vec3((lambertian - 0.7) * 0.3);\r\n    \r\n\r\n    // fragColor = vec4(mask, mask, mask, 1);\r\n    // color = color * vec3(uColor);\r\n\r\n    fragColor = vec4(color.rgb, mask);// vec4(color.rgb, mask);\r\n}";
+  var reflect_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uBackgroundSize; // (x, y, 1/x, 1/y)\r\nuniform sampler2D uNormalTex;\r\nuniform vec4 uColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    // vec3 lightPos = vec3(0.5, 1, 1);\r\n\r\n    vec4 raindrop = texture(uNormalTex, vUV.xy).rgba;\r\n    float mask = smoothstep(0.85, 0.99, raindrop.a);\r\n    float normalMask = smoothstep(0.2, 1.0, raindrop.a);\r\n    \r\n    vec2 uv = vUV.xy + -(raindrop.xy - vec2(0.5)) * vec2(raindrop.b * 0.6 + 0.4);\r\n    vec3 normal = normalize(vec3((raindrop.xy - vec2(0.5)) * vec2(2), 1));\r\n\r\n    // vec3 lightDir = lightPos - vec3(vUV, 0);\r\n    vec3 lightDir = vec3(-1, 1, 2);\r\n    float lambertian = clamp(dot(normalize(lightDir), normal), 0.0, 1.0);\r\n\r\n\r\n    // offset = pow(offset, vec2(2));\r\n    vec4 color = texture(uMainTex, uv.xy).rgba;\r\n\r\n    // color.rgb += vec3((lambertian - 0.7) * 0.3);\r\n    \r\n\r\n    // fragColor = vec4(mask, mask, mask, 1);\r\n    // color = color * vec3(uColor);\r\n\r\n    fragColor = vec4(color.rgb, mask);// vec4(color.rgb, mask);\r\n}";
 
   // src/renderer.ts
   var MaterialRaindropNormal = class extends import_zogra_renderer2.MaterialFromShader(new import_zogra_renderer2.Shader(raindrop_vert_default, raindrop_normal_default, {
@@ -9522,7 +9528,7 @@ void main()
     constructor(simulator, pos, size) {
       this.velocity = import_zogra_renderer4.vec2.zero();
       this.destroied = false;
-      this.evaporate = 0;
+      this.evaporate = 60;
       this._mass = 0;
       this._size = import_zogra_renderer4.vec2.zero();
       this.resistance = 0;
@@ -9542,7 +9548,9 @@ void main()
     }
     set mass(m) {
       this._mass = m;
-      this._size = import_zogra_renderer4.mul(import_zogra_renderer4.plus(this.spread, import_zogra_renderer4.vec2.one()), Math.sqrt(m));
+      const sqrtM = Math.sqrt(m);
+      this._size.x = (this.spread.x + 1) * sqrtM;
+      this._size.y = (this.spread.y + 1) * sqrtM;
     }
     get size() {
       return this._size;
@@ -9562,11 +9570,12 @@ void main()
       if (this.velocity.y > 0)
         this.velocity.y = 0;
       this.velocity.x = Math.abs(this.velocity.y) * this.shifting;
-      this.pos.plus(import_zogra_renderer4.mul(this.velocity, import_zogra_renderer4.vec2(time.dt)));
+      this.pos.x += this.velocity.x * time.dt;
+      this.pos.y += this.velocity.y * time.dt;
       this.spread.y = Math.max(this.spread.y, 0.3 * 2 * Math.atan(Math.abs(this.velocity.y * 5e-3)) / Math.PI);
       this.spread.x *= 0.7;
       this.spread.y *= 0.85;
-      if (import_zogra_renderer4.minus(this.lastTrailPos, this.pos).magnitude > this.nextTrailDistance) {
+      if (import_zogra_renderer4.Vector2.distanceSquared(this.lastTrailPos, this.pos) > this.nextTrailDistance * this.nextTrailDistance) {
         this.split();
       }
     }
@@ -9656,7 +9665,7 @@ void main()
     gridAt(gridX, gridY) {
       if (gridX < 0 || gridY < 0)
         return void 0;
-      const gridWidth = Math.ceil(this.options.viewport.size.x / this.gridSize);
+      const gridWidth = Math.ceil((this.options.viewport.xMax - this.options.viewport.xMin) / this.gridSize);
       const idx = gridY * gridWidth + gridX;
       if (idx >= this.grid.length)
         return void 0;
@@ -9677,9 +9686,11 @@ void main()
       raindrop.grid = grid;
     }
     update(time) {
-      let newDrop = this.spawner.update(time.dt).trySpawn();
-      if (newDrop)
-        this.raindrops.push(newDrop);
+      if (this.raindrops.length < 2e3) {
+        let newDrop = this.spawner.update(time.dt).trySpawn();
+        if (newDrop)
+          this.raindrops.push(newDrop);
+      }
       this.raindropUpdate(time);
       this.collisionUpdate();
       for (let i = 0; i < this.raindrops.length; i++) {
