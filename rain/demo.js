@@ -12,6 +12,12 @@ const raindropFx = new SarRaindropFX({
     background: "./assets/img/87747832_p0.jpg"
 });
 
+window.onresize = () =>
+{
+    const rect = canvas.getBoundingClientRect();
+    raindropFx.resize(rect.width, rect.height);
+}
+
 // raindropFx.setBackground("./assets/img/84765992_p0.jpg");
 // raindropFx.start();
 // (async () =>

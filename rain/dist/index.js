@@ -6678,19 +6678,19 @@ void main()
     exports.imageResize = exports.ImageSizing = void 0;
     var rect_1 = require_rect();
     var vec2_1 = require_vec22();
-    var ImageSizing;
-    (function(ImageSizing2) {
-      ImageSizing2[ImageSizing2["Stretch"] = 1] = "Stretch";
-      ImageSizing2[ImageSizing2["Cover"] = 2] = "Cover";
-      ImageSizing2[ImageSizing2["Contain"] = 3] = "Contain";
-      ImageSizing2[ImageSizing2["KeepLower"] = 4] = "KeepLower";
-      ImageSizing2[ImageSizing2["KeepHigher"] = 5] = "KeepHigher";
-      ImageSizing2[ImageSizing2["Center"] = 6] = "Center";
-    })(ImageSizing = exports.ImageSizing || (exports.ImageSizing = {}));
+    var ImageSizing2;
+    (function(ImageSizing3) {
+      ImageSizing3[ImageSizing3["Stretch"] = 1] = "Stretch";
+      ImageSizing3[ImageSizing3["Cover"] = 2] = "Cover";
+      ImageSizing3[ImageSizing3["Contain"] = 3] = "Contain";
+      ImageSizing3[ImageSizing3["KeepLower"] = 4] = "KeepLower";
+      ImageSizing3[ImageSizing3["KeepHigher"] = 5] = "KeepHigher";
+      ImageSizing3[ImageSizing3["Center"] = 6] = "Center";
+    })(ImageSizing2 = exports.ImageSizing || (exports.ImageSizing = {}));
     function imageResize(srcSize, dstSize, sizing) {
       let srcRect = new rect_1.Rect(vec2_1.vec2.zero(), srcSize);
       let dstRect = new rect_1.Rect(vec2_1.vec2.zero(), dstSize);
-      if (sizing === ImageSizing.Contain) {
+      if (sizing === ImageSizing2.Contain) {
         let srcAspectRatio = srcSize.x / srcSize.y;
         let dstAspectRatio = dstSize.x / dstSize.y;
         if (srcAspectRatio > dstAspectRatio) {
@@ -6702,7 +6702,7 @@ void main()
           dstRect.min.x += delta / 2;
           dstRect.max.x -= delta / 2;
         }
-      } else if (sizing === ImageSizing.Cover) {
+      } else if (sizing === ImageSizing2.Cover) {
         let srcAspectRatio = srcSize.x / srcSize.y;
         let dstAspectRatio = dstSize.x / dstSize.y;
         if (srcAspectRatio > dstAspectRatio) {
@@ -6717,58 +6717,58 @@ void main()
       } else {
         if (srcSize.x < dstSize.x) {
           switch (sizing) {
-            case ImageSizing.Center:
+            case ImageSizing2.Center:
               const delta = dstSize.x - srcSize.x;
               dstRect.min.x += delta / 2;
               dstRect.max.x -= delta / 2;
               break;
-            case ImageSizing.KeepHigher:
+            case ImageSizing2.KeepHigher:
               dstRect.min.x = dstSize.x - srcSize.x;
               break;
-            case ImageSizing.KeepLower:
+            case ImageSizing2.KeepLower:
               dstRect.max.x = srcSize.x;
               break;
           }
         } else if (srcSize.x > dstSize.x) {
           switch (sizing) {
-            case ImageSizing.Center:
+            case ImageSizing2.Center:
               const delta = srcSize.x - dstSize.x;
               srcRect.min.x += delta / 2;
               srcRect.max.x -= delta / 2;
               break;
-            case ImageSizing.KeepHigher:
+            case ImageSizing2.KeepHigher:
               srcRect.min.x = srcSize.x - dstSize.x;
               break;
-            case ImageSizing.KeepLower:
+            case ImageSizing2.KeepLower:
               srcRect.max.x = dstSize.x;
               break;
           }
         }
         if (srcSize.y < dstSize.y) {
           switch (sizing) {
-            case ImageSizing.Center:
+            case ImageSizing2.Center:
               const delta = dstSize.y - srcSize.y;
               dstRect.min.y += delta / 2;
               dstRect.max.y -= delta / 2;
               break;
-            case ImageSizing.KeepHigher:
+            case ImageSizing2.KeepHigher:
               dstRect.min.y = dstSize.y - srcSize.y;
               break;
-            case ImageSizing.KeepLower:
+            case ImageSizing2.KeepLower:
               dstRect.max.y = srcSize.y;
               break;
           }
         } else if (srcSize.y > dstSize.y) {
           switch (sizing) {
-            case ImageSizing.Center:
+            case ImageSizing2.Center:
               const delta = srcSize.y - dstSize.y;
               srcRect.min.y += delta / 2;
               srcRect.max.y -= delta / 2;
               break;
-            case ImageSizing.KeepHigher:
+            case ImageSizing2.KeepHigher:
               srcRect.min.y = srcSize.y - dstSize.y;
               break;
-            case ImageSizing.KeepLower:
+            case ImageSizing2.KeepLower:
               srcRect.max.y = dstSize.y;
               break;
           }
@@ -9619,6 +9619,29 @@ void main()
     __exportStar2(require_mesh_builder(), exports);
   });
 
+  // zogra-renderer/dist/utils/index.js
+  var require_utils = __commonJS((exports) => {
+    "use strict";
+    var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      Object.defineProperty(o, k2, {enumerable: true, get: function() {
+        return m[k];
+      }});
+    } : function(o, m, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m[k];
+    });
+    var __exportStar2 = exports && exports.__exportStar || function(m, exports2) {
+      for (var p in m)
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p))
+          __createBinding(exports2, m, p);
+    };
+    Object.defineProperty(exports, "__esModule", {value: true});
+    __exportStar2(require_image_sizing(), exports);
+  });
+
   // zogra-renderer/dist/index.js
   var require_dist = __commonJS((exports) => {
     "use strict";
@@ -9656,7 +9679,7 @@ void main()
       return result;
     };
     Object.defineProperty(exports, "__esModule", {value: true});
-    exports.GlobalContext = exports.plugins = void 0;
+    exports.Utils = exports.GlobalContext = exports.plugins = void 0;
     __exportStar2(require_types(), exports);
     __exportStar2(require_core(), exports);
     __exportStar2(require_engine(), exports);
@@ -9669,6 +9692,8 @@ void main()
     Object.defineProperty(exports, "GlobalContext", {enumerable: true, get: function() {
       return global_1.GlobalContext;
     }});
+    var Utils2 = __importStar(require_utils());
+    exports.Utils = Utils2;
   });
 
   // src/index.ts
@@ -9751,7 +9776,7 @@ void main()
         input = output;
       }
     }
-    upSample(iteration) {
+    upSample(iteration, finalOutput = this.steps[0]) {
       let input = this.steps[iteration];
       for (let i = iteration - 1; i >= 0; i--) {
         const upSize = import_zogra_renderer.mul(input.size, import_zogra_renderer.vec2(2));
@@ -9760,7 +9785,7 @@ void main()
           this.steps[i].wrapMode = import_zogra_renderer.WrapMode.Clamp;
           this.steps[i].updateParameters();
         }
-        const output = this.steps[i];
+        const output = i === 0 ? finalOutput : this.steps[i];
         this.mateiralBlur.texture = input;
         this.mateiralBlur.textureSize = import_zogra_renderer.vec4(input.width, input.height, 1 / input.width, 1 / input.height);
         this.mateiralBlur.sampleOffset = 1;
@@ -9805,6 +9830,7 @@ void main()
   var bg_mist_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform sampler2D uMistTex;\r\nuniform float uMistAlpha;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.rgb += vec3(uMistAlpha);\r\n    color.a = texture(uMistTex, vUV.xy).r;\r\n    fragColor = color.rgba;\r\n}";
 
   // src/renderer.ts
+  var import_utils = __toModule(require_utils());
   var RaindropMaterial = class extends import_zogra_renderer3.MaterialFromShader(new import_zogra_renderer3.Shader(raindrop_vert_default, raindrop_normal_default, {
     blendRGB: [import_zogra_renderer3.Blending.OneMinusDstColor, import_zogra_renderer3.Blending.OneMinusSrcColor],
     depth: import_zogra_renderer3.DepthTest.Disable,
@@ -9897,7 +9923,7 @@ void main()
   var RaindropRenderer = class {
     constructor(options) {
       this.raindropTex = null;
-      this.background = null;
+      this.originalBackground = null;
       this.matRefract = new RaindropCompose();
       this.matRaindrop = new RaindropMaterial();
       this.matDroplet = new DropletMaterial();
@@ -9916,9 +9942,11 @@ void main()
       this.renderer.gl.getExtension("EXT_color_buffer_float");
       this.options = options;
       this.projectionMatrix = import_zogra_renderer3.mat4.ortho(0, options.width, 0, options.height, 1, -1);
-      this.raindropComposeTex = new import_zogra_renderer3.RenderTexture(options.width, options.height, false, import_texture_format2.TextureFormat.RGBA);
-      this.dropletTexture = new import_zogra_renderer3.RenderTexture(options.width, options.height, false, import_texture_format2.TextureFormat.RGBA);
+      this.raindropComposeTex = new import_zogra_renderer3.RenderTexture(options.width, options.height, false);
+      this.background = new import_zogra_renderer3.RenderTexture(options.width, options.height, false);
+      this.dropletTexture = new import_zogra_renderer3.RenderTexture(options.width, options.height, false);
       this.clearBackground = new import_zogra_renderer3.RenderTexture(options.width, options.height, false);
+      this.blurryBackground = new import_zogra_renderer3.RenderTexture(options.width, options.height, false);
       this.mistTexture = new import_zogra_renderer3.RenderTexture(options.width, options.height, false, import_texture_format2.TextureFormat.R16F);
       this.blurRenderer = new BlurRenderer(this.renderer);
       this.renderer.setViewProjection(import_zogra_renderer3.mat4.identity(), this.projectionMatrix);
@@ -9927,15 +9955,43 @@ void main()
       this.raindropTex = await import_zogra_renderer3.TextureImporter.url(raindrop_default).then((t) => t.tex2d());
       this.matRaindrop.texture = this.raindropTex;
       this.matDroplet.texture = this.raindropTex;
+      await this.reloadBackground();
+    }
+    async reloadBackground() {
       if (typeof this.options.background === "string") {
-        this.background = await import_zogra_renderer3.TextureImporter.url(this.options.background).then((t) => t.tex2d({wrapMpde: import_zogra_renderer3.WrapMode.Clamp}));
-        this.background.wrapMode = import_zogra_renderer3.WrapMode.Clamp;
+        this.originalBackground = await import_zogra_renderer3.TextureImporter.url(this.options.background).then((t) => t.tex2d({wrapMpde: import_zogra_renderer3.WrapMode.Clamp}));
+        this.originalBackground.wrapMode = import_zogra_renderer3.WrapMode.Clamp;
+        this.originalBackground.updateParameters();
       } else {
-        this.background = new import_zogra_renderer3.Texture2D();
-        this.background.setData(this.options.background);
+        this.originalBackground = new import_zogra_renderer3.Texture2D();
+        this.originalBackground.setData(this.options.background);
+        this.originalBackground.updateParameters();
       }
-      this.background.resize(this.options.width, this.options.height, import_zogra_renderer3.TextureResizing.Cover);
+      const [srcRect, dstRect] = import_zogra_renderer3.Utils.imageResize(this.originalBackground.size, this.background.size, import_utils.ImageSizing.Cover);
+      this.renderer.blit(this.originalBackground, this.background, this.renderer.assets.materials.blitCopy, srcRect, dstRect);
       this.background.generateMipmap();
+      this.blurRenderer.init(this.background);
+      this.blurRenderer.downSample(this.background, 4);
+      this.blurRenderer.upSample(3, this.clearBackground);
+      this.blurRenderer.upSample(4, this.blurryBackground);
+    }
+    resize() {
+      this.renderer.setSize(this.options.width, this.options.height);
+      this.projectionMatrix = import_zogra_renderer3.mat4.ortho(0, this.options.width, 0, this.options.height, 1, -1);
+      this.renderer.setViewProjection(import_zogra_renderer3.mat4.identity(), this.projectionMatrix);
+      this.raindropComposeTex.resize(this.options.width, this.options.height);
+      this.background.resize(this.options.width, this.options.height);
+      this.dropletTexture.resize(this.options.width, this.options.height);
+      this.clearBackground.resize(this.options.width, this.options.height);
+      this.blurryBackground.resize(this.options.width, this.options.height);
+      this.mistTexture.resize(this.options.width, this.options.height);
+      const [srcRect, dstRect] = import_zogra_renderer3.Utils.imageResize(this.originalBackground.size, this.background.size, import_utils.ImageSizing.Cover);
+      this.renderer.blit(this.originalBackground, this.background, this.renderer.assets.materials.blitCopy, srcRect, dstRect);
+      this.background.generateMipmap();
+      this.blurRenderer.init(this.background);
+      this.blurRenderer.downSample(this.background, 4);
+      this.blurRenderer.upSample(3, this.clearBackground);
+      this.blurRenderer.upSample(4, this.blurryBackground);
     }
     render(raindrops) {
       this.drawDroplet();
@@ -9945,7 +10001,7 @@ void main()
       this.renderer.clear(import_zogra_renderer3.Color.black);
       this.drawBackground();
       this.matRefract.background = this.clearBackground;
-      this.matRefract.backgroundSize = import_zogra_renderer3.vec4(this.background.width, this.background.height, 1 / this.background.width, 1 / this.background.height);
+      this.matRefract.backgroundSize = import_zogra_renderer3.vec4(this.options.width, this.options.height, 1 / this.options.width, 1 / this.options.height);
       this.matRefract.raindropTex = this.raindropComposeTex;
       this.matRefract.dropletTex = this.dropletTexture;
       this.matRefract.mistTex = this.mistTexture;
@@ -9956,16 +10012,10 @@ void main()
       this.renderer.blit(this.renderer.assets.textures.default, this.mistTexture, this.matMist);
     }
     drawBackground() {
-      this.blurRenderer.init(this.background);
-      this.blurRenderer.downSample(this.background, 4);
-      let bluredBackground = this.blurRenderer.upSample(3);
-      this.renderer.blit(bluredBackground, this.clearBackground);
-      this.renderer.blit(bluredBackground, import_render_target.RenderTarget.CanvasTarget);
-      bluredBackground = this.blurRenderer.upSample(4);
+      this.renderer.blit(this.clearBackground, import_render_target.RenderTarget.CanvasTarget);
       this.matMistBackground.mistTex = this.mistTexture;
-      this.matMistBackground.texture = bluredBackground;
-      this.renderer.blit(bluredBackground, import_render_target.RenderTarget.CanvasTarget, this.matMistBackground);
-      return bluredBackground;
+      this.matMistBackground.texture = this.blurryBackground;
+      this.renderer.blit(this.blurryBackground, import_render_target.RenderTarget.CanvasTarget, this.matMistBackground);
     }
     drawRaindrops(raindrops) {
       if (raindrops.length > this.raindropBuffer.length)
@@ -10263,6 +10313,12 @@ void main()
         this.animFrameId = requestAnimationFrame(update);
       };
       this.animFrameId = requestAnimationFrame(update);
+    }
+    resize(width, height) {
+      this.options.width = width;
+      this.options.height = height;
+      this.options.viewport = new import_zogra_renderer5.Rect(import_zogra_renderer5.vec2.zero(), import_zogra_renderer5.vec2(width, height));
+      this.renderer.resize();
     }
     update(time) {
       this.simulator.update(time);

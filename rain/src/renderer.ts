@@ -1,4 +1,4 @@
-import { TextureImporter, Blending, Color, DepthTest, RenderBuffer, mat4, MaterialFromShader, MeshBuilder, quat, RenderTexture, Shader, shaderProp, Texture, Texture2D, TextureData, TextureResizing, vec4, WrapMode, ZograRenderer, vec3, SimpleTexturedMaterial } from "zogra-renderer";
+import { TextureImporter, Blending, Color, DepthTest, RenderBuffer, mat4, MaterialFromShader, MeshBuilder, quat, RenderTexture, Shader, shaderProp, Texture, Texture2D, TextureData, TextureResizing, vec4, WrapMode, ZograRenderer, vec3, SimpleTexturedMaterial, Utils } from "zogra-renderer";
 import { RenderTarget } from "zogra-renderer/dist/core/render-target";
 import { TextureFormat } from "zogra-renderer/dist/core/texture-format";
 import raindropTexture from "../assets/img/raindrop.png";
@@ -13,6 +13,7 @@ import raindropReflect from "./shader/reflect.glsl";
 import dropletNormal from "./shader/droplet.glsl";
 import raindropErase from "./shader/erase.glsl";
 import mistBackground from "./shader/bg-mist.glsl";
+import { ImageSizing } from "zogra-renderer/dist/utils";
 
 
 class RaindropMaterial extends MaterialFromShader(new Shader(raindropVert, raindropNormal, {
@@ -105,11 +106,13 @@ export class RaindropRenderer
     options: RenderOptions;
 
     private raindropTex: Texture2D = null as any;
-    private background: Texture2D = null as any;
+    private originalBackground: Texture2D = null as any;
+    private background: RenderTexture;
     private raindropComposeTex: RenderTexture;
     private dropletTexture: RenderTexture;
     private mistTexture: RenderTexture;
     private clearBackground: RenderTexture;
+    private blurryBackground: RenderTexture;
     private blurRenderer: BlurRenderer;
 
     private matRefract = new RaindropCompose();
@@ -138,9 +141,11 @@ export class RaindropRenderer
         this.options = options;
 
         this.projectionMatrix = mat4.ortho(0, options.width, 0, options.height, 1, -1);
-        this.raindropComposeTex = new RenderTexture(options.width, options.height, false, TextureFormat.RGBA);
-        this.dropletTexture = new RenderTexture(options.width, options.height, false, TextureFormat.RGBA);
+        this.raindropComposeTex = new RenderTexture(options.width, options.height, false);
+        this.background = new RenderTexture(options.width, options.height, false);
+        this.dropletTexture = new RenderTexture(options.width, options.height, false);
         this.clearBackground = new RenderTexture(options.width, options.height, false);
+        this.blurryBackground = new RenderTexture(options.width, options.height, false);
         this.mistTexture = new RenderTexture(options.width, options.height, false, TextureFormat.R16F);
 
         this.blurRenderer = new BlurRenderer(this.renderer);
@@ -157,22 +162,57 @@ export class RaindropRenderer
         this.matRaindrop.texture = this.raindropTex;
         this.matDroplet.texture = this.raindropTex;
 
+        await this.reloadBackground();
+
+    }
+    async reloadBackground()
+    {
         if (typeof (this.options.background) === "string")
         {
-            this.background = await TextureImporter
+            this.originalBackground = await TextureImporter
                 .url(this.options.background)
                 .then(t => t.tex2d({ wrapMpde: WrapMode.Clamp }));
 
-            this.background.wrapMode = WrapMode.Clamp;
+            this.originalBackground.wrapMode = WrapMode.Clamp;
+            this.originalBackground.updateParameters();
         }
         else
         {
-            this.background = new Texture2D();
-            this.background.setData(this.options.background);
+            this.originalBackground = new Texture2D();
+            this.originalBackground.setData(this.options.background);
+            this.originalBackground.updateParameters();
         }
-        this.background.resize(this.options.width, this.options.height, TextureResizing.Cover);
+        const [srcRect, dstRect] = Utils.imageResize(this.originalBackground.size, this.background.size, ImageSizing.Cover);
+        this.renderer.blit(this.originalBackground, this.background, this.renderer.assets.materials.blitCopy, srcRect, dstRect);
         this.background.generateMipmap();
 
+        this.blurRenderer.init(this.background);
+        this.blurRenderer.downSample(this.background, 4);
+        this.blurRenderer.upSample(3, this.clearBackground);
+        this.blurRenderer.upSample(4, this.blurryBackground);
+
+    }
+    resize()
+    {
+        this.renderer.setSize(this.options.width, this.options.height);
+        this.projectionMatrix = mat4.ortho(0, this.options.width, 0, this.options.height, 1, -1);
+        this.renderer.setViewProjection(mat4.identity(), this.projectionMatrix);
+        
+        this.raindropComposeTex.resize(this.options.width, this.options.height);
+        this.background.resize(this.options.width, this.options.height);
+        this.dropletTexture.resize(this.options.width, this.options.height);
+        this.clearBackground.resize(this.options.width, this.options.height);
+        this.blurryBackground.resize(this.options.width, this.options.height);
+        this.mistTexture.resize(this.options.width, this.options.height);
+
+        const [srcRect, dstRect] = Utils.imageResize(this.originalBackground.size, this.background.size, ImageSizing.Cover);
+        this.renderer.blit(this.originalBackground, this.background, this.renderer.assets.materials.blitCopy, srcRect, dstRect);
+        this.background.generateMipmap();
+
+        this.blurRenderer.init(this.background);
+        this.blurRenderer.downSample(this.background, 4);
+        this.blurRenderer.upSample(3, this.clearBackground);
+        this.blurRenderer.upSample(4, this.blurryBackground);
     }
     render(raindrops: RainDrop[])
     {
@@ -186,7 +226,7 @@ export class RaindropRenderer
         this.drawBackground();
 
         this.matRefract.background = this.clearBackground;
-        this.matRefract.backgroundSize = vec4(this.background.width, this.background.height, 1 / this.background.width, 1 / this.background.height);
+        this.matRefract.backgroundSize = vec4(this.options.width, this.options.height, 1 / this.options.width, 1 / this.options.height);
 
         this.matRefract.raindropTex = this.raindropComposeTex;
         this.matRefract.dropletTex = this.dropletTexture;
@@ -201,21 +241,20 @@ export class RaindropRenderer
         this.renderer.blit(this.renderer.assets.textures.default, this.mistTexture, this.matMist);
     }
 
-    private drawBackground(): Texture
+    private drawBackground()
     {
-        this.blurRenderer.init(this.background);
-        this.blurRenderer.downSample(this.background, 4);
-        let bluredBackground = this.blurRenderer.upSample(3);
-        this.renderer.blit(bluredBackground, this.clearBackground);
-        this.renderer.blit(bluredBackground, RenderTarget.CanvasTarget);
+        // this.blurRenderer.init(this.background);
+        // this.blurRenderer.downSample(this.background, 4);
+        // let bluredBackground = this.blurRenderer.upSample(3);
+        // this.renderer.blit(bluredBackground, this.clearBackground);
+        this.renderer.blit(this.clearBackground, RenderTarget.CanvasTarget);
         
-        bluredBackground = this.blurRenderer.upSample(4);
+        // bluredBackground = this.blurRenderer.upSample(4);
 
         this.matMistBackground.mistTex = this.mistTexture;
-        this.matMistBackground.texture = bluredBackground;
-        this.renderer.blit(bluredBackground, RenderTarget.CanvasTarget, this.matMistBackground);
+        this.matMistBackground.texture = this.blurryBackground;
+        this.renderer.blit(this.blurryBackground, RenderTarget.CanvasTarget, this.matMistBackground);
         
-        return bluredBackground;
     }
 
     private drawRaindrops(raindrops: RainDrop[])

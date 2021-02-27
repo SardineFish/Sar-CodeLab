@@ -74,7 +74,7 @@ export class BlurRenderer
         }
     }
 
-    upSample(iteration: number)
+    upSample(iteration: number, finalOutput = this.steps[0])
     {
         let input = this.steps[iteration];
         for (let i = iteration - 1; i >= 0; i--)
@@ -87,7 +87,7 @@ export class BlurRenderer
                 this.steps[i].updateParameters();
             }
 
-            const output = this.steps[i];
+            const output = i === 0 ? finalOutput : this.steps[i];
 
             this.mateiralBlur.texture = input;
             this.mateiralBlur.textureSize = vec4(input.width, input.height, 1 / input.width, 1 / input.height);

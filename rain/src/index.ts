@@ -55,13 +55,22 @@ export class RaindropFX
 
         this.animFrameId =  requestAnimationFrame(update);
     }
+
+    resize(width: number, height: number)
+    {
+        this.options.width = width;
+        this.options.height = height;
+        this.options.viewport = new Rect(vec2.zero(), vec2(width, height));
+        this.renderer.resize();
+    }
     
-    update(time: Time)
+    private update(time: Time)
     {
         this.simulator.update(time);
 
         this.renderer.render(this.simulator.raindrops);
     }
+
 }
 
 (window as any).SarRaindropFX = RaindropFX;
