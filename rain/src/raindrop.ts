@@ -9,10 +9,11 @@ export class RainDrop
     pos: vec2;
     // size: number;
     seed: number;
+    density: number = 1;
     velocity: vec2 = vec2.zero();
     spread: vec2;
     destroied = false;
-    evaporate = 60;
+    evaporate = 1;
     parent?: RainDrop;
     grid?: Set<RainDrop>;
 
@@ -29,11 +30,12 @@ export class RainDrop
 
     private nextRandomTime = 0;
 
-    constructor(simulator: RaindropSimulator, pos: vec2, size: number)
+    constructor(simulator: RaindropSimulator, pos: vec2, size: number, density = 1)
     {
         this.pos = pos;
         this.seed = Math.floor(Math.random() * 2147483647) + 1;
         this.simulator = simulator;
+        this.density = density;
         // this.velocity.x = Math.random() * 20 - 10;
         // this.velocity.y = -Math.random() * 60;
 
@@ -42,14 +44,14 @@ export class RainDrop
 
         this.spread = vec2(0.5, 0.5);
 
-        this.mass = size ** 2;
+        this.mass = (size * density) ** 2;
     }
 
     get mass() { return this._mass; }
     set mass(m: number)
     {
         this._mass = m;
-        const sqrtM = Math.sqrt(m);
+        const sqrtM = Math.sqrt(m) / this.density;
         this._size.x = (this.spread.x + 1) * sqrtM;
         this._size.y = (this.spread.y + 1) * sqrtM;
         // this._size = mul(plus(this.spread, vec2.one()), Math.sqrt(m));
@@ -100,12 +102,12 @@ export class RainDrop
         // return;
         if (this.mass < 1000)
             return;
-        let mass = randomRange(0.05, 0.1) * this.mass;
-        this.mass -= mass;
+        let size = this.size.x * randomRange(0.3, 0.5);
         const pos = plus(vec2(randomRange(-5, 5), this.size.y / 4), this.pos);
-        let trailDrop = this.simulator.spawner.spawn(pos.clone(), mass);
+        let trailDrop = this.simulator.spawner.spawn(pos.clone(), size, 0.2);
         trailDrop.spread = vec2(1, Math.abs(this.velocity.y) * 0.006);
         trailDrop.parent = this;
+        this.mass -= trailDrop.mass;
         this.simulator.add(trailDrop);
         this.lastTrailPos = this.pos.clone();
         this.nextTrailDistance = randomRange(20, 30);
@@ -113,7 +115,7 @@ export class RainDrop
 
     randomMotion()
     {
-        this.resistance = randomRange(0.3, 1) * this.gravity * 9000;
+        this.resistance = randomRange(0.3, 1) * this.gravity * 12000;
         this.shifting = random() * 0.1;
     }
 

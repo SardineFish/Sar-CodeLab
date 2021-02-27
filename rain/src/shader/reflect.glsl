@@ -22,7 +22,7 @@ void main()
 
     vec4 compose = vec4(raindrop.rgb + droplet.rgb - vec3(2.0) * raindrop.rgb * droplet.rgb, max(droplet.a, raindrop.a));
 
-    float mask = smoothstep(0.93, 0.99, compose.a);
+    float mask = smoothstep(0.96, 0.99, compose.a);
     
     vec2 uv = vUV.xy + -(compose.xy - vec2(0.5)) * vec2(compose.b * 0.6 + 0.4);
     vec3 normal = normalize(vec3((compose.xy - vec2(0.5)) * vec2(2), 1));

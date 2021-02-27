@@ -1,4 +1,4 @@
-import { TextureImporter, Blending, Color, DepthTest, InstanceBuffer, mat4, MaterialFromShader, MeshBuilder, quat, RenderTexture, Shader, shaderProp, Texture, Texture2D, TextureData, TextureResizing, vec4, WrapMode, ZograRenderer, vec3, SimpleTexturedMaterial } from "zogra-renderer";
+import { TextureImporter, Blending, Color, DepthTest, RenderBuffer, mat4, MaterialFromShader, MeshBuilder, quat, RenderTexture, Shader, shaderProp, Texture, Texture2D, TextureData, TextureResizing, vec4, WrapMode, ZograRenderer, vec3, SimpleTexturedMaterial } from "zogra-renderer";
 import { RenderTarget } from "zogra-renderer/dist/core/render-target";
 import { TextureFormat } from "zogra-renderer/dist/core/texture-format";
 import raindropTexture from "../assets/img/raindrop.png";
@@ -31,10 +31,14 @@ class RaindropMaterial extends MaterialFromShader(new Shader(raindropVert, raind
     size: number = 0;
 }
 
-class DropletMaterial extends MaterialFromShader(new Shader(defaultVert, dropletNormal, {
+class DropletMaterial extends MaterialFromShader(new Shader(raindropVert, dropletNormal, {
     blendRGB: [Blending.OneMinusDstColor, Blending.OneMinusSrcColor],
     depth: DepthTest.Disable,
     zWrite: false,
+    attributes: {
+        size: "aSize",
+        modelMatrix: "aModelMatrix",
+    }
 }))
 {
     @shaderProp("uMainTex", "tex2d")
@@ -93,10 +97,13 @@ export class RaindropRenderer
 
     private mesh = MeshBuilder.quad();
     private projectionMatrix: mat4;
-    private buffer = new InstanceBuffer({
+    private raindropBuffer = new RenderBuffer({
         size: "float",
         modelMatrix: "mat4",
     }, 3000);
+    private dropletBuffer = new RenderBuffer({
+        modelMatrix: "mat4",
+    }, 100);
 
     // deubg: DebugLayerRenderer = new DebugLayerRenderer();
 
@@ -143,21 +150,23 @@ export class RaindropRenderer
     {
         this.drawDroplet();
 
+        if (raindrops.length > this.raindropBuffer.length)
+            this.raindropBuffer.resize(this.raindropBuffer.length * 2);
         this.renderer.setRenderTarget(this.raindropComposeTex);
         this.renderer.clear(Color.black.transparent());
         for (let i = 0; i < raindrops.length; i++)
         {
             const raindrop = raindrops[i];
             const model = mat4.rts(quat.identity(), raindrop.pos.toVec3(), raindrop.size.toVec3(1));
-            this.buffer[i].modelMatrix.set(model);
-            this.buffer[i].size[0] = raindrop.size.x / 100;
+            this.raindropBuffer[i].modelMatrix.set(model);
+            this.raindropBuffer[i].size[0] = raindrop.size.x / 100;
             // this.matRaindrop.size = raindrop.size.x / 100;
             // this.renderer.drawMesh(this.mesh, mat4.rts(quat.identity(), raindrop.pos.toVec3(), raindrop.size.toVec3(1)), this.matRaindrop);
 
             // return;
         }
         // this.buffer.upload(true);
-        this.renderer.drawMeshInstance(this.mesh, this.buffer, this.matRaindrop, raindrops.length);
+        this.renderer.drawMeshInstance(this.mesh, this.raindropBuffer, this.matRaindrop, raindrops.length);
         
         this.renderer.blit(this.raindropComposeTex, this.dropletTexture, this.matRaindropErase);
 
@@ -185,7 +194,10 @@ export class RaindropRenderer
             const pos = vec3(randomRange(0, this.options.width), randomRange(0, this.options.height), 0);
             let size = vec3(randomRange(...this.options.dropletSize), randomRange(...this.options.dropletSize), 1);
             let model = mat4.rts(quat.identity(), pos, size);
-            this.renderer.drawMesh(this.mesh, model, this.matDroplet);
+
+            this.dropletBuffer[i].modelMatrix.set(model);
+            // this.renderer.drawMesh(this.mesh, model, this.matDroplet);
         }
+        this.renderer.drawMeshInstance(this.mesh, this.dropletBuffer, this.matDroplet, 10);
     }
 }

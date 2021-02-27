@@ -39,8 +39,8 @@ export class Spawner
         }
         return undefined;
     }
-    spawn(pos: vec2, mass: number)
+    spawn(pos: vec2, size: number, density = 1)
     {
-        return new RainDrop(this.simulator, pos, Math.pow(mass, 1 / 2));
+        return new RainDrop(this.simulator, pos, size, density);
     }
 }

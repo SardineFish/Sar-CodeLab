@@ -75,6 +75,19 @@
   // zogra-renderer/node_modules/gl-matrix/cjs/mat2.js
   var require_mat2 = __commonJS((exports) => {
     "use strict";
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function _typeof2(obj2) {
+          return typeof obj2;
+        };
+      } else {
+        _typeof = function _typeof2(obj2) {
+          return obj2 && typeof Symbol === "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+        };
+      }
+      return _typeof(obj);
+    }
     Object.defineProperty(exports, "__esModule", {
       value: true
     });
@@ -104,26 +117,43 @@
     exports.multiplyScalarAndAdd = multiplyScalarAndAdd;
     exports.sub = exports.mul = void 0;
     var glMatrix = _interopRequireWildcard(require_common());
+    function _getRequireWildcardCache() {
+      if (typeof WeakMap !== "function")
+        return null;
+      var cache = new WeakMap();
+      _getRequireWildcardCache = function _getRequireWildcardCache2() {
+        return cache;
+      };
+      return cache;
+    }
     function _interopRequireWildcard(obj) {
       if (obj && obj.__esModule) {
         return obj;
-      } else {
-        var newObj = {};
-        if (obj != null) {
-          for (var key in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
-              var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {};
-              if (desc.get || desc.set) {
-                Object.defineProperty(newObj, key, desc);
-              } else {
-                newObj[key] = obj[key];
-              }
-            }
+      }
+      if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") {
+        return {default: obj};
+      }
+      var cache = _getRequireWildcardCache();
+      if (cache && cache.has(obj)) {
+        return cache.get(obj);
+      }
+      var newObj = {};
+      var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+      for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+          if (desc && (desc.get || desc.set)) {
+            Object.defineProperty(newObj, key, desc);
+          } else {
+            newObj[key] = obj[key];
           }
         }
-        newObj["default"] = obj;
-        return newObj;
       }
+      newObj["default"] = obj;
+      if (cache) {
+        cache.set(obj, newObj);
+      }
+      return newObj;
     }
     function create() {
       var out = new glMatrix.ARRAY_TYPE(4);
@@ -311,6 +341,19 @@
   // zogra-renderer/node_modules/gl-matrix/cjs/mat2d.js
   var require_mat2d = __commonJS((exports) => {
     "use strict";
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function _typeof2(obj2) {
+          return typeof obj2;
+        };
+      } else {
+        _typeof = function _typeof2(obj2) {
+          return obj2 && typeof Symbol === "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+        };
+      }
+      return _typeof(obj);
+    }
     Object.defineProperty(exports, "__esModule", {
       value: true
     });
@@ -339,26 +382,43 @@
     exports.equals = equals;
     exports.sub = exports.mul = void 0;
     var glMatrix = _interopRequireWildcard(require_common());
+    function _getRequireWildcardCache() {
+      if (typeof WeakMap !== "function")
+        return null;
+      var cache = new WeakMap();
+      _getRequireWildcardCache = function _getRequireWildcardCache2() {
+        return cache;
+      };
+      return cache;
+    }
     function _interopRequireWildcard(obj) {
       if (obj && obj.__esModule) {
         return obj;
-      } else {
-        var newObj = {};
-        if (obj != null) {
-          for (var key in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
-              var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {};
-              if (desc.get || desc.set) {
-                Object.defineProperty(newObj, key, desc);
-              } else {
-                newObj[key] = obj[key];
-              }
-            }
+      }
+      if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") {
+        return {default: obj};
+      }
+      var cache = _getRequireWildcardCache();
+      if (cache && cache.has(obj)) {
+        return cache.get(obj);
+      }
+      var newObj = {};
+      var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+      for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+          if (desc && (desc.get || desc.set)) {
+            Object.defineProperty(newObj, key, desc);
+          } else {
+            newObj[key] = obj[key];
           }
         }
-        newObj["default"] = obj;
-        return newObj;
       }
+      newObj["default"] = obj;
+      if (cache) {
+        cache.set(obj, newObj);
+      }
+      return newObj;
     }
     function create() {
       var out = new glMatrix.ARRAY_TYPE(6);
@@ -570,6 +630,19 @@
   // zogra-renderer/node_modules/gl-matrix/cjs/mat3.js
   var require_mat3 = __commonJS((exports) => {
     "use strict";
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function _typeof2(obj2) {
+          return typeof obj2;
+        };
+      } else {
+        _typeof = function _typeof2(obj2) {
+          return obj2 && typeof Symbol === "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+        };
+      }
+      return _typeof(obj);
+    }
     Object.defineProperty(exports, "__esModule", {
       value: true
     });
@@ -605,26 +678,43 @@
     exports.equals = equals;
     exports.sub = exports.mul = void 0;
     var glMatrix = _interopRequireWildcard(require_common());
+    function _getRequireWildcardCache() {
+      if (typeof WeakMap !== "function")
+        return null;
+      var cache = new WeakMap();
+      _getRequireWildcardCache = function _getRequireWildcardCache2() {
+        return cache;
+      };
+      return cache;
+    }
     function _interopRequireWildcard(obj) {
       if (obj && obj.__esModule) {
         return obj;
-      } else {
-        var newObj = {};
-        if (obj != null) {
-          for (var key in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
-              var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {};
-              if (desc.get || desc.set) {
-                Object.defineProperty(newObj, key, desc);
-              } else {
-                newObj[key] = obj[key];
-              }
-            }
+      }
+      if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") {
+        return {default: obj};
+      }
+      var cache = _getRequireWildcardCache();
+      if (cache && cache.has(obj)) {
+        return cache.get(obj);
+      }
+      var newObj = {};
+      var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+      for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+          if (desc && (desc.get || desc.set)) {
+            Object.defineProperty(newObj, key, desc);
+          } else {
+            newObj[key] = obj[key];
           }
         }
-        newObj["default"] = obj;
-        return newObj;
       }
+      newObj["default"] = obj;
+      if (cache) {
+        cache.set(obj, newObj);
+      }
+      return newObj;
     }
     function create() {
       var out = new glMatrix.ARRAY_TYPE(9);
@@ -1028,6 +1118,19 @@
   // zogra-renderer/node_modules/gl-matrix/cjs/mat4.js
   var require_mat4 = __commonJS((exports) => {
     "use strict";
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function _typeof2(obj2) {
+          return typeof obj2;
+        };
+      } else {
+        _typeof = function _typeof2(obj2) {
+          return obj2 && typeof Symbol === "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+        };
+      }
+      return _typeof(obj);
+    }
     Object.defineProperty(exports, "__esModule", {
       value: true
     });
@@ -1078,26 +1181,43 @@
     exports.equals = equals;
     exports.sub = exports.mul = void 0;
     var glMatrix = _interopRequireWildcard(require_common());
+    function _getRequireWildcardCache() {
+      if (typeof WeakMap !== "function")
+        return null;
+      var cache = new WeakMap();
+      _getRequireWildcardCache = function _getRequireWildcardCache2() {
+        return cache;
+      };
+      return cache;
+    }
     function _interopRequireWildcard(obj) {
       if (obj && obj.__esModule) {
         return obj;
-      } else {
-        var newObj = {};
-        if (obj != null) {
-          for (var key in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
-              var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {};
-              if (desc.get || desc.set) {
-                Object.defineProperty(newObj, key, desc);
-              } else {
-                newObj[key] = obj[key];
-              }
-            }
+      }
+      if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") {
+        return {default: obj};
+      }
+      var cache = _getRequireWildcardCache();
+      if (cache && cache.has(obj)) {
+        return cache.get(obj);
+      }
+      var newObj = {};
+      var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+      for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+          if (desc && (desc.get || desc.set)) {
+            Object.defineProperty(newObj, key, desc);
+          } else {
+            newObj[key] = obj[key];
           }
         }
-        newObj["default"] = obj;
-        return newObj;
       }
+      newObj["default"] = obj;
+      if (cache) {
+        cache.set(obj, newObj);
+      }
+      return newObj;
     }
     function create() {
       var out = new glMatrix.ARRAY_TYPE(16);
@@ -2151,7 +2271,7 @@
       return "mat4(" + a[0] + ", " + a[1] + ", " + a[2] + ", " + a[3] + ", " + a[4] + ", " + a[5] + ", " + a[6] + ", " + a[7] + ", " + a[8] + ", " + a[9] + ", " + a[10] + ", " + a[11] + ", " + a[12] + ", " + a[13] + ", " + a[14] + ", " + a[15] + ")";
     }
     function frob(a) {
-      return Math.hypot(a[0], a[1], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15]);
+      return Math.hypot(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15]);
     }
     function add(out, a, b) {
       out[0] = a[0] + b[0];
@@ -2252,6 +2372,19 @@
   // zogra-renderer/node_modules/gl-matrix/cjs/vec3.js
   var require_vec3 = __commonJS((exports) => {
     "use strict";
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function _typeof2(obj2) {
+          return typeof obj2;
+        };
+      } else {
+        _typeof = function _typeof2(obj2) {
+          return obj2 && typeof Symbol === "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+        };
+      }
+      return _typeof(obj);
+    }
     Object.defineProperty(exports, "__esModule", {
       value: true
     });
@@ -2297,26 +2430,43 @@
     exports.equals = equals;
     exports.forEach = exports.sqrLen = exports.len = exports.sqrDist = exports.dist = exports.div = exports.mul = exports.sub = void 0;
     var glMatrix = _interopRequireWildcard(require_common());
+    function _getRequireWildcardCache() {
+      if (typeof WeakMap !== "function")
+        return null;
+      var cache = new WeakMap();
+      _getRequireWildcardCache = function _getRequireWildcardCache2() {
+        return cache;
+      };
+      return cache;
+    }
     function _interopRequireWildcard(obj) {
       if (obj && obj.__esModule) {
         return obj;
-      } else {
-        var newObj = {};
-        if (obj != null) {
-          for (var key in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
-              var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {};
-              if (desc.get || desc.set) {
-                Object.defineProperty(newObj, key, desc);
-              } else {
-                newObj[key] = obj[key];
-              }
-            }
+      }
+      if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") {
+        return {default: obj};
+      }
+      var cache = _getRequireWildcardCache();
+      if (cache && cache.has(obj)) {
+        return cache.get(obj);
+      }
+      var newObj = {};
+      var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+      for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+          if (desc && (desc.get || desc.set)) {
+            Object.defineProperty(newObj, key, desc);
+          } else {
+            newObj[key] = obj[key];
           }
         }
-        newObj["default"] = obj;
-        return newObj;
       }
+      newObj["default"] = obj;
+      if (cache) {
+        cache.set(obj, newObj);
+      }
+      return newObj;
     }
     function create() {
       var out = new glMatrix.ARRAY_TYPE(3);
@@ -2555,39 +2705,39 @@
       out[2] = z + uvz + uuvz;
       return out;
     }
-    function rotateX(out, a, b, c) {
+    function rotateX(out, a, b, rad) {
       var p = [], r = [];
       p[0] = a[0] - b[0];
       p[1] = a[1] - b[1];
       p[2] = a[2] - b[2];
       r[0] = p[0];
-      r[1] = p[1] * Math.cos(c) - p[2] * Math.sin(c);
-      r[2] = p[1] * Math.sin(c) + p[2] * Math.cos(c);
+      r[1] = p[1] * Math.cos(rad) - p[2] * Math.sin(rad);
+      r[2] = p[1] * Math.sin(rad) + p[2] * Math.cos(rad);
       out[0] = r[0] + b[0];
       out[1] = r[1] + b[1];
       out[2] = r[2] + b[2];
       return out;
     }
-    function rotateY(out, a, b, c) {
+    function rotateY(out, a, b, rad) {
       var p = [], r = [];
       p[0] = a[0] - b[0];
       p[1] = a[1] - b[1];
       p[2] = a[2] - b[2];
-      r[0] = p[2] * Math.sin(c) + p[0] * Math.cos(c);
+      r[0] = p[2] * Math.sin(rad) + p[0] * Math.cos(rad);
       r[1] = p[1];
-      r[2] = p[2] * Math.cos(c) - p[0] * Math.sin(c);
+      r[2] = p[2] * Math.cos(rad) - p[0] * Math.sin(rad);
       out[0] = r[0] + b[0];
       out[1] = r[1] + b[1];
       out[2] = r[2] + b[2];
       return out;
     }
-    function rotateZ(out, a, b, c) {
+    function rotateZ(out, a, b, rad) {
       var p = [], r = [];
       p[0] = a[0] - b[0];
       p[1] = a[1] - b[1];
       p[2] = a[2] - b[2];
-      r[0] = p[0] * Math.cos(c) - p[1] * Math.sin(c);
-      r[1] = p[0] * Math.sin(c) + p[1] * Math.cos(c);
+      r[0] = p[0] * Math.cos(rad) - p[1] * Math.sin(rad);
+      r[1] = p[0] * Math.sin(rad) + p[1] * Math.cos(rad);
       r[2] = p[2];
       out[0] = r[0] + b[0];
       out[1] = r[1] + b[1];
@@ -2595,18 +2745,8 @@
       return out;
     }
     function angle(a, b) {
-      var tempA = fromValues(a[0], a[1], a[2]);
-      var tempB = fromValues(b[0], b[1], b[2]);
-      normalize(tempA, tempA);
-      normalize(tempB, tempB);
-      var cosine = dot(tempA, tempB);
-      if (cosine > 1) {
-        return 0;
-      } else if (cosine < -1) {
-        return Math.PI;
-      } else {
-        return Math.acos(cosine);
-      }
+      var ax = a[0], ay = a[1], az = a[2], bx = b[0], by = b[1], bz = b[2], mag1 = Math.sqrt(ax * ax + ay * ay + az * az), mag2 = Math.sqrt(bx * bx + by * by + bz * bz), mag = mag1 * mag2, cosine = mag && dot(a, b) / mag;
+      return Math.acos(Math.min(Math.max(cosine, -1), 1));
     }
     function zero(out) {
       out[0] = 0;
@@ -2672,6 +2812,19 @@
   // zogra-renderer/node_modules/gl-matrix/cjs/vec4.js
   var require_vec4 = __commonJS((exports) => {
     "use strict";
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function _typeof2(obj2) {
+          return typeof obj2;
+        };
+      } else {
+        _typeof = function _typeof2(obj2) {
+          return obj2 && typeof Symbol === "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+        };
+      }
+      return _typeof(obj);
+    }
     Object.defineProperty(exports, "__esModule", {
       value: true
     });
@@ -2710,26 +2863,43 @@
     exports.equals = equals;
     exports.forEach = exports.sqrLen = exports.len = exports.sqrDist = exports.dist = exports.div = exports.mul = exports.sub = void 0;
     var glMatrix = _interopRequireWildcard(require_common());
+    function _getRequireWildcardCache() {
+      if (typeof WeakMap !== "function")
+        return null;
+      var cache = new WeakMap();
+      _getRequireWildcardCache = function _getRequireWildcardCache2() {
+        return cache;
+      };
+      return cache;
+    }
     function _interopRequireWildcard(obj) {
       if (obj && obj.__esModule) {
         return obj;
-      } else {
-        var newObj = {};
-        if (obj != null) {
-          for (var key in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
-              var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {};
-              if (desc.get || desc.set) {
-                Object.defineProperty(newObj, key, desc);
-              } else {
-                newObj[key] = obj[key];
-              }
-            }
+      }
+      if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") {
+        return {default: obj};
+      }
+      var cache = _getRequireWildcardCache();
+      if (cache && cache.has(obj)) {
+        return cache.get(obj);
+      }
+      var newObj = {};
+      var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+      for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+          if (desc && (desc.get || desc.set)) {
+            Object.defineProperty(newObj, key, desc);
+          } else {
+            newObj[key] = obj[key];
           }
         }
-        newObj["default"] = obj;
-        return newObj;
       }
+      newObj["default"] = obj;
+      if (cache) {
+        cache.set(obj, newObj);
+      }
+      return newObj;
     }
     function create() {
       var out = new glMatrix.ARRAY_TYPE(4);
@@ -3040,6 +3210,19 @@
   // zogra-renderer/node_modules/gl-matrix/cjs/quat.js
   var require_quat = __commonJS((exports) => {
     "use strict";
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function _typeof2(obj2) {
+          return typeof obj2;
+        };
+      } else {
+        _typeof = function _typeof2(obj2) {
+          return obj2 && typeof Symbol === "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+        };
+      }
+      return _typeof(obj);
+    }
     Object.defineProperty(exports, "__esModule", {
       value: true
     });
@@ -3068,26 +3251,43 @@
     var mat3 = _interopRequireWildcard(require_mat3());
     var vec33 = _interopRequireWildcard(require_vec3());
     var vec43 = _interopRequireWildcard(require_vec4());
+    function _getRequireWildcardCache() {
+      if (typeof WeakMap !== "function")
+        return null;
+      var cache = new WeakMap();
+      _getRequireWildcardCache = function _getRequireWildcardCache2() {
+        return cache;
+      };
+      return cache;
+    }
     function _interopRequireWildcard(obj) {
       if (obj && obj.__esModule) {
         return obj;
-      } else {
-        var newObj = {};
-        if (obj != null) {
-          for (var key in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
-              var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {};
-              if (desc.get || desc.set) {
-                Object.defineProperty(newObj, key, desc);
-              } else {
-                newObj[key] = obj[key];
-              }
-            }
+      }
+      if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") {
+        return {default: obj};
+      }
+      var cache = _getRequireWildcardCache();
+      if (cache && cache.has(obj)) {
+        return cache.get(obj);
+      }
+      var newObj = {};
+      var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+      for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+          if (desc && (desc.get || desc.set)) {
+            Object.defineProperty(newObj, key, desc);
+          } else {
+            newObj[key] = obj[key];
           }
         }
-        newObj["default"] = obj;
-        return newObj;
       }
+      newObj["default"] = obj;
+      if (cache) {
+        cache.set(obj, newObj);
+      }
+      return newObj;
     }
     function create() {
       var out = new glMatrix.ARRAY_TYPE(4);
@@ -3404,6 +3604,19 @@
   // zogra-renderer/node_modules/gl-matrix/cjs/quat2.js
   var require_quat2 = __commonJS((exports) => {
     "use strict";
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function _typeof2(obj2) {
+          return typeof obj2;
+        };
+      } else {
+        _typeof = function _typeof2(obj2) {
+          return obj2 && typeof Symbol === "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+        };
+      }
+      return _typeof(obj);
+    }
     Object.defineProperty(exports, "__esModule", {
       value: true
     });
@@ -3442,26 +3655,43 @@
     var glMatrix = _interopRequireWildcard(require_common());
     var quat2 = _interopRequireWildcard(require_quat());
     var mat42 = _interopRequireWildcard(require_mat4());
+    function _getRequireWildcardCache() {
+      if (typeof WeakMap !== "function")
+        return null;
+      var cache = new WeakMap();
+      _getRequireWildcardCache = function _getRequireWildcardCache2() {
+        return cache;
+      };
+      return cache;
+    }
     function _interopRequireWildcard(obj) {
       if (obj && obj.__esModule) {
         return obj;
-      } else {
-        var newObj = {};
-        if (obj != null) {
-          for (var key in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
-              var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {};
-              if (desc.get || desc.set) {
-                Object.defineProperty(newObj, key, desc);
-              } else {
-                newObj[key] = obj[key];
-              }
-            }
+      }
+      if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") {
+        return {default: obj};
+      }
+      var cache = _getRequireWildcardCache();
+      if (cache && cache.has(obj)) {
+        return cache.get(obj);
+      }
+      var newObj = {};
+      var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+      for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+          if (desc && (desc.get || desc.set)) {
+            Object.defineProperty(newObj, key, desc);
+          } else {
+            newObj[key] = obj[key];
           }
         }
-        newObj["default"] = obj;
-        return newObj;
       }
+      newObj["default"] = obj;
+      if (cache) {
+        cache.set(obj, newObj);
+      }
+      return newObj;
     }
     function create() {
       var dq = new glMatrix.ARRAY_TYPE(8);
@@ -3843,6 +4073,19 @@
   // zogra-renderer/node_modules/gl-matrix/cjs/vec2.js
   var require_vec2 = __commonJS((exports) => {
     "use strict";
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function _typeof2(obj2) {
+          return typeof obj2;
+        };
+      } else {
+        _typeof = function _typeof2(obj2) {
+          return obj2 && typeof Symbol === "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+        };
+      }
+      return _typeof(obj);
+    }
     Object.defineProperty(exports, "__esModule", {
       value: true
     });
@@ -3885,26 +4128,43 @@
     exports.equals = equals;
     exports.forEach = exports.sqrLen = exports.sqrDist = exports.dist = exports.div = exports.mul = exports.sub = exports.len = void 0;
     var glMatrix = _interopRequireWildcard(require_common());
+    function _getRequireWildcardCache() {
+      if (typeof WeakMap !== "function")
+        return null;
+      var cache = new WeakMap();
+      _getRequireWildcardCache = function _getRequireWildcardCache2() {
+        return cache;
+      };
+      return cache;
+    }
     function _interopRequireWildcard(obj) {
       if (obj && obj.__esModule) {
         return obj;
-      } else {
-        var newObj = {};
-        if (obj != null) {
-          for (var key in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
-              var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {};
-              if (desc.get || desc.set) {
-                Object.defineProperty(newObj, key, desc);
-              } else {
-                newObj[key] = obj[key];
-              }
-            }
+      }
+      if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") {
+        return {default: obj};
+      }
+      var cache = _getRequireWildcardCache();
+      if (cache && cache.has(obj)) {
+        return cache.get(obj);
+      }
+      var newObj = {};
+      var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+      for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+          if (desc && (desc.get || desc.set)) {
+            Object.defineProperty(newObj, key, desc);
+          } else {
+            newObj[key] = obj[key];
           }
         }
-        newObj["default"] = obj;
-        return newObj;
       }
+      newObj["default"] = obj;
+      if (cache) {
+        cache.set(obj, newObj);
+      }
+      return newObj;
     }
     function create() {
       var out = new glMatrix.ARRAY_TYPE(2);
@@ -4074,30 +4334,15 @@
       out[1] = m[1] * x + m[5] * y + m[13];
       return out;
     }
-    function rotate(out, a, b, c) {
-      var p0 = a[0] - b[0], p1 = a[1] - b[1], sinC = Math.sin(c), cosC = Math.cos(c);
+    function rotate(out, a, b, rad) {
+      var p0 = a[0] - b[0], p1 = a[1] - b[1], sinC = Math.sin(rad), cosC = Math.cos(rad);
       out[0] = p0 * cosC - p1 * sinC + b[0];
       out[1] = p0 * sinC + p1 * cosC + b[1];
       return out;
     }
     function angle(a, b) {
-      var x1 = a[0], y1 = a[1], x2 = b[0], y2 = b[1];
-      var len1 = x1 * x1 + y1 * y1;
-      if (len1 > 0) {
-        len1 = 1 / Math.sqrt(len1);
-      }
-      var len2 = x2 * x2 + y2 * y2;
-      if (len2 > 0) {
-        len2 = 1 / Math.sqrt(len2);
-      }
-      var cosine = (x1 * x2 + y1 * y2) * len1 * len2;
-      if (cosine > 1) {
-        return 0;
-      } else if (cosine < -1) {
-        return Math.PI;
-      } else {
-        return Math.acos(cosine);
-      }
+      var x1 = a[0], y1 = a[1], x2 = b[0], y2 = b[1], mag = Math.sqrt(x1 * x1 + y1 * y1) * Math.sqrt(x2 * x2 + y2 * y2), cosine = mag && (x1 * x2 + y1 * y2) / mag;
+      return Math.acos(Math.min(Math.max(cosine, -1), 1));
     }
     function zero(out) {
       out[0] = 0;
@@ -4160,6 +4405,19 @@
   // zogra-renderer/node_modules/gl-matrix/cjs/index.js
   var require_cjs = __commonJS((exports) => {
     "use strict";
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function _typeof2(obj2) {
+          return typeof obj2;
+        };
+      } else {
+        _typeof = function _typeof2(obj2) {
+          return obj2 && typeof Symbol === "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+        };
+      }
+      return _typeof(obj);
+    }
     Object.defineProperty(exports, "__esModule", {
       value: true
     });
@@ -4184,26 +4442,43 @@
     exports.vec3 = vec33;
     var vec43 = _interopRequireWildcard(require_vec4());
     exports.vec4 = vec43;
+    function _getRequireWildcardCache() {
+      if (typeof WeakMap !== "function")
+        return null;
+      var cache = new WeakMap();
+      _getRequireWildcardCache = function _getRequireWildcardCache2() {
+        return cache;
+      };
+      return cache;
+    }
     function _interopRequireWildcard(obj) {
       if (obj && obj.__esModule) {
         return obj;
-      } else {
-        var newObj = {};
-        if (obj != null) {
-          for (var key in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
-              var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {};
-              if (desc.get || desc.set) {
-                Object.defineProperty(newObj, key, desc);
-              } else {
-                newObj[key] = obj[key];
-              }
-            }
+      }
+      if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") {
+        return {default: obj};
+      }
+      var cache = _getRequireWildcardCache();
+      if (cache && cache.has(obj)) {
+        return cache.get(obj);
+      }
+      var newObj = {};
+      var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+      for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+          if (desc && (desc.get || desc.set)) {
+            Object.defineProperty(newObj, key, desc);
+          } else {
+            newObj[key] = obj[key];
           }
         }
-        newObj["default"] = obj;
-        return newObj;
       }
+      newObj["default"] = obj;
+      if (cache) {
+        cache.set(obj, newObj);
+      }
+      return newObj;
     }
   });
 
@@ -4684,8 +4959,10 @@
       }
     };
     exports.Color = Color2;
-    exports.rgba = (r, g, b, a = 1) => new Color2(r, g, b, a);
-    exports.rgb = (r, g, b) => new Color2(r, g, b, 1);
+    var rgba = (r, g, b, a = 1) => new Color2(r, g, b, a);
+    exports.rgba = rgba;
+    var rgb = (r, g, b) => new Color2(r, g, b, 1);
+    exports.rgb = rgb;
   });
 
   // zogra-renderer/dist/types/math.js
@@ -4848,7 +5125,7 @@
     Matrix4x4.equal = (a, b) => {
       if (a === void 0 || b === void 0)
         return false;
-      if (!(a instanceof gl_matrix_1.mat4) || !(b instanceof gl_matrix_1.mat4))
+      if (!(a instanceof Array || a instanceof Float32Array) || !(b instanceof Array || b instanceof Float32Array))
         return false;
       return gl_matrix_1.mat4.exactEquals(a, b);
     };
@@ -4987,7 +5264,7 @@
     });
     var __exportStar2 = exports && exports.__exportStar || function(m, exports2) {
       for (var p in m)
-        if (p !== "default" && !exports2.hasOwnProperty(p))
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p))
           __createBinding(exports2, m, p);
     };
     Object.defineProperty(exports, "__esModule", {value: true});
@@ -5748,12 +6025,15 @@
     Object.defineProperty(exports, "__esModule", {value: true});
     exports.GL = exports.GlobalContext = exports.setGlobalContext = void 0;
     var ctx;
-    exports.setGlobalContext = (_ctx) => ctx = _ctx;
-    exports.GlobalContext = () => ctx;
-    exports.GL = () => {
+    var setGlobalContext = (_ctx) => ctx = _ctx;
+    exports.setGlobalContext = setGlobalContext;
+    var GlobalContext = () => ctx;
+    exports.GlobalContext = GlobalContext;
+    var GL = () => {
       var _a;
       return (_a = exports.GlobalContext()) === null || _a === void 0 ? void 0 : _a.gl;
     };
+    exports.GL = GL;
   });
 
   // zogra-renderer/dist/core/texture-format.js
@@ -6783,42 +7063,25 @@ void main()
       get shader() {
         return this._shader;
       }
-      setup(data) {
+      upload(data) {
         this.tryInit(true);
-        const gl = data.gl;
         for (const uniformName in this.properties) {
-          this.setUniform(uniformName);
+          const prop = this.properties[uniformName];
+          const value = prop.key ? this[prop.key] : prop.value;
+          this.uploadUniform(prop, value);
         }
       }
       setProp(uniformName, type, value) {
         this.tryInit(true);
-        let prop = this.properties[uniformName];
-        if (!prop) {
-          switch (type) {
-            case "tex2d":
-              this.properties[uniformName] = {
-                type,
-                textureUnit: this.textureCount++,
-                location: void 0,
-                uploaded: void 0,
-                value
-              };
-              break;
-            default:
-              this.properties[uniformName] = {
-                type,
-                location: void 0,
-                uploaded: void 0,
-                value
-              };
-          }
+        const prop = this.getOrCreatePropInfo(uniformName, type);
+        if (type !== prop.type) {
+          console.warn("Uniform type missmatch");
           return;
         }
-        if (prop.key) {
+        if (prop.key)
           this[prop.key] = value;
-        } else {
+        else
           prop.value = value;
-        }
       }
       unbindRenderTextures() {
         this.tryInit(true);
@@ -6841,48 +7104,51 @@ void main()
           return false;
         }
         this.gl = gl;
-        const shader = this.shader;
-        const properties = this.properties;
         for (const key in this) {
-          const prop = getShaderProp(this, key);
-          if (!prop)
+          const propInfo = getShaderProp(this, key);
+          if (!propInfo)
             continue;
-          const loc = shader.uniformLocation(prop === null || prop === void 0 ? void 0 : prop.name);
-          if (!loc)
-            continue;
-          switch (prop.type) {
-            case "tex2d":
-              properties[prop.name] = {
-                type: prop.type,
-                uploaded: void 0,
-                key,
-                location: loc,
-                textureUnit: this.textureCount++
-              };
-              break;
-            default:
-              properties[prop.name] = {
-                type: prop.type,
-                location: loc,
-                uploaded: void 0,
-                key
-              };
-          }
+          const prop = this.getOrCreatePropInfo(propInfo.name, propInfo.type);
+          prop.key = key;
         }
-        this.properties = properties;
         this.initialized = true;
         return true;
       }
-      setUniform(uniformName) {
-        const prop = this.properties[uniformName];
+      setUniformDirectly(uniformName, type, value) {
+        this.tryInit(true);
+        const prop = this.getOrCreatePropInfo(uniformName, type);
+        if (!prop.location)
+          return;
+        this.uploadUniform(prop, value);
+      }
+      getOrCreatePropInfo(uniformName, type) {
+        let prop = this.properties[uniformName];
+        if (prop)
+          return prop;
+        switch (type) {
+          case "tex2d":
+            prop = {
+              type,
+              uploaded: void 0,
+              location: this.shader.uniformLocation(uniformName),
+              textureUnit: this.textureCount++
+            };
+            break;
+          default:
+            prop = {
+              type,
+              location: this.shader.uniformLocation(uniformName),
+              uploaded: void 0
+            };
+        }
+        this.properties[uniformName] = prop;
+        return prop;
+      }
+      uploadUniform(prop, value) {
         const gl = this.gl;
         const ctx = global_1.GlobalContext();
-        if (prop.location === void 0) {
-          prop.location = this.shader.uniformLocation(uniformName);
-        }
         if (!prop.location)
           return false;
-        let value = prop.key ? this[prop.key] : prop.value;
         let dirty = false;
         if (prop.uploaded === null && value === null)
           return false;
@@ -7851,6 +8117,11 @@ void main()
           matMV_IT: mvit
         });
       }
+      setupGlobalUniforms(material) {
+        for (const val of this.globalUniforms.values()) {
+          material.setUniformDirectly(val.name, val.type, val.value);
+        }
+      }
       drawMeshInstance(mesh, buffer, material, count) {
         if (!material)
           material = this.assets.materials.error;
@@ -7864,12 +8135,12 @@ void main()
         this.target.bind(this.ctx);
         this.setupScissor();
         this.useShader(material.shader);
-        material.setup(data);
+        material.upload(data);
         this.setupTransforms(material.shader, mat4_1.mat4.identity());
         mesh.bind(material.shader);
-        buffer.bind(material.shader);
+        buffer.bindInstanceDraw(material.shader);
         gl.drawElementsInstanced(gl.TRIANGLES, mesh.triangles.length, gl.UNSIGNED_INT, 0, count);
-        buffer.unbind(material.shader);
+        buffer.cleanupInstanceDraw(material.shader);
         material.unbindRenderTextures();
       }
       drawMesh(mesh, transform, material) {
@@ -7885,7 +8156,7 @@ void main()
         this.target.bind(this.ctx);
         this.setupScissor();
         this.useShader(material.shader);
-        material.setup(data);
+        material.upload(data);
         this.setupTransforms(material.shader, transform);
         mesh.bind(material.shader);
         gl.drawElements(gl.TRIANGLES, mesh.triangles.length, gl.UNSIGNED_INT, 0);
@@ -7902,10 +8173,20 @@ void main()
         this.target.bind(this.ctx);
         this.setupScissor();
         this.useShader(material.shader);
-        material.setup(data);
+        material.upload(data);
         this.setupTransforms(material.shader, transform);
         lines.bind(material.shader);
         gl.drawElements(gl.LINES, lines.lines.length, gl.UNSIGNED_INT, 0);
+      }
+      setGlobalUniform(name, type, value) {
+        this.globalUniforms.set(name, {
+          name,
+          type,
+          value
+        });
+      }
+      unsetGlobalUniform(name) {
+        this.globalUniforms.delete(name);
       }
       setupScissor() {
         const gl = this.gl;
@@ -8041,10 +8322,10 @@ void main()
   var require_buffer = __commonJS((exports) => {
     "use strict";
     Object.defineProperty(exports, "__esModule", {value: true});
-    exports.InstanceBuffer = void 0;
+    exports.RenderBuffer = void 0;
     var util_1 = require_util();
     var global_1 = require_global();
-    var InstanceBuffer2 = class extends Array {
+    var RenderBuffer2 = class extends Array {
       constructor(structure, items, ctx = global_1.GlobalContext()) {
         super(items);
         this.static = false;
@@ -8074,14 +8355,44 @@ void main()
           }
         }
         const elementBytes = elementSize * 4;
-        this.buffer = new Float32Array(elementSize * items);
+        this.buffer = null;
         this.byteSize = elementBytes * items;
+        this.elementSize = elementSize;
         this.elementByteSize = elementBytes;
+        this.resize(items);
+        this.tryInit(false);
+      }
+      tryInit(required = false) {
+        var _a;
+        if (this.initialized)
+          return true;
+        const ctx = this.ctx || global_1.GlobalContext();
+        if (!ctx) {
+          if (required)
+            throw new Error("Failed to init render buffer without a global GL context.");
+          return false;
+        }
+        this.ctx = ctx;
+        const gl = ctx.gl;
+        this.glBuf = (_a = gl.createBuffer()) !== null && _a !== void 0 ? _a : util_1.panic("Failed to create render buffer");
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuf);
+        gl.bufferData(gl.ARRAY_BUFFER, this.byteSize, this.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW);
+        this.initialized = true;
+        return true;
+      }
+      resize(length, keepContent = true) {
+        const oldBuffer = this.buffer;
+        this.buffer = new Float32Array(this.elementSize * length);
+        if (keepContent && oldBuffer) {
+          this.buffer.set(oldBuffer, 0);
+        }
+        this.length = length;
+        const elementBytes = this.elementByteSize;
         for (let i = 0; i < this.length; i++) {
           const element = {};
           let offset = 0;
-          for (const key in structure) {
-            switch (structure[key]) {
+          for (const key in this.structure) {
+            switch (this.structure[key]) {
               case "float":
                 element[key] = new Float32Array(this.buffer.buffer, i * elementBytes + offset * 4, 1);
                 offset += 1;
@@ -8107,25 +8418,6 @@ void main()
           this[i] = element;
         }
         this.dirty = true;
-        this.tryInit(false);
-      }
-      tryInit(required = false) {
-        var _a;
-        if (this.initialized)
-          return true;
-        const ctx = this.ctx || global_1.GlobalContext();
-        if (!ctx) {
-          if (required)
-            throw new Error("Failed to init render buffer without a global GL context.");
-          return false;
-        }
-        this.ctx = ctx;
-        const gl = ctx.gl;
-        this.glBuf = (_a = gl.createBuffer()) !== null && _a !== void 0 ? _a : util_1.panic("Failed to create render buffer");
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuf);
-        gl.bufferData(gl.ARRAY_BUFFER, this.byteSize, this.static ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW);
-        this.initialized = true;
-        return true;
       }
       markDirty() {
         this.dirty = true;
@@ -8140,7 +8432,7 @@ void main()
         this.dirty = false;
         return true;
       }
-      bind(shader) {
+      bindInstanceDraw(shader) {
         this.tryInit(true);
         const gl = this.ctx.gl;
         this.upload() || gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuf);
@@ -8187,7 +8479,7 @@ void main()
           loc >= 0 && gl.vertexAttribDivisor(loc, 1);
         }
       }
-      unbind(shader) {
+      cleanupInstanceDraw(shader) {
         this.tryInit(true);
         const gl = this.ctx.gl;
         const locations = shader.attributes;
@@ -8217,7 +8509,7 @@ void main()
         }
       }
     };
-    exports.InstanceBuffer = InstanceBuffer2;
+    exports.RenderBuffer = RenderBuffer2;
   });
 
   // zogra-renderer/dist/core/core.js
@@ -8236,7 +8528,7 @@ void main()
     });
     var __exportStar2 = exports && exports.__exportStar || function(m, exports2) {
       for (var p in m)
-        if (p !== "default" && !exports2.hasOwnProperty(p))
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p))
           __createBinding(exports2, m, p);
     };
     Object.defineProperty(exports, "__esModule", {value: true});
@@ -9062,7 +9354,7 @@ void main()
     });
     var __exportStar2 = exports && exports.__exportStar || function(m, exports2) {
       for (var p in m)
-        if (p !== "default" && !exports2.hasOwnProperty(p))
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p))
           __createBinding(exports2, m, p);
     };
     Object.defineProperty(exports, "__esModule", {value: true});
@@ -9147,7 +9439,7 @@ void main()
     });
     var __exportStar2 = exports && exports.__exportStar || function(m, exports2) {
       for (var p in m)
-        if (p !== "default" && !exports2.hasOwnProperty(p))
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p))
           __createBinding(exports2, m, p);
     };
     Object.defineProperty(exports, "__esModule", {value: true});
@@ -9205,7 +9497,7 @@ void main()
     });
     var __exportStar2 = exports && exports.__exportStar || function(m, exports2) {
       for (var p in m)
-        if (p !== "default" && !exports2.hasOwnProperty(p))
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p))
           __createBinding(exports2, m, p);
     };
     Object.defineProperty(exports, "__esModule", {value: true});
@@ -9291,7 +9583,7 @@ void main()
     });
     var __exportStar2 = exports && exports.__exportStar || function(m, exports2) {
       for (var p in m)
-        if (p !== "default" && !exports2.hasOwnProperty(p))
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p))
           __createBinding(exports2, m, p);
     };
     Object.defineProperty(exports, "__esModule", {value: true});
@@ -9315,7 +9607,7 @@ void main()
     });
     var __exportStar2 = exports && exports.__exportStar || function(m, exports2) {
       for (var p in m)
-        if (p !== "default" && !exports2.hasOwnProperty(p))
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p))
           __createBinding(exports2, m, p);
     };
     Object.defineProperty(exports, "__esModule", {value: true});
@@ -9343,7 +9635,7 @@ void main()
     });
     var __exportStar2 = exports && exports.__exportStar || function(m, exports2) {
       for (var p in m)
-        if (p !== "default" && !exports2.hasOwnProperty(p))
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p))
           __createBinding(exports2, m, p);
     };
     var __importStar = exports && exports.__importStar || function(mod) {
@@ -9352,14 +9644,14 @@ void main()
       var result = {};
       if (mod != null) {
         for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
+          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
             __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
     };
     Object.defineProperty(exports, "__esModule", {value: true});
-    exports.plugins = void 0;
+    exports.GlobalContext = exports.plugins = void 0;
     __exportStar2(require_types(), exports);
     __exportStar2(require_core(), exports);
     __exportStar2(require_engine(), exports);
@@ -9466,7 +9758,7 @@ void main()
   var raindrop_vert_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec3 aPos;\r\nin vec4 aColor;\r\nin vec2 aUV;\r\nin vec3 aNormal;\r\n\r\nin float aSize;\r\nin mat4 aModelMatrix;\r\n\r\nuniform mat4 uTransformM;\r\nuniform mat4 uTransformVP;\r\nuniform mat4 uTransformMVP;\r\nuniform mat4 uTransformM_IT;\r\n\r\nout vec4 vColor;\r\nout vec4 vPos;\r\nout vec2 vUV;\r\nout vec3 vNormal;\r\nout vec3 vWorldPos;\r\nout float vSize;\r\n\r\nvoid main()\r\n{\r\n    mat4 mvp = uTransformVP * aModelMatrix;\r\n    gl_Position = mvp * vec4(aPos, 1);\r\n    vPos = gl_Position;\r\n    vColor = aColor;\r\n    vUV = aUV;\r\n    vNormal = (uTransformM_IT *  vec4(aNormal, 0)).xyz;\r\n    vWorldPos = (uTransformM * vec4(aPos, 1)).xyz;\r\n    vSize = aSize;\r\n}";
 
   // src/shader/reflect.glsl
-  var reflect_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uBackgroundSize; // (x, y, 1/x, 1/y)\r\nuniform sampler2D uRaindropTex;\r\nuniform sampler2D uDropletTex;\r\nuniform vec4 uColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    // vec3 lightPos = vec3(0.5, 1, 1);\r\n\r\n    vec4 raindrop = texture(uRaindropTex, vUV.xy).rgba;\r\n    vec4 droplet = texture(uDropletTex, vUV.xy).rgba;\r\n\r\n    vec4 compose = vec4(raindrop.rgb + droplet.rgb - vec3(2.0) * raindrop.rgb * droplet.rgb, max(droplet.a, raindrop.a));\r\n\r\n    float mask = smoothstep(0.93, 0.99, compose.a);\r\n    \r\n    vec2 uv = vUV.xy + -(compose.xy - vec2(0.5)) * vec2(compose.b * 0.6 + 0.4);\r\n    vec3 normal = normalize(vec3((compose.xy - vec2(0.5)) * vec2(2), 1));\r\n\r\n    // vec3 lightDir = lightPos - vec3(vUV, 0);\r\n    vec3 lightDir = vec3(-1, 1, 2);\r\n    float lambertian = clamp(dot(normalize(lightDir), normal), 0.0, 1.0);\r\n\r\n\r\n    // offset = pow(offset, vec2(2));\r\n    vec4 color = texture(uMainTex, uv.xy).rgba;\r\n\r\n    color.rgb += vec3((lambertian - 0.8) * 0.3);\r\n    \r\n\r\n    // fragColor = vec4(mask, mask, mask, 1);\r\n    // color = color * vec3(uColor);\r\n\r\n    fragColor = vec4(color.rgb, mask);// vec4(color.rgb, mask);\r\n}";
+  var reflect_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uBackgroundSize; // (x, y, 1/x, 1/y)\r\nuniform sampler2D uRaindropTex;\r\nuniform sampler2D uDropletTex;\r\nuniform vec4 uColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    // vec3 lightPos = vec3(0.5, 1, 1);\r\n\r\n    vec4 raindrop = texture(uRaindropTex, vUV.xy).rgba;\r\n    vec4 droplet = texture(uDropletTex, vUV.xy).rgba;\r\n\r\n    vec4 compose = vec4(raindrop.rgb + droplet.rgb - vec3(2.0) * raindrop.rgb * droplet.rgb, max(droplet.a, raindrop.a));\r\n\r\n    float mask = smoothstep(0.96, 0.99, compose.a);\r\n    \r\n    vec2 uv = vUV.xy + -(compose.xy - vec2(0.5)) * vec2(compose.b * 0.6 + 0.4);\r\n    vec3 normal = normalize(vec3((compose.xy - vec2(0.5)) * vec2(2), 1));\r\n\r\n    // vec3 lightDir = lightPos - vec3(vUV, 0);\r\n    vec3 lightDir = vec3(-1, 1, 2);\r\n    float lambertian = clamp(dot(normalize(lightDir), normal), 0.0, 1.0);\r\n\r\n\r\n    // offset = pow(offset, vec2(2));\r\n    vec4 color = texture(uMainTex, uv.xy).rgba;\r\n\r\n    color.rgb += vec3((lambertian - 0.8) * 0.3);\r\n    \r\n\r\n    // fragColor = vec4(mask, mask, mask, 1);\r\n    // color = color * vec3(uColor);\r\n\r\n    fragColor = vec4(color.rgb, mask);// vec4(color.rgb, mask);\r\n}";
 
   // src/shader/droplet.glsl
   var droplet_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.rgb *= color.a;\r\n    fragColor = vec4(color.rg, 0.2, color.a);\r\n}";
@@ -9496,10 +9788,14 @@ void main()
   __decorate([
     import_zogra_renderer3.shaderProp("uSize", "float")
   ], RaindropMaterial.prototype, "size", 2);
-  var DropletMaterial = class extends import_zogra_renderer3.MaterialFromShader(new import_zogra_renderer3.Shader(d_vert_default, droplet_default, {
+  var DropletMaterial = class extends import_zogra_renderer3.MaterialFromShader(new import_zogra_renderer3.Shader(raindrop_vert_default, droplet_default, {
     blendRGB: [import_zogra_renderer3.Blending.OneMinusDstColor, import_zogra_renderer3.Blending.OneMinusSrcColor],
     depth: import_zogra_renderer3.DepthTest.Disable,
-    zWrite: false
+    zWrite: false,
+    attributes: {
+      size: "aSize",
+      modelMatrix: "aModelMatrix"
+    }
   })) {
     constructor() {
       super(...arguments);
@@ -9547,10 +9843,13 @@ void main()
       this.matDroplet = new DropletMaterial();
       this.matRaindropErase = new RaindropErase();
       this.mesh = import_zogra_renderer3.MeshBuilder.quad();
-      this.buffer = new import_zogra_renderer3.InstanceBuffer({
+      this.raindropBuffer = new import_zogra_renderer3.RenderBuffer({
         size: "float",
         modelMatrix: "mat4"
       }, 3e3);
+      this.dropletBuffer = new import_zogra_renderer3.RenderBuffer({
+        modelMatrix: "mat4"
+      }, 100);
       this.renderer = new import_zogra_renderer3.ZograRenderer(options.canvas);
       this.options = options;
       this.projectionMatrix = import_zogra_renderer3.mat4.ortho(0, options.width, 0, options.height, 1, -1);
@@ -9575,15 +9874,17 @@ void main()
     }
     render(raindrops) {
       this.drawDroplet();
+      if (raindrops.length > this.raindropBuffer.length)
+        this.raindropBuffer.resize(this.raindropBuffer.length * 2);
       this.renderer.setRenderTarget(this.raindropComposeTex);
       this.renderer.clear(import_zogra_renderer3.Color.black.transparent());
       for (let i = 0; i < raindrops.length; i++) {
         const raindrop = raindrops[i];
         const model = import_zogra_renderer3.mat4.rts(import_zogra_renderer3.quat.identity(), raindrop.pos.toVec3(), raindrop.size.toVec3(1));
-        this.buffer[i].modelMatrix.set(model);
-        this.buffer[i].size[0] = raindrop.size.x / 100;
+        this.raindropBuffer[i].modelMatrix.set(model);
+        this.raindropBuffer[i].size[0] = raindrop.size.x / 100;
       }
-      this.renderer.drawMeshInstance(this.mesh, this.buffer, this.matRaindrop, raindrops.length);
+      this.renderer.drawMeshInstance(this.mesh, this.raindropBuffer, this.matRaindrop, raindrops.length);
       this.renderer.blit(this.raindropComposeTex, this.dropletTexture, this.matRaindropErase);
       this.renderer.setRenderTarget(import_render_target.RenderTarget.CanvasTarget);
       this.renderer.clear(import_zogra_renderer3.Color.black);
@@ -9601,18 +9902,20 @@ void main()
         const pos = import_zogra_renderer3.vec3(randomRange(0, this.options.width), randomRange(0, this.options.height), 0);
         let size = import_zogra_renderer3.vec3(randomRange(...this.options.dropletSize), randomRange(...this.options.dropletSize), 1);
         let model = import_zogra_renderer3.mat4.rts(import_zogra_renderer3.quat.identity(), pos, size);
-        this.renderer.drawMesh(this.mesh, model, this.matDroplet);
+        this.dropletBuffer[i].modelMatrix.set(model);
       }
+      this.renderer.drawMeshInstance(this.mesh, this.dropletBuffer, this.matDroplet, 10);
     }
   };
 
   // src/raindrop.ts
   var import_zogra_renderer4 = __toModule(require_dist());
   var RainDrop = class {
-    constructor(simulator, pos, size) {
+    constructor(simulator, pos, size, density = 1) {
+      this.density = 1;
       this.velocity = import_zogra_renderer4.vec2.zero();
       this.destroied = false;
-      this.evaporate = 60;
+      this.evaporate = 1;
       this._mass = 0;
       this._size = import_zogra_renderer4.vec2.zero();
       this.resistance = 0;
@@ -9622,17 +9925,18 @@ void main()
       this.pos = pos;
       this.seed = Math.floor(Math.random() * 2147483647) + 1;
       this.simulator = simulator;
+      this.density = density;
       this.lastTrailPos = pos.clone();
       this.nextTrailDistance = randomRange(10, 20);
       this.spread = import_zogra_renderer4.vec2(0.5, 0.5);
-      this.mass = size ** 2;
+      this.mass = (size * density) ** 2;
     }
     get mass() {
       return this._mass;
     }
     set mass(m) {
       this._mass = m;
-      const sqrtM = Math.sqrt(m);
+      const sqrtM = Math.sqrt(m) / this.density;
       this._size.x = (this.spread.x + 1) * sqrtM;
       this._size.y = (this.spread.y + 1) * sqrtM;
     }
@@ -9666,18 +9970,18 @@ void main()
     split() {
       if (this.mass < 1e3)
         return;
-      let mass = randomRange(0.05, 0.1) * this.mass;
-      this.mass -= mass;
+      let size = this.size.x * randomRange(0.3, 0.5);
       const pos = import_zogra_renderer4.plus(import_zogra_renderer4.vec2(randomRange(-5, 5), this.size.y / 4), this.pos);
-      let trailDrop = this.simulator.spawner.spawn(pos.clone(), mass);
+      let trailDrop = this.simulator.spawner.spawn(pos.clone(), size, 0.2);
       trailDrop.spread = import_zogra_renderer4.vec2(1, Math.abs(this.velocity.y) * 6e-3);
       trailDrop.parent = this;
+      this.mass -= trailDrop.mass;
       this.simulator.add(trailDrop);
       this.lastTrailPos = this.pos.clone();
       this.nextTrailDistance = randomRange(20, 30);
     }
     randomMotion() {
-      this.resistance = randomRange(0.3, 1) * this.gravity * 9e3;
+      this.resistance = randomRange(0.3, 1) * this.gravity * 12e3;
       this.shifting = random() * 0.1;
     }
     merge(target) {
@@ -9718,8 +10022,8 @@ void main()
       }
       return void 0;
     }
-    spawn(pos, mass) {
-      return new RainDrop(this.simulator, pos, Math.pow(mass, 1 / 2));
+    spawn(pos, size, density = 1) {
+      return new RainDrop(this.simulator, pos, size, density);
     }
   };
 
