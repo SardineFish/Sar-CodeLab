@@ -105,7 +105,7 @@ export class RainDrop
         let size = this.size.x * randomRange(0.3, 0.5);
         const pos = plus(vec2(randomRange(-5, 5), this.size.y / 4), this.pos);
         let trailDrop = this.simulator.spawner.spawn(pos.clone(), size, 0.2);
-        trailDrop.spread = vec2(1, Math.abs(this.velocity.y) * 0.006);
+        trailDrop.spread = vec2(0.1, Math.abs(this.velocity.y) * 0.006);
         trailDrop.parent = this;
         this.mass -= trailDrop.mass;
         this.simulator.add(trailDrop);

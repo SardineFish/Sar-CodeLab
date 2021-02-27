@@ -9918,6 +9918,7 @@ void main()
       this.projectionMatrix = import_zogra_renderer3.mat4.ortho(0, options.width, 0, options.height, 1, -1);
       this.raindropComposeTex = new import_zogra_renderer3.RenderTexture(options.width, options.height, false, import_texture_format2.TextureFormat.RGBA);
       this.dropletTexture = new import_zogra_renderer3.RenderTexture(options.width, options.height, false, import_texture_format2.TextureFormat.RGBA);
+      this.clearBackground = new import_zogra_renderer3.RenderTexture(options.width, options.height, false);
       this.mistTexture = new import_zogra_renderer3.RenderTexture(options.width, options.height, false, import_texture_format2.TextureFormat.R16F);
       this.blurRenderer = new BlurRenderer(this.renderer);
       this.renderer.setViewProjection(import_zogra_renderer3.mat4.identity(), this.projectionMatrix);
@@ -9942,8 +9943,8 @@ void main()
       this.drawRaindrops(raindrops);
       this.renderer.setRenderTarget(import_render_target.RenderTarget.CanvasTarget);
       this.renderer.clear(import_zogra_renderer3.Color.black);
-      const bluredBackground = this.drawBackground();
-      this.matRefract.background = bluredBackground;
+      this.drawBackground();
+      this.matRefract.background = this.clearBackground;
       this.matRefract.backgroundSize = import_zogra_renderer3.vec4(this.background.width, this.background.height, 1 / this.background.width, 1 / this.background.height);
       this.matRefract.raindropTex = this.raindropComposeTex;
       this.matRefract.dropletTex = this.dropletTexture;
@@ -9958,6 +9959,7 @@ void main()
       this.blurRenderer.init(this.background);
       this.blurRenderer.downSample(this.background, 4);
       let bluredBackground = this.blurRenderer.upSample(3);
+      this.renderer.blit(bluredBackground, this.clearBackground);
       this.renderer.blit(bluredBackground, import_render_target.RenderTarget.CanvasTarget);
       bluredBackground = this.blurRenderer.upSample(4);
       this.matMistBackground.mistTex = this.mistTexture;
@@ -10057,7 +10059,7 @@ void main()
       let size = this.size.x * randomRange(0.3, 0.5);
       const pos = import_zogra_renderer4.plus(import_zogra_renderer4.vec2(randomRange(-5, 5), this.size.y / 4), this.pos);
       let trailDrop = this.simulator.spawner.spawn(pos.clone(), size, 0.2);
-      trailDrop.spread = import_zogra_renderer4.vec2(1, Math.abs(this.velocity.y) * 6e-3);
+      trailDrop.spread = import_zogra_renderer4.vec2(0.1, Math.abs(this.velocity.y) * 6e-3);
       trailDrop.parent = this;
       this.mass -= trailDrop.mass;
       this.simulator.add(trailDrop);
