@@ -11,6 +11,10 @@ uniform sampler2D uRaindropTex;
 uniform sampler2D uDropletTex;
 uniform sampler2D uMistTex;
 uniform vec4 uColor;
+uniform vec2 uSmoothRaindrop;
+uniform vec2 uRefractParams; // (refractBase, refractScale)
+uniform vec4 uLightPos;
+uniform vec4 uDiffuseColor; // (color.rgb, shadowOffset)
 
 out vec4 fragColor;
 
@@ -24,20 +28,20 @@ void main()
 
     vec4 compose = vec4(raindrop.rgb + droplet.rgb - vec3(2.0) * raindrop.rgb * droplet.rgb, max(droplet.a, raindrop.a));
 
-    float mask = smoothstep(0.96, 0.99, compose.a);
+    float mask = smoothstep(uSmoothRaindrop.x, uSmoothRaindrop.y, compose.a);
     
-    vec2 uv = vUV.xy + -(compose.xy - vec2(0.5)) * vec2(compose.b * 0.6 + 0.4);
+    vec2 uv = vUV.xy + -(compose.xy - vec2(0.5)) * vec2(compose.b * uRefractParams.y + uRefractParams.x);
     vec3 normal = normalize(vec3((compose.xy - vec2(0.5)) * vec2(2), 1));
 
     // vec3 lightDir = lightPos - vec3(vUV, 0);
-    vec3 lightDir = vec3(-1, 1, 2);
+    vec3 lightDir = uLightPos.xyz - uLightPos.w * vec3(vUV.xy, 0.0);
     float lambertian = clamp(dot(normalize(lightDir), normal), 0.0, 1.0);
 
 
     // offset = pow(offset, vec2(2));
     vec4 color = texture(uMainTex, uv.xy).rgba;
 
-    color.rgb += vec3((lambertian - 0.8) * 0.3);
+    color.rgb += vec3((lambertian - uDiffuseColor.a) * uDiffuseColor.rgb);
     
 
     // fragColor = vec4(mask, mask, mask, 1);

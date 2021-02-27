@@ -4436,8 +4436,8 @@
     exports.quat = quat2;
     var quat22 = _interopRequireWildcard(require_quat2());
     exports.quat2 = quat22;
-    var vec25 = _interopRequireWildcard(require_vec2());
-    exports.vec2 = vec25;
+    var vec26 = _interopRequireWildcard(require_vec2());
+    exports.vec2 = vec26;
     var vec33 = _interopRequireWildcard(require_vec3());
     exports.vec3 = vec33;
     var vec43 = _interopRequireWildcard(require_vec4());
@@ -4776,7 +4776,7 @@
       }
       get normalized() {
         const m = this.magnitude;
-        return m == 0 ? vec25.zero() : this.clone().div(vec25(m, m));
+        return m == 0 ? vec26.zero() : this.clone().div(vec26(m, m));
       }
       get negative() {
         return this.clone().negate();
@@ -4836,7 +4836,7 @@
       }
       normalize() {
         const m = this.magnitude;
-        return m == 0 ? vec25.zero() : this.clone().div(vec25(m, m));
+        return m == 0 ? vec26.zero() : this.clone().div(vec26(m, m));
       }
       inverse() {
         this[0] = 1 / this[0];
@@ -4852,7 +4852,7 @@
         return this.x * b.y - this.y * b.x;
       }
       clone() {
-        return vec25(this[0], this[1]);
+        return vec26(this[0], this[1]);
       }
       toVec3(z = 0) {
         return vec3_1.vec3(this[0], this[1], z);
@@ -4873,21 +4873,21 @@
       }
     };
     exports.Vector2 = Vector23;
-    function vec25(x, y = x) {
+    function vec26(x, y = x) {
       return new Vector23(x, y);
     }
-    exports.vec2 = vec25;
-    vec25.from = (src) => {
+    exports.vec2 = vec26;
+    vec26.from = (src) => {
       const [x = 0, y = 0] = src;
-      return vec25(x, y);
+      return vec26(x, y);
     };
-    vec25.floor = (v) => vec25(Math.floor(v.x), Math.floor(v.y));
-    vec25.zero = Vector23.zero;
-    vec25.one = Vector23.one;
-    vec25.left = Vector23.left;
-    vec25.right = Vector23.right;
-    vec25.down = Vector23.down;
-    vec25.up = Vector23.up;
+    vec26.floor = (v) => vec26(Math.floor(v.x), Math.floor(v.y));
+    vec26.zero = Vector23.zero;
+    vec26.one = Vector23.one;
+    vec26.left = Vector23.left;
+    vec26.right = Vector23.right;
+    vec26.down = Vector23.down;
+    vec26.up = Vector23.up;
   });
 
   // zogra-renderer/dist/types/color.js
@@ -9750,13 +9750,14 @@ void main()
       if (this.steps[0].width !== texture.width || this.steps[0].height !== texture.height)
         this.steps[0].resize(texture.width, texture.height, import_zogra_renderer.TextureResizing.Discard);
     }
-    blur(texture, iteration = 4) {
+    blur(texture, iteration = 4, output = this.steps[0]) {
       if (!this.steps[0])
         this.steps[0] = new import_zogra_renderer.RenderTexture(texture.width, texture.height, false, texture.format, texture.filterMode);
+      output = output || this.steps[0];
       if (this.steps[0].width !== texture.width || this.steps[0].height !== texture.height)
         this.steps[0].resize(texture.width, texture.height, import_zogra_renderer.TextureResizing.Discard);
       this.downSample(texture, iteration);
-      return this.upSample(iteration);
+      return this.upSample(iteration, output);
     }
     downSample(input, iteration) {
       for (let i = 1; i <= iteration; i++) {
@@ -9818,16 +9819,16 @@ void main()
   var raindrop_vert_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec3 aPos;\r\nin vec4 aColor;\r\nin vec2 aUV;\r\nin vec3 aNormal;\r\n\r\nin float aSize;\r\nin mat4 aModelMatrix;\r\n\r\nuniform mat4 uTransformM;\r\nuniform mat4 uTransformVP;\r\nuniform mat4 uTransformMVP;\r\nuniform mat4 uTransformM_IT;\r\n\r\nout vec4 vColor;\r\nout vec4 vPos;\r\nout vec2 vUV;\r\nout vec3 vNormal;\r\nout vec3 vWorldPos;\r\nout float vSize;\r\n\r\nvoid main()\r\n{\r\n    mat4 mvp = uTransformVP * aModelMatrix;\r\n    gl_Position = mvp * vec4(aPos, 1);\r\n    vPos = gl_Position;\r\n    vColor = aColor;\r\n    vUV = aUV;\r\n    vNormal = (uTransformM_IT *  vec4(aNormal, 0)).xyz;\r\n    vWorldPos = (uTransformM * vec4(aPos, 1)).xyz;\r\n    vSize = aSize;\r\n}";
 
   // src/shader/reflect.glsl
-  var reflect_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uBackgroundSize; // (x, y, 1/x, 1/y)\r\nuniform sampler2D uRaindropTex;\r\nuniform sampler2D uDropletTex;\r\nuniform sampler2D uMistTex;\r\nuniform vec4 uColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    // vec3 lightPos = vec3(0.5, 1, 1);\r\n\r\n    vec4 raindrop = texture(uRaindropTex, vUV.xy).rgba;\r\n    vec4 droplet = texture(uDropletTex, vUV.xy).rgba;\r\n    float mist = texture(uMistTex, vUV.xy).r;\r\n\r\n    vec4 compose = vec4(raindrop.rgb + droplet.rgb - vec3(2.0) * raindrop.rgb * droplet.rgb, max(droplet.a, raindrop.a));\r\n\r\n    float mask = smoothstep(0.96, 0.99, compose.a);\r\n    \r\n    vec2 uv = vUV.xy + -(compose.xy - vec2(0.5)) * vec2(compose.b * 0.6 + 0.4);\r\n    vec3 normal = normalize(vec3((compose.xy - vec2(0.5)) * vec2(2), 1));\r\n\r\n    // vec3 lightDir = lightPos - vec3(vUV, 0);\r\n    vec3 lightDir = vec3(-1, 1, 2);\r\n    float lambertian = clamp(dot(normalize(lightDir), normal), 0.0, 1.0);\r\n\r\n\r\n    // offset = pow(offset, vec2(2));\r\n    vec4 color = texture(uMainTex, uv.xy).rgba;\r\n\r\n    color.rgb += vec3((lambertian - 0.8) * 0.3);\r\n    \r\n\r\n    // fragColor = vec4(mask, mask, mask, 1);\r\n    // color = color * vec3(uColor);\r\n\r\n    fragColor = vec4(color.rgb, mask);// vec4(color.rgb, mask);\r\n}";
+  var reflect_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uBackgroundSize; // (x, y, 1/x, 1/y)\r\nuniform sampler2D uRaindropTex;\r\nuniform sampler2D uDropletTex;\r\nuniform sampler2D uMistTex;\r\nuniform vec4 uColor;\r\nuniform vec2 uSmoothRaindrop;\r\nuniform vec2 uRefractParams; // (refractBase, refractScale)\r\nuniform vec4 uLightPos;\r\nuniform vec4 uDiffuseColor; // (color.rgb, shadowOffset)\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    // vec3 lightPos = vec3(0.5, 1, 1);\r\n\r\n    vec4 raindrop = texture(uRaindropTex, vUV.xy).rgba;\r\n    vec4 droplet = texture(uDropletTex, vUV.xy).rgba;\r\n    float mist = texture(uMistTex, vUV.xy).r;\r\n\r\n    vec4 compose = vec4(raindrop.rgb + droplet.rgb - vec3(2.0) * raindrop.rgb * droplet.rgb, max(droplet.a, raindrop.a));\r\n\r\n    float mask = smoothstep(uSmoothRaindrop.x, uSmoothRaindrop.y, compose.a);\r\n    \r\n    vec2 uv = vUV.xy + -(compose.xy - vec2(0.5)) * vec2(compose.b * uRefractParams.y + uRefractParams.x);\r\n    vec3 normal = normalize(vec3((compose.xy - vec2(0.5)) * vec2(2), 1));\r\n\r\n    // vec3 lightDir = lightPos - vec3(vUV, 0);\r\n    vec3 lightDir = uLightPos.xyz - uLightPos.w * vec3(vUV.xy, 0.0);\r\n    float lambertian = clamp(dot(normalize(lightDir), normal), 0.0, 1.0);\r\n\r\n\r\n    // offset = pow(offset, vec2(2));\r\n    vec4 color = texture(uMainTex, uv.xy).rgba;\r\n\r\n    color.rgb += vec3((lambertian - uDiffuseColor.a) * uDiffuseColor.rgb);\r\n    \r\n\r\n    // fragColor = vec4(mask, mask, mask, 1);\r\n    // color = color * vec3(uColor);\r\n\r\n    fragColor = vec4(color.rgb, mask);// vec4(color.rgb, mask);\r\n}";
 
   // src/shader/droplet.glsl
   var droplet_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.rgb *= color.a;\r\n    fragColor = vec4(color.rg, 0.2, color.a);\r\n}";
 
   // src/shader/erase.glsl
-  var erase_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.a = smoothstep(0.93, 0.99, color.a);\r\n    fragColor = color.rgba;\r\n}";
+  var erase_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uColor;\r\nuniform vec2 uEraserSmooth;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.a = smoothstep(uEraserSmooth.x, uEraserSmooth.y, color.a);\r\n    fragColor = color.rgba;\r\n}";
 
   // src/shader/bg-mist.glsl
-  var bg_mist_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform sampler2D uMistTex;\r\nuniform float uMistAlpha;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.rgb += vec3(uMistAlpha);\r\n    color.a = texture(uMistTex, vUV.xy).r;\r\n    fragColor = color.rgba;\r\n}";
+  var bg_mist_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform sampler2D uMistTex;\r\nuniform vec4 uMistColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.rgb += vec3(uMistColor);\r\n    color.a = texture(uMistTex, vUV.xy).r * uMistColor.a;\r\n    fragColor = color.rgba;\r\n}";
 
   // src/renderer.ts
   var import_utils = __toModule(require_utils());
@@ -9881,6 +9882,10 @@ void main()
       this.raindropTex = null;
       this.dropletTex = null;
       this.mistTex = null;
+      this.smoothRaindrop = import_zogra_renderer3.vec2(0.95, 1);
+      this.refractParams = import_zogra_renderer3.vec2(0.4, 0.6);
+      this.lightPos = import_zogra_renderer3.vec4(0.5, 0.5, 2, 1);
+      this.diffuseLight = new import_zogra_renderer3.Color(0.3, 0.3, 0.3, 0.8);
     }
   };
   __decorate([
@@ -9898,25 +9903,45 @@ void main()
   __decorate([
     import_zogra_renderer3.shaderProp("uMistTex", "tex2d")
   ], RaindropCompose.prototype, "mistTex", 2);
-  var RaindropErase = import_zogra_renderer3.SimpleTexturedMaterial(new import_zogra_renderer3.Shader(d_vert_default, erase_default, {
+  __decorate([
+    import_zogra_renderer3.shaderProp("uSmoothRaindrop", "vec2")
+  ], RaindropCompose.prototype, "smoothRaindrop", 2);
+  __decorate([
+    import_zogra_renderer3.shaderProp("uRefractParams", "vec2")
+  ], RaindropCompose.prototype, "refractParams", 2);
+  __decorate([
+    import_zogra_renderer3.shaderProp("uLightPos", "vec4")
+  ], RaindropCompose.prototype, "lightPos", 2);
+  __decorate([
+    import_zogra_renderer3.shaderProp("uDiffuseColor", "color")
+  ], RaindropCompose.prototype, "diffuseLight", 2);
+  var RaindropErase = class extends import_zogra_renderer3.SimpleTexturedMaterial(new import_zogra_renderer3.Shader(d_vert_default, erase_default, {
     blendRGB: [import_zogra_renderer3.Blending.Zero, import_zogra_renderer3.Blending.OneMinusSrcAlpha],
     blendAlpha: [import_zogra_renderer3.Blending.Zero, import_zogra_renderer3.Blending.OneMinusSrcAlpha]
-  }));
-  var TexturedMaterial = import_zogra_renderer3.SimpleTexturedMaterial(new import_zogra_renderer3.Shader(d_vert_default, d_frag_default, {
-    blend: [import_zogra_renderer3.Blending.SrcAlpha, import_zogra_renderer3.Blending.OneMinusSrcAlpha]
+  })) {
+    constructor() {
+      super(...arguments);
+      this.eraserSize = import_zogra_renderer3.vec2(0.93, 1);
+    }
+  };
+  __decorate([
+    import_zogra_renderer3.shaderProp("uEraserSmooth", "vec2")
+  ], RaindropErase.prototype, "eraserSize", 2);
+  var MistAccumulate = import_zogra_renderer3.SimpleTexturedMaterial(new import_zogra_renderer3.Shader(d_vert_default, d_frag_default, {
+    blend: [import_zogra_renderer3.Blending.One, import_zogra_renderer3.Blending.One]
   }));
   var MistBackground = class extends import_zogra_renderer3.SimpleTexturedMaterial(new import_zogra_renderer3.Shader(d_vert_default, bg_mist_default, {
     blend: [import_zogra_renderer3.Blending.SrcAlpha, import_zogra_renderer3.Blending.OneMinusSrcAlpha]
   })) {
     constructor() {
       super(...arguments);
-      this.mistAlpha = 0.01;
+      this.mistColor = new import_zogra_renderer3.Color(0.01, 0.01, 0.01, 1);
       this.mistTex = null;
     }
   };
   __decorate([
-    import_zogra_renderer3.shaderProp("uMistAlpha", "float")
-  ], MistBackground.prototype, "mistAlpha", 2);
+    import_zogra_renderer3.shaderProp("uMistColor", "color")
+  ], MistBackground.prototype, "mistColor", 2);
   __decorate([
     import_zogra_renderer3.shaderProp("uMistTex", "tex2d")
   ], MistBackground.prototype, "mistTex", 2);
@@ -9928,7 +9953,7 @@ void main()
       this.matRaindrop = new RaindropMaterial();
       this.matDroplet = new DropletMaterial();
       this.matRaindropErase = new RaindropErase();
-      this.matMist = new TexturedMaterial();
+      this.matMist = new MistAccumulate();
       this.matMistBackground = new MistBackground();
       this.mesh = import_zogra_renderer3.MeshBuilder.quad();
       this.raindropBuffer = new import_zogra_renderer3.RenderBuffer({
@@ -9945,8 +9970,8 @@ void main()
       this.raindropComposeTex = new import_zogra_renderer3.RenderTexture(options.width, options.height, false);
       this.background = new import_zogra_renderer3.RenderTexture(options.width, options.height, false);
       this.dropletTexture = new import_zogra_renderer3.RenderTexture(options.width, options.height, false);
-      this.clearBackground = new import_zogra_renderer3.RenderTexture(options.width, options.height, false);
       this.blurryBackground = new import_zogra_renderer3.RenderTexture(options.width, options.height, false);
+      this.mistBackground = new import_zogra_renderer3.RenderTexture(options.width, options.height, false);
       this.mistTexture = new import_zogra_renderer3.RenderTexture(options.width, options.height, false, import_texture_format2.TextureFormat.R16F);
       this.blurRenderer = new BlurRenderer(this.renderer);
       this.renderer.setViewProjection(import_zogra_renderer3.mat4.identity(), this.projectionMatrix);
@@ -9970,10 +9995,7 @@ void main()
       const [srcRect, dstRect] = import_zogra_renderer3.Utils.imageResize(this.originalBackground.size, this.background.size, import_utils.ImageSizing.Cover);
       this.renderer.blit(this.originalBackground, this.background, this.renderer.assets.materials.blitCopy, srcRect, dstRect);
       this.background.generateMipmap();
-      this.blurRenderer.init(this.background);
-      this.blurRenderer.downSample(this.background, 4);
-      this.blurRenderer.upSample(3, this.clearBackground);
-      this.blurRenderer.upSample(4, this.blurryBackground);
+      this.blurBackground();
     }
     resize() {
       this.renderer.setSize(this.options.width, this.options.height);
@@ -9982,40 +10004,66 @@ void main()
       this.raindropComposeTex.resize(this.options.width, this.options.height);
       this.background.resize(this.options.width, this.options.height);
       this.dropletTexture.resize(this.options.width, this.options.height);
-      this.clearBackground.resize(this.options.width, this.options.height);
       this.blurryBackground.resize(this.options.width, this.options.height);
+      this.mistBackground.resize(this.options.width, this.options.height);
       this.mistTexture.resize(this.options.width, this.options.height);
       const [srcRect, dstRect] = import_zogra_renderer3.Utils.imageResize(this.originalBackground.size, this.background.size, import_utils.ImageSizing.Cover);
       this.renderer.blit(this.originalBackground, this.background, this.renderer.assets.materials.blitCopy, srcRect, dstRect);
       this.background.generateMipmap();
-      this.blurRenderer.init(this.background);
-      this.blurRenderer.downSample(this.background, 4);
-      this.blurRenderer.upSample(3, this.clearBackground);
-      this.blurRenderer.upSample(4, this.blurryBackground);
+      this.blurBackground();
     }
-    render(raindrops) {
+    resetOptions() {
+    }
+    render(raindrops, time) {
       this.drawDroplet();
-      this.drawMist();
+      this.drawMist(time.dt);
       this.drawRaindrops(raindrops);
       this.renderer.setRenderTarget(import_render_target.RenderTarget.CanvasTarget);
       this.renderer.clear(import_zogra_renderer3.Color.black);
       this.drawBackground();
-      this.matRefract.background = this.clearBackground;
+      this.matRefract.background = this.blurryBackground;
       this.matRefract.backgroundSize = import_zogra_renderer3.vec4(this.options.width, this.options.height, 1 / this.options.width, 1 / this.options.height);
       this.matRefract.raindropTex = this.raindropComposeTex;
       this.matRefract.dropletTex = this.dropletTexture;
       this.matRefract.mistTex = this.mistTexture;
+      this.matRefract.smoothRaindrop = import_zogra_renderer3.vec2(...this.options.smoothRaindrop);
+      this.matRefract.refractParams = import_zogra_renderer3.vec2(this.options.refractBase, this.options.refractScale);
+      this.matRefract.lightPos = import_zogra_renderer3.vec4(...this.options.raindropLightPos);
+      this.matRefract.diffuseLight = new import_zogra_renderer3.Color(...this.options.raindropDiffuseLight, this.options.raindropShadowOffset);
       this.renderer.blit(null, import_render_target.RenderTarget.CanvasTarget, this.matRefract);
     }
-    drawMist() {
-      this.matMist.color.a = 4e-3;
+    blurBackground() {
+      if (!this.options.mist) {
+        this.blurRenderer.blur(this.background, this.options.backgroundBlurSteps, this.blurryBackground);
+      } else {
+        this.blurRenderer.init(this.background);
+        this.blurRenderer.downSample(this.background, Math.max(this.options.backgroundBlurSteps, this.options.mistBlurStep));
+        if (this.options.backgroundBlurSteps === this.options.mistBlurStep) {
+          this.blurRenderer.upSample(this.options.backgroundBlurSteps, this.blurryBackground);
+          this.renderer.blit(this.blurryBackground, this.mistBackground);
+        } else if (this.options.mistBlurStep > this.options.backgroundBlurSteps) {
+          this.blurRenderer.upSample(this.options.backgroundBlurSteps, this.blurryBackground);
+          this.blurRenderer.upSample(this.options.mistBlurStep, this.mistBackground);
+        } else {
+          this.blurRenderer.upSample(this.options.mistBlurStep, this.mistBackground);
+          this.blurRenderer.upSample(this.options.backgroundBlurSteps, this.blurryBackground);
+        }
+      }
+    }
+    drawMist(dt) {
+      if (!this.options.mist)
+        return;
+      this.matMist.color.r = dt / this.options.mistTime;
       this.renderer.blit(this.renderer.assets.textures.default, this.mistTexture, this.matMist);
     }
     drawBackground() {
-      this.renderer.blit(this.clearBackground, import_render_target.RenderTarget.CanvasTarget);
-      this.matMistBackground.mistTex = this.mistTexture;
-      this.matMistBackground.texture = this.blurryBackground;
-      this.renderer.blit(this.blurryBackground, import_render_target.RenderTarget.CanvasTarget, this.matMistBackground);
+      this.renderer.blit(this.blurryBackground, import_render_target.RenderTarget.CanvasTarget);
+      if (this.options.mist) {
+        this.matMistBackground.mistTex = this.mistTexture;
+        this.matMistBackground.texture = this.mistBackground;
+        this.matMistBackground.mistColor = new import_zogra_renderer3.Color(...this.options.mistColor);
+        this.renderer.blit(this.mistBackground, import_render_target.RenderTarget.CanvasTarget, this.matMistBackground);
+      }
     }
     drawRaindrops(raindrops) {
       if (raindrops.length > this.raindropBuffer.length)
@@ -10029,8 +10077,10 @@ void main()
         this.raindropBuffer[i].size[0] = raindrop.size.x / 100;
       }
       this.renderer.drawMeshInstance(this.mesh, this.raindropBuffer, this.matRaindrop, raindrops.length);
+      this.matRaindropErase.eraserSize = import_zogra_renderer3.vec2(...this.options.raindropEraserSize);
       this.renderer.blit(this.raindropComposeTex, this.dropletTexture, this.matRaindropErase);
-      this.renderer.blit(this.raindropComposeTex, this.mistTexture, this.matRaindropErase);
+      if (this.options.mist)
+        this.renderer.blit(this.raindropComposeTex, this.mistTexture, this.matRaindropErase);
     }
     drawDroplet() {
       this.renderer.setRenderTarget(this.dropletTexture);
@@ -10315,7 +10365,20 @@ void main()
         shrinkRate: 0.01,
         velocitySpread: 0.3,
         evaporate: 10,
-        xShifting: [0, 0.1]
+        xShifting: [0, 0.1],
+        backgroundBlurSteps: 3,
+        mist: true,
+        mistColor: [0.01, 0.01, 0.01, 1],
+        mistBlurStep: 4,
+        mistTime: 10,
+        smoothRaindrop: [0.96, 1],
+        refractBase: 0.4,
+        refractScale: 0.6,
+        raindropCompose: "smoother",
+        raindropLightPos: [-1, 1, 2, 0],
+        raindropDiffuseLight: [0.3, 0.3, 0.3],
+        raindropShadowOffset: 0.8,
+        raindropEraserSize: [0.93, 1]
       };
       this.options = {...defaultOptions, ...options};
       this.simulator = new RaindropSimulator(this.options);
@@ -10344,7 +10407,7 @@ void main()
     }
     update(time) {
       this.simulator.update(time);
-      this.renderer.render(this.simulator.raindrops);
+      this.renderer.render(this.simulator.raindrops, time);
     }
   };
   window.SarRaindropFX = RaindropFX;

@@ -40,6 +40,20 @@ export class RaindropFX
             velocitySpread: 0.3,
             evaporate: 10,
             xShifting: [0, 0.1],
+
+            backgroundBlurSteps: 3,
+            mist: true,
+            mistColor: [0.01, 0.01, 0.01, 1],
+            mistBlurStep: 4,
+            mistTime: 10,
+            smoothRaindrop: [0.96, 1.0],
+            refractBase: 0.4,
+            refractScale: 0.6,
+            raindropCompose: "smoother",
+            raindropLightPos: [-1, 1, 2, 0],
+            raindropDiffuseLight: [0.3, 0.3, 0.3],
+            raindropShadowOffset: 0.8,
+            raindropEraserSize: [0.93, 1.0],
         };
         this.options = { ...defaultOptions, ...options };
 
@@ -81,7 +95,7 @@ export class RaindropFX
     {
         this.simulator.update(time);
 
-        this.renderer.render(this.simulator.raindrops);
+        this.renderer.render(this.simulator.raindrops, time);
     }
 
 }

@@ -38,16 +38,18 @@ export class BlurRenderer
             this.steps[0].resize(texture.width, texture.height, TextureResizing.Discard);
     }
 
-    blur(texture: Texture, iteration: number = 4)
+    blur(texture: Texture, iteration: number = 4, output = this.steps[0])
     {
         if (!this.steps[0])
-            this.steps[0] = new RenderTexture(texture.width, texture.height, false, texture.format, texture.filterMode);
+            this.steps[0] = new RenderTexture(texture.width, texture.height, false, texture.format, texture.filterMode);   
+        output = output || this.steps[0];
+
         if (this.steps[0].width !== texture.width || this.steps[0].height !== texture.height)
             this.steps[0].resize(texture.width, texture.height, TextureResizing.Discard);
         
         this.downSample(texture, iteration);
 
-        return this.upSample(iteration);
+        return this.upSample(iteration, output);
     }
 
     downSample(input: Texture, iteration: number)
