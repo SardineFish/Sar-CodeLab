@@ -1,4 +1,4 @@
-import { div, FilterMode, MaterialFromShader, mul, RenderTexture, Shader, shaderProp, Texture, Texture2D, TextureResizing, vec2, vec4, ZograRenderer } from "zogra-renderer";
+import { div, FilterMode, MaterialFromShader, mul, RenderTexture, Shader, shaderProp, Texture, Texture2D, TextureResizing, vec2, vec4, WrapMode, ZograRenderer } from "zogra-renderer";
 import { TextureFormat } from "zogra-renderer/dist/core/texture-format";
 import vert from "./shader/2d-vert.glsl";
 import frag from "./shader/blur.glsl";
@@ -29,7 +29,11 @@ export class BlurRenderer
     init(texture: Texture)
     {
         if (!this.steps[0])
+        {
             this.steps[0] = new RenderTexture(texture.width, texture.height, false, texture.format, texture.filterMode);
+            this.steps[0].wrapMode = WrapMode.Clamp;
+            this.steps[0].updateParameters();
+        }
         if (this.steps[0].width !== texture.width || this.steps[0].height !== texture.height)
             this.steps[0].resize(texture.width, texture.height, TextureResizing.Discard);
     }
@@ -52,7 +56,11 @@ export class BlurRenderer
         {
             const downSize = vec2.floor(div(input.size, vec2(2)));
             if (!this.steps[i])
+            {
                 this.steps[i] = new RenderTexture(downSize.x, downSize.y, false, TextureFormat.RGBA, FilterMode.Linear);
+                this.steps[i].wrapMode = WrapMode.Clamp;
+                this.steps[i].updateParameters();
+            }
 
             const output = this.steps[i];
             if (output.width !== downSize.x || output.height !== downSize.y)
@@ -73,7 +81,11 @@ export class BlurRenderer
         {
             const upSize = mul(input.size, vec2(2));
             if (!this.steps[i])
+            {
                 this.steps[i] = new RenderTexture(upSize.x, upSize.y, false, TextureFormat.RGBA, FilterMode.Linear);
+                this.steps[i].wrapMode = WrapMode.Clamp;
+                this.steps[i].updateParameters();
+            }
 
             const output = this.steps[i];
 

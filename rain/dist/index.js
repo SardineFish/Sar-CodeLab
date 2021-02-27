@@ -6796,12 +6796,12 @@ void main()
       FilterMode3[FilterMode3["Linear"] = WebGL2RenderingContext.LINEAR] = "Linear";
       FilterMode3[FilterMode3["Nearest"] = WebGL2RenderingContext.NEAREST] = "Nearest";
     })(FilterMode2 = exports.FilterMode || (exports.FilterMode = {}));
-    var WrapMode2;
-    (function(WrapMode3) {
-      WrapMode3[WrapMode3["Repeat"] = WebGL2RenderingContext.REPEAT] = "Repeat";
-      WrapMode3[WrapMode3["Clamp"] = WebGL2RenderingContext.CLAMP_TO_EDGE] = "Clamp";
-      WrapMode3[WrapMode3["Mirror"] = WebGL2RenderingContext.MIRRORED_REPEAT] = "Mirror";
-    })(WrapMode2 = exports.WrapMode || (exports.WrapMode = {}));
+    var WrapMode3;
+    (function(WrapMode4) {
+      WrapMode4[WrapMode4["Repeat"] = WebGL2RenderingContext.REPEAT] = "Repeat";
+      WrapMode4[WrapMode4["Clamp"] = WebGL2RenderingContext.CLAMP_TO_EDGE] = "Clamp";
+      WrapMode4[WrapMode4["Mirror"] = WebGL2RenderingContext.MIRRORED_REPEAT] = "Mirror";
+    })(WrapMode3 = exports.WrapMode || (exports.WrapMode = {}));
     var Texture3 = class extends asset_1.Asset {
     };
     exports.Texture = Texture3;
@@ -6819,7 +6819,7 @@ void main()
       constructor(width, height, format = texture_format_1.TextureFormat.RGBA, filterMode = FilterMode2.Linear, ctx = global_1.GlobalContext()) {
         super();
         this.autoMipmap = true;
-        this.wrapMode = WrapMode2.Repeat;
+        this.wrapMode = WrapMode3.Repeat;
         this._glTex = null;
         this.initialized = false;
         this.created = false;
@@ -6865,6 +6865,7 @@ void main()
         newTex.wrapMode = this.wrapMode;
         newTex.autoMipmap = this.autoMipmap;
         newTex.create();
+        newTex.updateParameters();
         const prevSize = this.size;
         this.width = width;
         this.height = height;
@@ -6887,19 +6888,25 @@ void main()
         gl.bindTexture(gl.TEXTURE_2D, this._glTex);
         gl.generateMipmap(gl.TEXTURE_2D);
       }
-      create() {
-        if (this.created)
-          return;
-        this.tryInit(true);
+      updateParameters() {
+        this.create();
         const gl = this.ctx.gl;
         gl.bindTexture(gl.TEXTURE_2D, this._glTex);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.filterMode);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.filterMode);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.wrapMode);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.wrapMode);
+      }
+      create() {
+        if (this.created)
+          return;
+        this.tryInit(true);
+        const gl = this.ctx.gl;
+        gl.bindTexture(gl.TEXTURE_2D, this._glTex);
         const [internalFormat, format, type] = texture_format_1.mapGLFormat(gl, this.format);
         gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, this.width, this.height, 0, format, type, null);
         this.created = true;
+        this.updateParameters();
       }
       setData(pixels) {
         this.create();
@@ -9548,6 +9555,7 @@ void main()
             const tex = new core_1.Texture2D(opt.width, opt.height, opt.format, opt.filterMode, ctx);
             tex.autoMipmap = opt.mipmap;
             tex.wrapMode = opt.wrapMpde;
+            tex.updateParameters();
             tex.setData(img);
             resolve(tex);
           };
@@ -9709,8 +9717,11 @@ void main()
       this.renderer = renderer;
     }
     init(texture) {
-      if (!this.steps[0])
+      if (!this.steps[0]) {
         this.steps[0] = new import_zogra_renderer.RenderTexture(texture.width, texture.height, false, texture.format, texture.filterMode);
+        this.steps[0].wrapMode = import_zogra_renderer.WrapMode.Clamp;
+        this.steps[0].updateParameters();
+      }
       if (this.steps[0].width !== texture.width || this.steps[0].height !== texture.height)
         this.steps[0].resize(texture.width, texture.height, import_zogra_renderer.TextureResizing.Discard);
     }
@@ -9725,8 +9736,11 @@ void main()
     downSample(input, iteration) {
       for (let i = 1; i <= iteration; i++) {
         const downSize = import_zogra_renderer.vec2.floor(import_zogra_renderer.div(input.size, import_zogra_renderer.vec2(2)));
-        if (!this.steps[i])
+        if (!this.steps[i]) {
           this.steps[i] = new import_zogra_renderer.RenderTexture(downSize.x, downSize.y, false, import_texture_format.TextureFormat.RGBA, import_zogra_renderer.FilterMode.Linear);
+          this.steps[i].wrapMode = import_zogra_renderer.WrapMode.Clamp;
+          this.steps[i].updateParameters();
+        }
         const output = this.steps[i];
         if (output.width !== downSize.x || output.height !== downSize.y)
           output.resize(downSize.x, downSize.y, import_zogra_renderer.TextureResizing.Discard);
@@ -9741,8 +9755,11 @@ void main()
       let input = this.steps[iteration];
       for (let i = iteration - 1; i >= 0; i--) {
         const upSize = import_zogra_renderer.mul(input.size, import_zogra_renderer.vec2(2));
-        if (!this.steps[i])
+        if (!this.steps[i]) {
           this.steps[i] = new import_zogra_renderer.RenderTexture(upSize.x, upSize.y, false, import_texture_format.TextureFormat.RGBA, import_zogra_renderer.FilterMode.Linear);
+          this.steps[i].wrapMode = import_zogra_renderer.WrapMode.Clamp;
+          this.steps[i].updateParameters();
+        }
         const output = this.steps[i];
         this.mateiralBlur.texture = input;
         this.mateiralBlur.textureSize = import_zogra_renderer.vec4(input.width, input.height, 1 / input.width, 1 / input.height);
