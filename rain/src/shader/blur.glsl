@@ -7,12 +7,13 @@ in vec2 vUV;
 
 uniform sampler2D uMainTex;
 uniform vec4 uTexSize; // (w, h, 1/w, 1/h)
+uniform float uSampleOffset;
 
 out vec4 fragColor;
 
 void main()
 {
-    vec2 delta = vec2(-1, 1);
+    vec2 delta = vec2(-uSampleOffset, uSampleOffset);
     vec4 color = 
       texture(uMainTex, clamp(vUV.xy + uTexSize.zw * delta.xx, vec2(0), vec2(1)))
     + texture(uMainTex, clamp(vUV.xy + uTexSize.zw * delta.yx, vec2(0), vec2(1)))

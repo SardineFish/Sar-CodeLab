@@ -9,6 +9,7 @@ uniform sampler2D uMainTex;
 uniform vec4 uBackgroundSize; // (x, y, 1/x, 1/y)
 uniform sampler2D uRaindropTex;
 uniform sampler2D uDropletTex;
+uniform sampler2D uMistTex;
 uniform vec4 uColor;
 
 out vec4 fragColor;
@@ -19,6 +20,7 @@ void main()
 
     vec4 raindrop = texture(uRaindropTex, vUV.xy).rgba;
     vec4 droplet = texture(uDropletTex, vUV.xy).rgba;
+    float mist = texture(uMistTex, vUV.xy).r;
 
     vec4 compose = vec4(raindrop.rgb + droplet.rgb - vec3(2.0) * raindrop.rgb * droplet.rgb, max(droplet.a, raindrop.a));
 

@@ -10,12 +10,15 @@ class MaterialBlur extends MaterialFromShader(new Shader(vert, frag))
 
     @shaderProp("uTexSize", "vec4")
     textureSize: vec4 = vec4.one();
+
+    @shaderProp("uSampleOffset", "float")
+    sampleOffset: number = 1;
 }
 
 export class BlurRenderer
 {
     renderer: ZograRenderer;
-    tempTextures: RenderTexture[] = [];
+    steps: RenderTexture[] = [];
     mateiralBlur = new MaterialBlur();
 
     constructor(renderer: ZograRenderer)
@@ -23,44 +26,63 @@ export class BlurRenderer
         this.renderer = renderer;
     }
 
+    init(texture: Texture)
+    {
+        if (!this.steps[0])
+            this.steps[0] = new RenderTexture(texture.width, texture.height, false, texture.format, texture.filterMode);
+        if (this.steps[0].width !== texture.width || this.steps[0].height !== texture.height)
+            this.steps[0].resize(texture.width, texture.height, TextureResizing.Discard);
+    }
+
     blur(texture: Texture, iteration: number = 4)
     {
-        let input = texture;
-        if (!this.tempTextures[0])
-            this.tempTextures[0] = new RenderTexture(texture.width, texture.height, false, texture.format, texture.filterMode);
-        if (this.tempTextures[0].width !== texture.width || this.tempTextures[0].height !== texture.height)
-            this.tempTextures[0].resize(texture.width, texture.height, TextureResizing.Discard);
+        if (!this.steps[0])
+            this.steps[0] = new RenderTexture(texture.width, texture.height, false, texture.format, texture.filterMode);
+        if (this.steps[0].width !== texture.width || this.steps[0].height !== texture.height)
+            this.steps[0].resize(texture.width, texture.height, TextureResizing.Discard);
         
+        this.downSample(texture, iteration);
+
+        return this.upSample(iteration);
+    }
+
+    downSample(input: Texture, iteration: number)
+    {
         for (let i = 1; i <= iteration; i++)
         {
             const downSize = vec2.floor(div(input.size, vec2(2)));
-            if (!this.tempTextures[i])
-                this.tempTextures[i] = new RenderTexture(downSize.x, downSize.y, false, TextureFormat.RGBA, FilterMode.Linear);
-            
-            const output = this.tempTextures[i];
+            if (!this.steps[i])
+                this.steps[i] = new RenderTexture(downSize.x, downSize.y, false, TextureFormat.RGBA, FilterMode.Linear);
+
+            const output = this.steps[i];
             if (output.width !== downSize.x || output.height !== downSize.y)
                 output.resize(downSize.x, downSize.y, TextureResizing.Discard);
 
             this.mateiralBlur.texture = input;
             this.mateiralBlur.textureSize = vec4(input.width, input.height, 1 / input.width, 1 / input.height);
+            this.mateiralBlur.sampleOffset = 1;
             this.renderer.blit(input, output, this.mateiralBlur);
             input = output;
         }
+    }
 
+    upSample(iteration: number)
+    {
+        let input = this.steps[iteration];
         for (let i = iteration - 1; i >= 0; i--)
         {
             const upSize = mul(input.size, vec2(2));
-            if (!this.tempTextures[i])
-                this.tempTextures[i] = new RenderTexture(upSize.x, upSize.y, false, TextureFormat.RGBA, FilterMode.Linear);
-            
-            const output = this.tempTextures[i];
-            
+            if (!this.steps[i])
+                this.steps[i] = new RenderTexture(upSize.x, upSize.y, false, TextureFormat.RGBA, FilterMode.Linear);
+
+            const output = this.steps[i];
+
             this.mateiralBlur.texture = input;
             this.mateiralBlur.textureSize = vec4(input.width, input.height, 1 / input.width, 1 / input.height);
+            this.mateiralBlur.sampleOffset = 1;
             this.renderer.blit(input, output, this.mateiralBlur);
             input = output;
         }
-
         return input;
     }
 }
