@@ -2413,7 +2413,7 @@
     exports.normalize = normalize;
     exports.dot = dot;
     exports.cross = cross;
-    exports.lerp = lerp;
+    exports.lerp = lerp2;
     exports.hermite = hermite;
     exports.bezier = bezier;
     exports.random = random2;
@@ -2629,7 +2629,7 @@
       out[2] = ax * by - ay * bx;
       return out;
     }
-    function lerp(out, a, b, t) {
+    function lerp2(out, a, b, t) {
       var ax = a[0];
       var ay = a[1];
       var az = a[2];
@@ -2853,7 +2853,7 @@
     exports.normalize = normalize;
     exports.dot = dot;
     exports.cross = cross;
-    exports.lerp = lerp;
+    exports.lerp = lerp2;
     exports.random = random2;
     exports.transformMat4 = transformMat4;
     exports.transformQuat = transformQuat;
@@ -3090,7 +3090,7 @@
       out[3] = -(G * D) + H * B - I * A;
       return out;
     }
-    function lerp(out, a, b, t) {
+    function lerp2(out, a, b, t) {
       var ax = a[0];
       var ay = a[1];
       var az = a[2];
@@ -3526,8 +3526,8 @@
     exports.scale = scale;
     var dot = vec43.dot;
     exports.dot = dot;
-    var lerp = vec43.lerp;
-    exports.lerp = lerp;
+    var lerp2 = vec43.lerp;
+    exports.lerp = lerp2;
     var length = vec43.length;
     exports.length = length;
     var len = length;
@@ -3644,7 +3644,7 @@
     exports.add = add;
     exports.multiply = multiply;
     exports.scale = scale;
-    exports.lerp = lerp;
+    exports.lerp = lerp2;
     exports.invert = invert;
     exports.conjugate = conjugate;
     exports.normalize = normalize;
@@ -3988,7 +3988,7 @@
     }
     var dot = quat2.dot;
     exports.dot = dot;
-    function lerp(out, a, b, t) {
+    function lerp2(out, a, b, t) {
       var mt = 1 - t;
       if (dot(a, b) < 0)
         t = -t;
@@ -4114,7 +4114,7 @@
     exports.normalize = normalize;
     exports.dot = dot;
     exports.cross = cross;
-    exports.lerp = lerp;
+    exports.lerp = lerp2;
     exports.random = random2;
     exports.transformMat2 = transformMat2;
     exports.transformMat2d = transformMat2d;
@@ -4296,7 +4296,7 @@
       out[2] = z;
       return out;
     }
-    function lerp(out, a, b, t) {
+    function lerp2(out, a, b, t) {
       var ax = a[0], ay = a[1];
       out[0] = ax + t * (b[0] - ax);
       out[1] = ay + t * (b[1] - ay);
@@ -10046,25 +10046,29 @@ void main()
 
   // src/raindrop.ts
   var import_zogra_renderer4 = __toModule(require_dist());
+
+  // src/utils.ts
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+
+  // src/raindrop.ts
   var RainDrop = class {
     constructor(simulator, pos, size, density = 1) {
       this.density = 1;
       this.velocity = import_zogra_renderer4.vec2.zero();
       this.destroied = false;
-      this.evaporate = 1;
       this._mass = 0;
       this._size = import_zogra_renderer4.vec2.zero();
       this.resistance = 0;
       this.shifting = 0;
-      this.gravity = 2400;
       this.nextRandomTime = 0;
       this.pos = pos;
-      this.seed = Math.floor(Math.random() * 2147483647) + 1;
       this.simulator = simulator;
       this.density = density;
       this.lastTrailPos = pos.clone();
-      this.nextTrailDistance = randomRange(10, 20);
-      this.spread = import_zogra_renderer4.vec2(0.5, 0.5);
+      this.nextTrailDistance = randomRange(...simulator.options.trailDistance);
+      this.spread = import_zogra_renderer4.vec2(simulator.options.initialSpread);
       this.mass = (size * density) ** 2;
     }
     get mass() {
@@ -10080,15 +10084,18 @@ void main()
       return this._size;
     }
     get mergeDistance() {
-      return this.size.x * (1 + this.spread.x) * 0.16;
+      return this.size.x * (1 + this.spread.x) * 0.16 * this.simulator.options.colliderSize;
+    }
+    get options() {
+      return this.simulator.options;
     }
     updateRaindrop(time) {
       if (this.nextRandomTime <= time.total) {
-        this.nextRandomTime = time.total + Math.random() * 0.4;
+        this.nextRandomTime = time.total + randomRange(...this.simulator.options.motionInterval);
         this.randomMotion();
       }
-      this.mass -= this.evaporate * time.dt;
-      const force = this.gravity * this.mass - this.resistance;
+      this.mass -= this.simulator.options.evaporate * time.dt;
+      const force = this.options.gravity * this.mass - this.resistance;
       const acceleration = force / this.mass;
       this.velocity.y -= acceleration * time.dt;
       if (this.velocity.y > 0)
@@ -10096,9 +10103,10 @@ void main()
       this.velocity.x = Math.abs(this.velocity.y) * this.shifting;
       this.pos.x += this.velocity.x * time.dt;
       this.pos.y += this.velocity.y * time.dt;
-      this.spread.y = Math.max(this.spread.y, 0.3 * 2 * Math.atan(Math.abs(this.velocity.y * 5e-3)) / Math.PI);
-      this.spread.x *= 0.7;
-      this.spread.y *= 0.85;
+      const spreadByVelocity = this.simulator.options.velocitySpread * 2 * Math.atan(Math.abs(this.velocity.y * 5e-3)) / Math.PI;
+      this.spread.y = Math.max(this.spread.y, spreadByVelocity);
+      this.spread.x *= Math.pow(this.simulator.options.shrinkRate, time.dt);
+      this.spread.y *= Math.pow(this.simulator.options.shrinkRate, time.dt);
       if (import_zogra_renderer4.Vector2.distanceSquared(this.lastTrailPos, this.pos) > this.nextTrailDistance * this.nextTrailDistance) {
         this.split();
       }
@@ -10106,19 +10114,20 @@ void main()
     split() {
       if (this.mass < 1e3)
         return;
-      let size = this.size.x * randomRange(0.3, 0.5);
+      let size = this.size.x * randomRange(...this.simulator.options.trailDropSize);
       const pos = import_zogra_renderer4.plus(import_zogra_renderer4.vec2(randomRange(-5, 5), this.size.y / 4), this.pos);
-      let trailDrop = this.simulator.spawner.spawn(pos.clone(), size, 0.2);
-      trailDrop.spread = import_zogra_renderer4.vec2(0.1, Math.abs(this.velocity.y) * 6e-3);
+      let trailDrop = this.simulator.spawner.spawn(pos.clone(), size, this.simulator.options.trailDropDensity);
+      trailDrop.spread = import_zogra_renderer4.vec2(0.1, Math.abs(this.velocity.y) * 0.01 * this.options.trailSpread);
       trailDrop.parent = this;
       this.mass -= trailDrop.mass;
       this.simulator.add(trailDrop);
       this.lastTrailPos = this.pos.clone();
-      this.nextTrailDistance = randomRange(20, 30);
+      this.nextTrailDistance = randomRange(...this.simulator.options.trailDistance);
     }
     randomMotion() {
-      this.resistance = randomRange(0.3, 1) * this.gravity * 12e3;
-      this.shifting = random() * 0.1;
+      const maxResistance = lerp(...this.simulator.options.spawnSize, 1 - this.simulator.options.slipRate) ** 2 * 4;
+      this.resistance = randomRange(0, 1) * this.options.gravity * maxResistance;
+      this.shifting = random() * randomRange(...this.simulator.options.xShifting);
     }
     merge(target) {
       const selfMomentum = import_zogra_renderer4.mul(this.velocity, this.mass);
@@ -10293,7 +10302,20 @@ void main()
         width: canvas.width,
         height: canvas.height,
         background: "",
-        dropletSize: [10, 30]
+        gravity: 2400,
+        dropletSize: [10, 30],
+        slipRate: 0.5,
+        motionInterval: [0.1, 0.4],
+        colliderSize: 1,
+        trailDropDensity: 0.2,
+        trailDistance: [20, 30],
+        trailDropSize: [0.3, 0.5],
+        trailSpread: 0.6,
+        initialSpread: 0.5,
+        shrinkRate: 0.01,
+        velocitySpread: 0.3,
+        evaporate: 10,
+        xShifting: [0, 0.1]
       };
       this.options = {...defaultOptions, ...options};
       this.simulator = new RaindropSimulator(this.options);

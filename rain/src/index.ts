@@ -26,7 +26,20 @@ export class RaindropFX
             width: canvas.width,
             height: canvas.height,
             background: "",
+            gravity: 2400,
             dropletSize: [10, 30],
+            slipRate: 0.5,
+            motionInterval: [0.1, 0.4],
+            colliderSize: 1,
+            trailDropDensity: 0.2,
+            trailDistance: [20, 30],
+            trailDropSize: [0.3, 0.5],
+            trailSpread: 0.6,
+            initialSpread: 0.5,
+            shrinkRate: 0.01,
+            velocitySpread: 0.3,
+            evaporate: 10,
+            xShifting: [0, 0.1],
         };
         this.options = { ...defaultOptions, ...options };
 

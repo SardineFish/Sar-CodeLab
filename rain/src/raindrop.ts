@@ -2,29 +2,23 @@ import { trimEnd } from "*.png";
 import { div, minus, mul, plus, vec2, Vector2 } from "zogra-renderer";
 import { goldNoise, random, randomRange } from "./random";
 import { RaindropSimulator } from "./simulator";
-import { clamp, Time } from "./utils";
+import { clamp, lerp, Time } from "./utils";
 
 export class RainDrop
 {
     pos: vec2;
-    // size: number;
-    seed: number;
     density: number = 1;
     velocity: vec2 = vec2.zero();
     spread: vec2;
     destroied = false;
-    evaporate = 1;
     parent?: RainDrop;
     grid?: Set<RainDrop>;
-
-    // mergeRadius = 0.1;
 
     private _mass: number = 0;
     private _size: vec2 = vec2.zero();
     private simulator: RaindropSimulator;
     private resistance = 0;
     private shifting = 0;
-    private gravity = 2400;
     private lastTrailPos: vec2;
     private nextTrailDistance: number;
 
@@ -33,16 +27,13 @@ export class RainDrop
     constructor(simulator: RaindropSimulator, pos: vec2, size: number, density = 1)
     {
         this.pos = pos;
-        this.seed = Math.floor(Math.random() * 2147483647) + 1;
         this.simulator = simulator;
         this.density = density;
-        // this.velocity.x = Math.random() * 20 - 10;
-        // this.velocity.y = -Math.random() * 60;
 
         this.lastTrailPos = pos.clone();
-        this.nextTrailDistance = randomRange(10, 20);
+        this.nextTrailDistance = randomRange(...simulator.options.trailDistance);
 
-        this.spread = vec2(0.5, 0.5);
+        this.spread = vec2(simulator.options.initialSpread);
 
         this.mass = (size * density) ** 2;
     }
@@ -64,19 +55,21 @@ export class RainDrop
 
     get mergeDistance()
     {
-        return this.size.x * (1 + this.spread.x) * 0.16;
+        return this.size.x * (1 + this.spread.x) * 0.16 * this.simulator.options.colliderSize;
     }
+
+    get options() { return this.simulator.options }
 
     updateRaindrop(time: Time)
     {
         if (this.nextRandomTime <= time.total)
         {
-            this.nextRandomTime = time.total + Math.random() * 0.4;
+            this.nextRandomTime = time.total + randomRange(...this.simulator.options.motionInterval)
             this.randomMotion();
         }
 
-        this.mass -= this.evaporate * time.dt;
-        const force = this.gravity * this.mass - this.resistance;
+        this.mass -= this.simulator.options.evaporate * time.dt;
+        const force = this.options.gravity * this.mass - this.resistance;
         const acceleration = force / this.mass;
         this.velocity.y -= acceleration * time.dt;
         if (this.velocity.y > 0)
@@ -86,9 +79,10 @@ export class RainDrop
         this.pos.y += this.velocity.y * time.dt;
         // this.pos.plus(mul(this.velocity, vec2(time.dt)));
 
-        this.spread.y = Math.max(this.spread.y, 0.3 * 2 * Math.atan(Math.abs(this.velocity.y * 0.005)) / Math.PI);
-        this.spread.x *= 0.7;
-        this.spread.y *= 0.85;
+        const spreadByVelocity = this.simulator.options.velocitySpread * 2 * Math.atan(Math.abs(this.velocity.y * 0.005)) / Math.PI;
+        this.spread.y = Math.max(this.spread.y, spreadByVelocity);
+        this.spread.x *= Math.pow(this.simulator.options.shrinkRate, time.dt);
+        this.spread.y *= Math.pow(this.simulator.options.shrinkRate, time.dt);
         // this.spread.y +=  Math.abs(this.velocity.y) * 0.0001;
 
         if (Vector2.distanceSquared(this.lastTrailPos, this.pos) > this.nextTrailDistance * this.nextTrailDistance)
@@ -102,21 +96,22 @@ export class RainDrop
         // return;
         if (this.mass < 1000)
             return;
-        let size = this.size.x * randomRange(0.3, 0.5);
+        let size = this.size.x * randomRange(...this.simulator.options.trailDropSize);
         const pos = plus(vec2(randomRange(-5, 5), this.size.y / 4), this.pos);
-        let trailDrop = this.simulator.spawner.spawn(pos.clone(), size, 0.2);
-        trailDrop.spread = vec2(0.1, Math.abs(this.velocity.y) * 0.006);
+        let trailDrop = this.simulator.spawner.spawn(pos.clone(), size, this.simulator.options.trailDropDensity);
+        trailDrop.spread = vec2(0.1, Math.abs(this.velocity.y) * 0.01 * this.options.trailSpread);
         trailDrop.parent = this;
         this.mass -= trailDrop.mass;
         this.simulator.add(trailDrop);
         this.lastTrailPos = this.pos.clone();
-        this.nextTrailDistance = randomRange(20, 30);
+        this.nextTrailDistance = randomRange(...this.simulator.options.trailDistance);
     }
 
     randomMotion()
     {
-        this.resistance = randomRange(0.3, 1) * this.gravity * 12000;
-        this.shifting = random() * 0.1;
+        const maxResistance = lerp(...this.simulator.options.spawnSize, 1 - this.simulator.options.slipRate) ** 2 * 4;
+        this.resistance = randomRange(0, 1) * this.options.gravity * maxResistance;
+        this.shifting = random() * randomRange(...this.simulator.options.xShifting);
     }
 
     merge(target: RainDrop)
