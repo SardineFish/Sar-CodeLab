@@ -80,6 +80,12 @@ class RaindropCompose extends MaterialFromShader(new Shader(defaultVert, raindro
 
     @shaderProp("uDiffuseColor", "color")
     diffuseLight: Color = new Color(0.3, 0.3, 0.3, 0.8);
+
+    @shaderProp("uSpecularParams", "vec4")
+    specularParams: vec4 = vec4(1, 1, 1, 32);
+
+    @shaderProp("uBump", "float")
+    bump: number = 1;
 }
 
 class RaindropErase extends SimpleTexturedMaterial(new Shader(defaultVert, raindropErase, {
@@ -192,6 +198,22 @@ export interface RenderOptions
      * Recommended value [0.93, 1.0]
      */
     raindropEraserSize: [number, number];
+    /**
+     * Specular light clor.
+     * Recommend disable it with [0, 0, 0] :)
+     */
+    raindropSpecularLight: [number, number, number];
+    /**
+     * Blinn-Phong exponent representing shininess.
+     * Value from 0 to 1024 is ok
+     */
+    raindropSpecularShininess: number;
+    /**
+     * Will apply to calculate screen space normal for lighting.
+     * Larger value makes raindrops looks more flat.
+     * Recommend in range (0.3..1)
+     */
+    raindropLightBump: number,
 
 }
 
@@ -319,7 +341,6 @@ export class RaindropRenderer
 
         this.matRefract.background = this.blurryBackground;
         this.matRefract.backgroundSize = vec4(this.options.width, this.options.height, 1 / this.options.width, 1 / this.options.height);
-
         this.matRefract.raindropTex = this.raindropComposeTex;
         this.matRefract.dropletTex = this.dropletTexture;
         this.matRefract.mistTex = this.mistTexture;
@@ -327,6 +348,8 @@ export class RaindropRenderer
         this.matRefract.refractParams = vec2(this.options.refractBase, this.options.refractScale);
         this.matRefract.lightPos = vec4(...this.options.raindropLightPos);
         this.matRefract.diffuseLight = new Color(...this.options.raindropDiffuseLight, this.options.raindropShadowOffset);
+        this.matRefract.specularParams = vec4(...this.options.raindropSpecularLight, this.options.raindropSpecularShininess);
+        this.matRefract.bump = this.options.raindropLightBump;
 
         this.renderer.blit(null, RenderTarget.CanvasTarget, this.matRefract);
     }

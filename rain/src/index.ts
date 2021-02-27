@@ -28,7 +28,7 @@ export class RaindropFX
             background: "",
             gravity: 2400,
             dropletSize: [10, 30],
-            slipRate: 0.5,
+            slipRate: 0,
             motionInterval: [0.1, 0.4],
             colliderSize: 1,
             trailDropDensity: 0.2,
@@ -46,14 +46,17 @@ export class RaindropFX
             mistColor: [0.01, 0.01, 0.01, 1],
             mistBlurStep: 4,
             mistTime: 10,
-            smoothRaindrop: [0.96, 1.0],
+            smoothRaindrop: [0.96, 0.99],
             refractBase: 0.4,
             refractScale: 0.6,
             raindropCompose: "smoother",
             raindropLightPos: [-1, 1, 2, 0],
-            raindropDiffuseLight: [0.3, 0.3, 0.3],
+            raindropDiffuseLight: [0.2, 0.2, 0.2],
             raindropShadowOffset: 0.8,
             raindropEraserSize: [0.93, 1.0],
+            raindropSpecularLight: [0, 0, 0],
+            raindropSpecularShininess: 256,
+            raindropLightBump: 1,
         };
         this.options = { ...defaultOptions, ...options };
 

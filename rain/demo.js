@@ -9,7 +9,7 @@ canvas.height = rect.height;
 
 const raindropFx = new SarRaindropFX({
     canvas: canvas,
-    background: "./assets/img/87747832_p0.jpg"
+    background: "./assets/img/84765992_p0.jpg"
 });
 
 window.onresize = () =>

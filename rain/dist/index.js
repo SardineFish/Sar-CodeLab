@@ -9819,7 +9819,7 @@ void main()
   var raindrop_vert_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec3 aPos;\r\nin vec4 aColor;\r\nin vec2 aUV;\r\nin vec3 aNormal;\r\n\r\nin float aSize;\r\nin mat4 aModelMatrix;\r\n\r\nuniform mat4 uTransformM;\r\nuniform mat4 uTransformVP;\r\nuniform mat4 uTransformMVP;\r\nuniform mat4 uTransformM_IT;\r\n\r\nout vec4 vColor;\r\nout vec4 vPos;\r\nout vec2 vUV;\r\nout vec3 vNormal;\r\nout vec3 vWorldPos;\r\nout float vSize;\r\n\r\nvoid main()\r\n{\r\n    mat4 mvp = uTransformVP * aModelMatrix;\r\n    gl_Position = mvp * vec4(aPos, 1);\r\n    vPos = gl_Position;\r\n    vColor = aColor;\r\n    vUV = aUV;\r\n    vNormal = (uTransformM_IT *  vec4(aNormal, 0)).xyz;\r\n    vWorldPos = (uTransformM * vec4(aPos, 1)).xyz;\r\n    vSize = aSize;\r\n}";
 
   // src/shader/reflect.glsl
-  var reflect_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uBackgroundSize; // (x, y, 1/x, 1/y)\r\nuniform sampler2D uRaindropTex;\r\nuniform sampler2D uDropletTex;\r\nuniform sampler2D uMistTex;\r\nuniform vec4 uColor;\r\nuniform vec2 uSmoothRaindrop;\r\nuniform vec2 uRefractParams; // (refractBase, refractScale)\r\nuniform vec4 uLightPos;\r\nuniform vec4 uDiffuseColor; // (color.rgb, shadowOffset)\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    // vec3 lightPos = vec3(0.5, 1, 1);\r\n\r\n    vec4 raindrop = texture(uRaindropTex, vUV.xy).rgba;\r\n    vec4 droplet = texture(uDropletTex, vUV.xy).rgba;\r\n    float mist = texture(uMistTex, vUV.xy).r;\r\n\r\n    vec4 compose = vec4(raindrop.rgb + droplet.rgb - vec3(2.0) * raindrop.rgb * droplet.rgb, max(droplet.a, raindrop.a));\r\n\r\n    float mask = smoothstep(uSmoothRaindrop.x, uSmoothRaindrop.y, compose.a);\r\n    \r\n    vec2 uv = vUV.xy + -(compose.xy - vec2(0.5)) * vec2(compose.b * uRefractParams.y + uRefractParams.x);\r\n    vec3 normal = normalize(vec3((compose.xy - vec2(0.5)) * vec2(2), 1));\r\n\r\n    // vec3 lightDir = lightPos - vec3(vUV, 0);\r\n    vec3 lightDir = uLightPos.xyz - uLightPos.w * vec3(vUV.xy, 0.0);\r\n    float lambertian = clamp(dot(normalize(lightDir), normal), 0.0, 1.0);\r\n\r\n\r\n    // offset = pow(offset, vec2(2));\r\n    vec4 color = texture(uMainTex, uv.xy).rgba;\r\n\r\n    color.rgb += vec3((lambertian - uDiffuseColor.a) * uDiffuseColor.rgb);\r\n    \r\n\r\n    // fragColor = vec4(mask, mask, mask, 1);\r\n    // color = color * vec3(uColor);\r\n\r\n    fragColor = vec4(color.rgb, mask);// vec4(color.rgb, mask);\r\n}";
+  var reflect_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uBackgroundSize; // (x, y, 1/x, 1/y)\r\nuniform sampler2D uRaindropTex;\r\nuniform sampler2D uDropletTex;\r\nuniform sampler2D uMistTex;\r\nuniform vec4 uColor;\r\nuniform vec2 uSmoothRaindrop;\r\nuniform vec2 uRefractParams; // (refractBase, refractScale)\r\nuniform vec4 uLightPos;\r\nuniform vec4 uDiffuseColor; // (color.rgb, shadowOffset)\r\nuniform vec4 uSpecularParams; // (color.rgb, exponent)\r\nuniform float uBump;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    // vec3 lightPos = vec3(0.5, 1, 1);\r\n\r\n    vec4 raindrop = texture(uRaindropTex, vUV.xy).rgba;\r\n    vec4 droplet = texture(uDropletTex, vUV.xy).rgba;\r\n    float mist = texture(uMistTex, vUV.xy).r;\r\n\r\n    vec4 compose = vec4(raindrop.rgb + droplet.rgb - vec3(2.0) * raindrop.rgb * droplet.rgb, max(droplet.a, raindrop.a));\r\n\r\n    float mask = smoothstep(uSmoothRaindrop.x, uSmoothRaindrop.y, compose.a);\r\n    \r\n    vec2 uv = vUV.xy + -(compose.xy - vec2(0.5)) * vec2(compose.b * uRefractParams.y + uRefractParams.x);\r\n    vec3 normal = normalize(vec3((compose.xy - vec2(0.5)) * vec2(2), 1.0));\r\n\r\n    // vec3 lightDir = lightPos - vec3(vUV, 0);\r\n    vec3 lightDir = uLightPos.xyz - uLightPos.w * vec3(vUV.xy, 0.0);\r\n    vec3 viewDir = vec3(0, 0, 1);\r\n    vec3 halfDir = normalize(lightDir + viewDir);\r\n    float lambertian = clamp(dot(normalize(lightDir), normal), 0.0, 1.0);\r\n    float blinnPhon = pow(max(dot(normal, halfDir), 0.0), uSpecularParams.a);\r\n\r\n\r\n    // offset = pow(offset, vec2(2));\r\n    vec4 color = texture(uMainTex, uv.xy).rgba;\r\n    vec3 diffuse = vec3((lambertian - uDiffuseColor.a) * uDiffuseColor.rgb);\r\n\r\n    color.rgb += vec3((lambertian - uDiffuseColor.a) * uDiffuseColor.rgb);\r\n    color.rgb += vec3(blinnPhon) * uSpecularParams.rgb;\r\n    \r\n\r\n    // fragColor = vec4(mask, mask, mask, 1);\r\n    // color = color * vec3(uColor);\r\n\r\n    fragColor = vec4(color.rgb, mask);// vec4(color.rgb, mask);\r\n}";
 
   // src/shader/droplet.glsl
   var droplet_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.rgb *= color.a;\r\n    fragColor = vec4(color.rg, 0.2, color.a);\r\n}";
@@ -9886,6 +9886,8 @@ void main()
       this.refractParams = import_zogra_renderer3.vec2(0.4, 0.6);
       this.lightPos = import_zogra_renderer3.vec4(0.5, 0.5, 2, 1);
       this.diffuseLight = new import_zogra_renderer3.Color(0.3, 0.3, 0.3, 0.8);
+      this.specularParams = import_zogra_renderer3.vec4(1, 1, 1, 32);
+      this.bump = 1;
     }
   };
   __decorate([
@@ -9915,6 +9917,12 @@ void main()
   __decorate([
     import_zogra_renderer3.shaderProp("uDiffuseColor", "color")
   ], RaindropCompose.prototype, "diffuseLight", 2);
+  __decorate([
+    import_zogra_renderer3.shaderProp("uSpecularParams", "vec4")
+  ], RaindropCompose.prototype, "specularParams", 2);
+  __decorate([
+    import_zogra_renderer3.shaderProp("uBump", "float")
+  ], RaindropCompose.prototype, "bump", 2);
   var RaindropErase = class extends import_zogra_renderer3.SimpleTexturedMaterial(new import_zogra_renderer3.Shader(d_vert_default, erase_default, {
     blendRGB: [import_zogra_renderer3.Blending.Zero, import_zogra_renderer3.Blending.OneMinusSrcAlpha],
     blendAlpha: [import_zogra_renderer3.Blending.Zero, import_zogra_renderer3.Blending.OneMinusSrcAlpha]
@@ -10030,6 +10038,8 @@ void main()
       this.matRefract.refractParams = import_zogra_renderer3.vec2(this.options.refractBase, this.options.refractScale);
       this.matRefract.lightPos = import_zogra_renderer3.vec4(...this.options.raindropLightPos);
       this.matRefract.diffuseLight = new import_zogra_renderer3.Color(...this.options.raindropDiffuseLight, this.options.raindropShadowOffset);
+      this.matRefract.specularParams = import_zogra_renderer3.vec4(...this.options.raindropSpecularLight, this.options.raindropSpecularShininess);
+      this.matRefract.bump = this.options.raindropLightBump;
       this.renderer.blit(null, import_render_target.RenderTarget.CanvasTarget, this.matRefract);
     }
     blurBackground() {
@@ -10354,7 +10364,7 @@ void main()
         background: "",
         gravity: 2400,
         dropletSize: [10, 30],
-        slipRate: 0.5,
+        slipRate: 0,
         motionInterval: [0.1, 0.4],
         colliderSize: 1,
         trailDropDensity: 0.2,
@@ -10371,14 +10381,17 @@ void main()
         mistColor: [0.01, 0.01, 0.01, 1],
         mistBlurStep: 4,
         mistTime: 10,
-        smoothRaindrop: [0.96, 1],
+        smoothRaindrop: [0.96, 0.99],
         refractBase: 0.4,
         refractScale: 0.6,
         raindropCompose: "smoother",
         raindropLightPos: [-1, 1, 2, 0],
-        raindropDiffuseLight: [0.3, 0.3, 0.3],
+        raindropDiffuseLight: [0.2, 0.2, 0.2],
         raindropShadowOffset: 0.8,
-        raindropEraserSize: [0.93, 1]
+        raindropEraserSize: [0.93, 1],
+        raindropSpecularLight: [0, 0, 0],
+        raindropSpecularShininess: 256,
+        raindropLightBump: 1
       };
       this.options = {...defaultOptions, ...options};
       this.simulator = new RaindropSimulator(this.options);
