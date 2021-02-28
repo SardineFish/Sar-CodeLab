@@ -3249,7 +3249,7 @@
     exports.setAxes = exports.sqlerp = exports.rotationTo = exports.equals = exports.exactEquals = exports.normalize = exports.sqrLen = exports.squaredLength = exports.len = exports.length = exports.lerp = exports.dot = exports.scale = exports.mul = exports.add = exports.set = exports.copy = exports.fromValues = exports.clone = void 0;
     var glMatrix = _interopRequireWildcard(require_common());
     var mat3 = _interopRequireWildcard(require_mat3());
-    var vec33 = _interopRequireWildcard(require_vec3());
+    var vec32 = _interopRequireWildcard(require_vec3());
     var vec43 = _interopRequireWildcard(require_vec4());
     function _getRequireWildcardCache() {
       if (typeof WeakMap !== "function")
@@ -3543,16 +3543,16 @@
     var equals = vec43.equals;
     exports.equals = equals;
     var rotationTo = function() {
-      var tmpvec3 = vec33.create();
-      var xUnitVec3 = vec33.fromValues(1, 0, 0);
-      var yUnitVec3 = vec33.fromValues(0, 1, 0);
+      var tmpvec3 = vec32.create();
+      var xUnitVec3 = vec32.fromValues(1, 0, 0);
+      var yUnitVec3 = vec32.fromValues(0, 1, 0);
       return function(out, a, b) {
-        var dot2 = vec33.dot(a, b);
+        var dot2 = vec32.dot(a, b);
         if (dot2 < -0.999999) {
-          vec33.cross(tmpvec3, xUnitVec3, a);
-          if (vec33.len(tmpvec3) < 1e-6)
-            vec33.cross(tmpvec3, yUnitVec3, a);
-          vec33.normalize(tmpvec3, tmpvec3);
+          vec32.cross(tmpvec3, xUnitVec3, a);
+          if (vec32.len(tmpvec3) < 1e-6)
+            vec32.cross(tmpvec3, yUnitVec3, a);
+          vec32.normalize(tmpvec3, tmpvec3);
           setAxisAngle(out, tmpvec3, Math.PI);
           return out;
         } else if (dot2 > 0.999999) {
@@ -3562,7 +3562,7 @@
           out[3] = 1;
           return out;
         } else {
-          vec33.cross(tmpvec3, a, b);
+          vec32.cross(tmpvec3, a, b);
           out[0] = tmpvec3[0];
           out[1] = tmpvec3[1];
           out[2] = tmpvec3[2];
@@ -4438,8 +4438,8 @@
     exports.quat2 = quat22;
     var vec26 = _interopRequireWildcard(require_vec2());
     exports.vec2 = vec26;
-    var vec33 = _interopRequireWildcard(require_vec3());
-    exports.vec3 = vec33;
+    var vec32 = _interopRequireWildcard(require_vec3());
+    exports.vec3 = vec32;
     var vec43 = _interopRequireWildcard(require_vec4());
     exports.vec4 = vec43;
     function _getRequireWildcardCache() {
@@ -4514,7 +4514,7 @@
       }
       get normalized() {
         const m = this.magnitude;
-        return m == 0 ? vec33.zero() : this.clone().div(vec33(m, m, m));
+        return m == 0 ? vec32.zero() : this.clone().div(vec32(m, m, m));
       }
       get negative() {
         return this.clone().negate();
@@ -4560,7 +4560,7 @@
       }
       normalize() {
         const m = this.magnitude;
-        return m == 0 ? vec33.zero() : this.clone().div(vec33(m, m, m));
+        return m == 0 ? vec32.zero() : this.clone().div(vec32(m, m, m));
       }
       inverse() {
         this[0] = 1 / this[0];
@@ -4575,10 +4575,10 @@
         return this;
       }
       cross(b) {
-        return vec33(this.y * b.z - this.z * b.y, this.z * b.x - this.x * b.z, this.x * b.y - this.y * b.x);
+        return vec32(this.y * b.z - this.z * b.y, this.z * b.x - this.x * b.z, this.x * b.y - this.y * b.x);
       }
       clone() {
-        return vec33(this[0], this[1], this[2]);
+        return vec32(this[0], this[1], this[2]);
       }
       toVec2() {
         return vec2_1.vec2(this[0], this[1]);
@@ -4599,17 +4599,17 @@
       }
     };
     exports.Vector3 = Vector3;
-    function vec33(x, y = x, z = x) {
+    function vec32(x, y = x, z = x) {
       return new Vector3(x, y, z);
     }
-    exports.vec3 = vec33;
-    vec33.from = (src) => {
+    exports.vec3 = vec32;
+    vec32.from = (src) => {
       const [x = 0, y = 0, z = 0] = src;
-      return vec33(x, y, z);
+      return vec32(x, y, z);
     };
-    vec33.floor = (v) => vec33(Math.floor(v.x), Math.floor(v.y), Math.floor(v.z));
-    vec33.zero = Vector3.zero;
-    vec33.one = Vector3.one;
+    vec32.floor = (v) => vec32(Math.floor(v.x), Math.floor(v.y), Math.floor(v.z));
+    vec32.zero = Vector3.zero;
+    vec32.one = Vector3.one;
   });
 
   // zogra-renderer/dist/types/vec4.js
@@ -6371,7 +6371,7 @@
         this.program = null;
         this.vertexShader = null;
         this.fragmentShader = null;
-        this.settings = null;
+        this.pipelineStates = null;
         this.builtinUniformLocations = null;
         this._compiled = false;
         if (!options.name)
@@ -6395,26 +6395,26 @@
       }
       setupPipelineStates() {
         const gl = this.gl;
-        if (this.settings.depth === DepthTest2.Disable)
+        if (this.pipelineStates.depth === DepthTest2.Disable)
           gl.disable(gl.DEPTH_TEST);
         else {
           gl.enable(gl.DEPTH_TEST);
-          gl.depthMask(this.settings.zWrite);
-          gl.depthFunc(this.settings.depth);
+          gl.depthMask(this.pipelineStates.zWrite);
+          gl.depthFunc(this.pipelineStates.depth);
         }
-        if (!this.settings.blend)
+        if (!this.pipelineStates.blend)
           gl.disable(gl.BLEND);
         else {
-          const [srcRGB, dstRGB] = this.settings.blendRGB;
-          const [srcAlpha, dstAlpha] = this.settings.blendAlpha;
+          const [srcRGB, dstRGB] = this.pipelineStates.blendRGB;
+          const [srcAlpha, dstAlpha] = this.pipelineStates.blendAlpha;
           gl.enable(gl.BLEND);
           gl.blendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
         }
-        if (this.settings.cull === Culling.Disable)
+        if (this.pipelineStates.cull === Culling.Disable)
           gl.disable(gl.CULL_FACE);
         else {
           gl.enable(gl.CULL_FACE);
-          gl.cullFace(this.settings.cull);
+          gl.cullFace(this.pipelineStates.cull);
           gl.frontFace(gl.CCW);
         }
       }
@@ -6426,6 +6426,41 @@
         this.builtinUniformLocations.matMVP && gl.uniformMatrix4fv(this.builtinUniformLocations.matMVP, false, params.matMVP);
         this.builtinUniformLocations.matM_IT && gl.uniformMatrix4fv(this.builtinUniformLocations.matM_IT, false, params.matM_IT);
         this.builtinUniformLocations.matMV_IT && gl.uniformMatrix4fv(this.builtinUniformLocations.matMV_IT, false, params.matMV_IT);
+      }
+      setPipelineStates(settings) {
+        if (this.initialized)
+          this.setPipelineStateInternal(settings);
+        else
+          this.options = Object.assign(Object.assign({}, this.options), settings);
+      }
+      setPipelineStateInternal(settings) {
+        let blend = false;
+        let blendRGB = [Blending2.One, Blending2.Zero];
+        let blendAlpha = [Blending2.One, Blending2.OneMinusSrcAlpha];
+        if (typeof settings.blend === "number" && settings.blend !== Blending2.Disable) {
+          blend = true;
+          blendRGB = [settings.blend, settings.blend];
+          blendAlpha = [settings.blend, settings.blend];
+        } else if (settings.blend instanceof Array) {
+          blend = true;
+          blendRGB = settings.blend;
+        }
+        if (settings.blendRGB) {
+          blend = settings.blend !== false && settings.blend !== Blending2.Disable;
+          blendRGB = settings.blendRGB;
+        }
+        if (settings.blendAlpha) {
+          blend = settings.blend !== false && settings.blend !== Blending2.Disable;
+          blendAlpha = settings.blendAlpha;
+        }
+        this.pipelineStates = {
+          depth: settings.depth || DepthTest2.Less,
+          blend,
+          blendRGB,
+          blendAlpha,
+          zWrite: settings.zWrite === false ? false : true,
+          cull: settings.cull || Culling.Back
+        };
       }
       _internal() {
         this.tryInit(true);
@@ -6451,33 +6486,7 @@
         for (const key in attributeNames) {
           this.attributes[key] = gl.getAttribLocation(this.program, attributeNames[key]);
         }
-        let blend = false;
-        let blendRGB = [Blending2.One, Blending2.Zero];
-        let blendAlpha = [Blending2.One, Blending2.OneMinusSrcAlpha];
-        if (typeof this.options.blend === "number" && this.options.blend !== Blending2.Disable) {
-          blend = true;
-          blendRGB = [this.options.blend, this.options.blend];
-          blendAlpha = [this.options.blend, this.options.blend];
-        } else if (this.options.blend instanceof Array) {
-          blend = true;
-          blendRGB = this.options.blend;
-        }
-        if (this.options.blendRGB) {
-          blend = this.options.blend !== false && this.options.blend !== Blending2.Disable;
-          blendRGB = this.options.blendRGB;
-        }
-        if (this.options.blendAlpha) {
-          blend = this.options.blend !== false && this.options.blend !== Blending2.Disable;
-          blendAlpha = this.options.blendAlpha;
-        }
-        this.settings = {
-          depth: this.options.depth || DepthTest2.Less,
-          blend,
-          blendRGB,
-          blendAlpha,
-          zWrite: this.options.zWrite === false ? false : true,
-          cull: this.options.cull || Culling.Back
-        };
+        this.setPipelineStateInternal(this.options);
         this.builtinUniformLocations = util_2.getUniformsLocation(gl, this.program, shaders_1.BuiltinUniformNames);
         this.initialized = true;
         return true;
@@ -6678,19 +6687,19 @@ void main()
     exports.imageResize = exports.ImageSizing = void 0;
     var rect_1 = require_rect();
     var vec2_1 = require_vec22();
-    var ImageSizing2;
-    (function(ImageSizing3) {
-      ImageSizing3[ImageSizing3["Stretch"] = 1] = "Stretch";
-      ImageSizing3[ImageSizing3["Cover"] = 2] = "Cover";
-      ImageSizing3[ImageSizing3["Contain"] = 3] = "Contain";
-      ImageSizing3[ImageSizing3["KeepLower"] = 4] = "KeepLower";
-      ImageSizing3[ImageSizing3["KeepHigher"] = 5] = "KeepHigher";
-      ImageSizing3[ImageSizing3["Center"] = 6] = "Center";
-    })(ImageSizing2 = exports.ImageSizing || (exports.ImageSizing = {}));
+    var ImageSizing;
+    (function(ImageSizing2) {
+      ImageSizing2[ImageSizing2["Stretch"] = 1] = "Stretch";
+      ImageSizing2[ImageSizing2["Cover"] = 2] = "Cover";
+      ImageSizing2[ImageSizing2["Contain"] = 3] = "Contain";
+      ImageSizing2[ImageSizing2["KeepLower"] = 4] = "KeepLower";
+      ImageSizing2[ImageSizing2["KeepHigher"] = 5] = "KeepHigher";
+      ImageSizing2[ImageSizing2["Center"] = 6] = "Center";
+    })(ImageSizing = exports.ImageSizing || (exports.ImageSizing = {}));
     function imageResize(srcSize, dstSize, sizing) {
       let srcRect = new rect_1.Rect(vec2_1.vec2.zero(), srcSize);
       let dstRect = new rect_1.Rect(vec2_1.vec2.zero(), dstSize);
-      if (sizing === ImageSizing2.Contain) {
+      if (sizing === ImageSizing.Contain) {
         let srcAspectRatio = srcSize.x / srcSize.y;
         let dstAspectRatio = dstSize.x / dstSize.y;
         if (srcAspectRatio > dstAspectRatio) {
@@ -6702,7 +6711,7 @@ void main()
           dstRect.min.x += delta / 2;
           dstRect.max.x -= delta / 2;
         }
-      } else if (sizing === ImageSizing2.Cover) {
+      } else if (sizing === ImageSizing.Cover) {
         let srcAspectRatio = srcSize.x / srcSize.y;
         let dstAspectRatio = dstSize.x / dstSize.y;
         if (srcAspectRatio > dstAspectRatio) {
@@ -6717,58 +6726,58 @@ void main()
       } else {
         if (srcSize.x < dstSize.x) {
           switch (sizing) {
-            case ImageSizing2.Center:
+            case ImageSizing.Center:
               const delta = dstSize.x - srcSize.x;
               dstRect.min.x += delta / 2;
               dstRect.max.x -= delta / 2;
               break;
-            case ImageSizing2.KeepHigher:
+            case ImageSizing.KeepHigher:
               dstRect.min.x = dstSize.x - srcSize.x;
               break;
-            case ImageSizing2.KeepLower:
+            case ImageSizing.KeepLower:
               dstRect.max.x = srcSize.x;
               break;
           }
         } else if (srcSize.x > dstSize.x) {
           switch (sizing) {
-            case ImageSizing2.Center:
+            case ImageSizing.Center:
               const delta = srcSize.x - dstSize.x;
               srcRect.min.x += delta / 2;
               srcRect.max.x -= delta / 2;
               break;
-            case ImageSizing2.KeepHigher:
+            case ImageSizing.KeepHigher:
               srcRect.min.x = srcSize.x - dstSize.x;
               break;
-            case ImageSizing2.KeepLower:
+            case ImageSizing.KeepLower:
               srcRect.max.x = dstSize.x;
               break;
           }
         }
         if (srcSize.y < dstSize.y) {
           switch (sizing) {
-            case ImageSizing2.Center:
+            case ImageSizing.Center:
               const delta = dstSize.y - srcSize.y;
               dstRect.min.y += delta / 2;
               dstRect.max.y -= delta / 2;
               break;
-            case ImageSizing2.KeepHigher:
+            case ImageSizing.KeepHigher:
               dstRect.min.y = dstSize.y - srcSize.y;
               break;
-            case ImageSizing2.KeepLower:
+            case ImageSizing.KeepLower:
               dstRect.max.y = srcSize.y;
               break;
           }
         } else if (srcSize.y > dstSize.y) {
           switch (sizing) {
-            case ImageSizing2.Center:
+            case ImageSizing.Center:
               const delta = srcSize.y - dstSize.y;
               srcRect.min.y += delta / 2;
               srcRect.max.y -= delta / 2;
               break;
-            case ImageSizing2.KeepHigher:
+            case ImageSizing.KeepHigher:
               srcRect.min.y = srcSize.y - dstSize.y;
               break;
-            case ImageSizing2.KeepLower:
+            case ImageSizing.KeepLower:
               srcRect.max.y = dstSize.y;
               break;
           }
@@ -6805,16 +6814,16 @@ void main()
     var Texture3 = class extends asset_1.Asset {
     };
     exports.Texture = Texture3;
-    var TextureResizing3;
-    (function(TextureResizing4) {
-      TextureResizing4[TextureResizing4["Discard"] = 0] = "Discard";
-      TextureResizing4[TextureResizing4["Stretch"] = 1] = "Stretch";
-      TextureResizing4[TextureResizing4["Cover"] = 2] = "Cover";
-      TextureResizing4[TextureResizing4["Contain"] = 3] = "Contain";
-      TextureResizing4[TextureResizing4["KeepLower"] = 4] = "KeepLower";
-      TextureResizing4[TextureResizing4["KeepHigher"] = 5] = "KeepHigher";
-      TextureResizing4[TextureResizing4["Center"] = 6] = "Center";
-    })(TextureResizing3 = exports.TextureResizing || (exports.TextureResizing = {}));
+    var TextureResizing2;
+    (function(TextureResizing3) {
+      TextureResizing3[TextureResizing3["Discard"] = 0] = "Discard";
+      TextureResizing3[TextureResizing3["Stretch"] = 1] = "Stretch";
+      TextureResizing3[TextureResizing3["Cover"] = 2] = "Cover";
+      TextureResizing3[TextureResizing3["Contain"] = 3] = "Contain";
+      TextureResizing3[TextureResizing3["KeepLower"] = 4] = "KeepLower";
+      TextureResizing3[TextureResizing3["KeepHigher"] = 5] = "KeepHigher";
+      TextureResizing3[TextureResizing3["Center"] = 6] = "Center";
+    })(TextureResizing2 = exports.TextureResizing || (exports.TextureResizing = {}));
     var TextureBase = class extends asset_1.Asset {
       constructor(width, height, format = texture_format_1.TextureFormat.RGBA, filterMode = FilterMode2.Linear, ctx = global_1.GlobalContext()) {
         super();
@@ -6857,7 +6866,7 @@ void main()
         gl.deleteTexture(this._glTex);
         super.destroy();
       }
-      resize(width, height, textureContent = TextureResizing3.Discard) {
+      resize(width, height, textureContent = TextureResizing2.Discard) {
         this.tryInit(true);
         const gl = this.ctx.gl;
         let oldTex = TextureBase.wrapGlTex(this._glTex, this.width, this.height, this.format, this.filterMode, this.ctx);
@@ -6870,7 +6879,7 @@ void main()
         this.width = width;
         this.height = height;
         switch (textureContent) {
-          case TextureResizing3.Discard:
+          case TextureResizing2.Discard:
             break;
           default:
             const [srcRect, dstrEect] = image_sizing_1.imageResize(prevSize, newTex.size, textureContent);
@@ -8555,6 +8564,7 @@ void main()
           __createBinding(exports2, m, p);
     };
     Object.defineProperty(exports, "__esModule", {value: true});
+    exports.TextureFormat = void 0;
     __exportStar2(require_material(), exports);
     __exportStar2(require_material_type(), exports);
     __exportStar2(require_mesh(), exports);
@@ -8565,6 +8575,11 @@ void main()
     __exportStar2(require_lines(), exports);
     __exportStar2(require_event(), exports);
     __exportStar2(require_buffer(), exports);
+    __exportStar2(require_render_target(), exports);
+    var texture_format_1 = require_texture_format();
+    Object.defineProperty(exports, "TextureFormat", {enumerable: true, get: function() {
+      return texture_format_1.TextureFormat;
+    }});
   });
 
   // zogra-renderer/dist/engine/transform.js
@@ -9720,8 +9735,6 @@ void main()
 
   // src/renderer.ts
   var import_zogra_renderer3 = __toModule(require_dist());
-  var import_render_target = __toModule(require_render_target());
-  var import_texture_format2 = __toModule(require_texture_format());
 
   // assets/img/raindrop.png
   var raindrop_default = "dist/raindrop.F5NUXGSV.png";
@@ -9831,30 +9844,29 @@ void main()
   // src/shader/2d-frag.glsl
   var d_frag_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.rgba = color * uColor;\r\n    fragColor = color.rgba;\r\n}";
 
-  // src/shader/raindrop-normal.glsl
-  var raindrop_normal_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\nin float vSize;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform float uSize;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    \r\n    fragColor = vec4(color.rg * color.a, vSize * color.a, color.a);\r\n}";
+  // src/shader/bg-mist.glsl
+  var bg_mist_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform sampler2D uMistTex;\r\nuniform vec4 uMistColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.rgb += vec3(uMistColor);\r\n    color.a = texture(uMistTex, vUV.xy).r * uMistColor.a;\r\n    fragColor = color.rgba;\r\n}";
 
-  // src/shader/raindrop-vert.glsl
-  var raindrop_vert_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec3 aPos;\r\nin vec4 aColor;\r\nin vec2 aUV;\r\nin vec3 aNormal;\r\n\r\nin float aSize;\r\nin mat4 aModelMatrix;\r\n\r\nuniform mat4 uTransformM;\r\nuniform mat4 uTransformVP;\r\nuniform mat4 uTransformMVP;\r\nuniform mat4 uTransformM_IT;\r\n\r\nout vec4 vColor;\r\nout vec4 vPos;\r\nout vec2 vUV;\r\nout vec3 vNormal;\r\nout vec3 vWorldPos;\r\nout float vSize;\r\n\r\nvoid main()\r\n{\r\n    mat4 mvp = uTransformVP * aModelMatrix;\r\n    gl_Position = mvp * vec4(aPos, 1);\r\n    vPos = gl_Position;\r\n    vColor = aColor;\r\n    vUV = aUV;\r\n    vNormal = (uTransformM_IT *  vec4(aNormal, 0)).xyz;\r\n    vWorldPos = (uTransformM * vec4(aPos, 1)).xyz;\r\n    vSize = aSize;\r\n}";
-
-  // src/shader/reflect.glsl
-  var reflect_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uBackgroundSize; // (x, y, 1/x, 1/y)\r\nuniform sampler2D uRaindropTex;\r\nuniform sampler2D uDropletTex;\r\nuniform sampler2D uMistTex;\r\nuniform vec4 uColor;\r\nuniform vec2 uSmoothRaindrop;\r\nuniform vec2 uRefractParams; // (refractBase, refractScale)\r\nuniform vec4 uLightPos;\r\nuniform vec4 uDiffuseColor; // (color.rgb, shadowOffset)\r\nuniform vec4 uSpecularParams; // (color.rgb, exponent)\r\nuniform float uBump;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    // vec3 lightPos = vec3(0.5, 1, 1);\r\n\r\n    vec4 raindrop = texture(uRaindropTex, vUV.xy).rgba;\r\n    vec4 droplet = texture(uDropletTex, vUV.xy).rgba;\r\n    float mist = texture(uMistTex, vUV.xy).r;\r\n\r\n    vec4 compose = vec4(raindrop.rgb + droplet.rgb - vec3(2.0) * raindrop.rgb * droplet.rgb, max(droplet.a, raindrop.a));\r\n\r\n    float mask = smoothstep(uSmoothRaindrop.x, uSmoothRaindrop.y, compose.a);\r\n    \r\n    vec2 uv = vUV.xy + -(compose.xy - vec2(0.5)) * vec2(compose.b * uRefractParams.y + uRefractParams.x);\r\n    vec3 normal = normalize(vec3((compose.xy - vec2(0.5)) * vec2(2), 1.0));\r\n\r\n    // vec3 lightDir = lightPos - vec3(vUV, 0);\r\n    vec3 lightDir = uLightPos.xyz - uLightPos.w * vec3(vUV.xy, 0.0);\r\n    vec3 viewDir = vec3(0, 0, 1);\r\n    vec3 halfDir = normalize(lightDir + viewDir);\r\n    float lambertian = clamp(dot(normalize(lightDir), normal), 0.0, 1.0);\r\n    float blinnPhon = pow(max(dot(normal, halfDir), 0.0), uSpecularParams.a);\r\n\r\n\r\n    // offset = pow(offset, vec2(2));\r\n    vec4 color = texture(uMainTex, uv.xy).rgba;\r\n    vec3 diffuse = vec3((lambertian - uDiffuseColor.a) * uDiffuseColor.rgb);\r\n\r\n    color.rgb += vec3((lambertian - uDiffuseColor.a) * uDiffuseColor.rgb);\r\n    color.rgb += vec3(blinnPhon) * uSpecularParams.rgb;\r\n    \r\n\r\n    // fragColor = vec4(mask, mask, mask, 1);\r\n    // color = color * vec3(uColor);\r\n\r\n    fragColor = vec4(color.rgb, mask);// vec4(color.rgb, mask);\r\n}";
-
-  // src/shader/droplet.glsl
-  var droplet_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.rgb *= color.a;\r\n    fragColor = vec4(color.rg, 0.0, color.a);\r\n}";
+  // src/shader/compose.glsl
+  var compose_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uBackgroundSize; // (x, y, 1/x, 1/y)\r\nuniform sampler2D uRaindropTex;\r\nuniform sampler2D uDropletTex;\r\nuniform sampler2D uMistTex;\r\nuniform vec4 uColor;\r\nuniform vec2 uSmoothRaindrop;\r\nuniform vec2 uRefractParams; // (refractBase, refractScale)\r\nuniform vec4 uLightPos;\r\nuniform vec4 uDiffuseColor; // (color.rgb, shadowOffset)\r\nuniform vec4 uSpecularParams; // (color.rgb, exponent)\r\nuniform float uBump;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    // vec3 lightPos = vec3(0.5, 1, 1);\r\n\r\n    vec4 raindrop = texture(uRaindropTex, vUV.xy).rgba;\r\n    vec4 droplet = texture(uDropletTex, vUV.xy).rgba;\r\n    float mist = texture(uMistTex, vUV.xy).r;\r\n\r\n    vec4 compose = vec4(raindrop.rgb + droplet.rgb - vec3(2.0) * raindrop.rgb * droplet.rgb, max(droplet.a, raindrop.a));\r\n\r\n    float mask = smoothstep(uSmoothRaindrop.x, uSmoothRaindrop.y, compose.a);\r\n    \r\n    vec2 uv = vUV.xy + -(compose.xy - vec2(0.5)) * vec2(compose.b * uRefractParams.y + uRefractParams.x);\r\n    vec3 normal = normalize(vec3((compose.xy - vec2(0.5)) * vec2(2), 1.0));\r\n\r\n    // vec3 lightDir = lightPos - vec3(vUV, 0);\r\n    vec3 lightDir = uLightPos.xyz - uLightPos.w * vec3(vUV.xy, 0.0);\r\n    vec3 viewDir = vec3(0, 0, 1);\r\n    vec3 halfDir = normalize(lightDir + viewDir);\r\n    float lambertian = clamp(dot(normalize(lightDir), normal), 0.0, 1.0);\r\n    float blinnPhon = pow(max(dot(normal, halfDir), 0.0), uSpecularParams.a);\r\n\r\n\r\n    // offset = pow(offset, vec2(2));\r\n    vec4 color = texture(uMainTex, uv.xy).rgba;\r\n    vec3 diffuse = vec3((lambertian - uDiffuseColor.a) * uDiffuseColor.rgb);\r\n\r\n    color.rgb += vec3((lambertian - uDiffuseColor.a) * uDiffuseColor.rgb);\r\n    color.rgb += vec3(blinnPhon) * uSpecularParams.rgb;\r\n    \r\n\r\n    // fragColor = vec4(mask, mask, mask, 1);\r\n    // color = color * vec3(uColor);\r\n\r\n    fragColor = vec4(color.rgb, mask);// vec4(color.rgb, mask);\r\n}";
 
   // src/shader/droplet-vert.glsl
   var droplet_vert_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec3 aPos;\r\nin vec2 aUV;\r\n\r\nuniform mat4 uTransformVP;\r\n\r\nuniform float uSeed;\r\nuniform vec4 uSpawnRect; // (xmin, ymin, xsize, ysize)\r\nuniform vec2 uSizeRange; \r\n\r\nout vec2 vUV;\r\n\r\n// Gold Noise \xA92015 dcerisano@standard3d.com\r\n// - based on the Golden Ratio\r\n// - uniform normalized distribution\r\n// - fastest static noise generator function (also runs at low precision)\r\n// Ref: https://www.shadertoy.com/view/ltB3zD\r\nconst float PHI = 1.61803398874989484820459; // \u03A6 = Golden Ratio \r\n\r\nfloat gold_noise(in vec2 xy, in float seed)\r\n{\r\n    return fract(tan(distance(xy*PHI, xy)*seed)*xy.x);\r\n}\r\n\r\nvec2 lerp(vec2 a, vec2 b, vec2 t)\r\n{\r\n    return a + (b - a) * t;\r\n}\r\n\r\nvoid main()\r\n{\r\n    int id = gl_InstanceID + 1;\r\n    vec2 pos = uSpawnRect.xy + uSpawnRect.zw * vec2(\r\n        gold_noise(vec2(1, id), uSeed + 1.0),\r\n        gold_noise(vec2(id, 1), uSeed + 2.0));\r\n\r\n    vec2 size = vec2(\r\n        gold_noise(vec2(1, id), uSeed + 3.0),\r\n        gold_noise(vec2(id, 1), uSeed + 4.0));\r\n    size = lerp(vec2(uSizeRange.x), vec2(uSizeRange.y), size);\r\n    \r\n    mat4 model = mat4(size.x, 0.0, 0.0, 0.0,  \r\n                      0.0, size.x, 0.0, 0.0,  \r\n                      0.0, 0.0, 1, 0.0,  \r\n                      pos.x, pos.y, 0.0, 1.0); \r\n    mat4 mvp = uTransformVP * model;\r\n    gl_Position = mvp * vec4(aPos, 1);\r\n    vUV = aUV;\r\n}";
 
+  // src/shader/droplet.glsl
+  var droplet_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.rgb *= color.a;\r\n    fragColor = vec4(color.rg, 0.0, color.a);\r\n}";
+
   // src/shader/erase.glsl
   var erase_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uColor;\r\nuniform vec2 uEraserSmooth;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.a = smoothstep(uEraserSmooth.x, uEraserSmooth.y, color.a);\r\n    fragColor = color.rgba;\r\n}";
 
-  // src/shader/bg-mist.glsl
-  var bg_mist_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform sampler2D uMistTex;\r\nuniform vec4 uMistColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.rgb += vec3(uMistColor);\r\n    color.a = texture(uMistTex, vUV.xy).r * uMistColor.a;\r\n    fragColor = color.rgba;\r\n}";
+  // src/shader/raindrop-frag.glsl
+  var raindrop_frag_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\nin float vSize;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform float uSize;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    \r\n    fragColor = vec4(color.rg * color.a, vSize * color.a, color.a);\r\n}";
+
+  // src/shader/raindrop-vert.glsl
+  var raindrop_vert_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec3 aPos;\r\nin vec4 aColor;\r\nin vec2 aUV;\r\nin vec3 aNormal;\r\n\r\nin float aSize;\r\nin mat4 aModelMatrix;\r\n\r\nuniform mat4 uTransformM;\r\nuniform mat4 uTransformVP;\r\nuniform mat4 uTransformMVP;\r\nuniform mat4 uTransformM_IT;\r\n\r\nout vec4 vColor;\r\nout vec4 vPos;\r\nout vec2 vUV;\r\nout vec3 vNormal;\r\nout vec3 vWorldPos;\r\nout float vSize;\r\n\r\nvoid main()\r\n{\r\n    mat4 mvp = uTransformVP * aModelMatrix;\r\n    gl_Position = mvp * vec4(aPos, 1);\r\n    vPos = gl_Position;\r\n    vColor = aColor;\r\n    vUV = aUV;\r\n    vNormal = (uTransformM_IT *  vec4(aNormal, 0)).xyz;\r\n    vWorldPos = (uTransformM * vec4(aPos, 1)).xyz;\r\n    vSize = aSize;\r\n}";
 
   // src/renderer.ts
-  var import_utils = __toModule(require_utils());
-  var RaindropMaterial = class extends import_zogra_renderer3.MaterialFromShader(new import_zogra_renderer3.Shader(raindrop_vert_default, raindrop_normal_default, {
+  var RaindropMaterial = class extends import_zogra_renderer3.MaterialFromShader(new import_zogra_renderer3.Shader(raindrop_vert_default, raindrop_frag_default, {
     blendRGB: [import_zogra_renderer3.Blending.OneMinusDstColor, import_zogra_renderer3.Blending.OneMinusSrcColor],
     depth: import_zogra_renderer3.DepthTest.Disable,
     zWrite: false,
@@ -9904,7 +9916,7 @@ void main()
   __decorate([
     import_zogra_renderer3.shaderProp("uSeed", "float")
   ], DropletMaterial.prototype, "seed", 2);
-  var RaindropCompose = class extends import_zogra_renderer3.MaterialFromShader(new import_zogra_renderer3.Shader(d_vert_default, reflect_default, {
+  var FinalCompose = class extends import_zogra_renderer3.MaterialFromShader(new import_zogra_renderer3.Shader(d_vert_default, compose_default, {
     blend: [import_zogra_renderer3.Blending.SrcAlpha, import_zogra_renderer3.Blending.OneMinusSrcAlpha],
     depth: import_zogra_renderer3.DepthTest.Disable,
     zWrite: false
@@ -9926,37 +9938,37 @@ void main()
   };
   __decorate([
     import_zogra_renderer3.shaderProp("uMainTex", "tex2d")
-  ], RaindropCompose.prototype, "background", 2);
+  ], FinalCompose.prototype, "background", 2);
   __decorate([
     import_zogra_renderer3.shaderProp("uBackgroundSize", "vec4")
-  ], RaindropCompose.prototype, "backgroundSize", 2);
+  ], FinalCompose.prototype, "backgroundSize", 2);
   __decorate([
     import_zogra_renderer3.shaderProp("uRaindropTex", "tex2d")
-  ], RaindropCompose.prototype, "raindropTex", 2);
+  ], FinalCompose.prototype, "raindropTex", 2);
   __decorate([
     import_zogra_renderer3.shaderProp("uDropletTex", "tex2d")
-  ], RaindropCompose.prototype, "dropletTex", 2);
+  ], FinalCompose.prototype, "dropletTex", 2);
   __decorate([
     import_zogra_renderer3.shaderProp("uMistTex", "tex2d")
-  ], RaindropCompose.prototype, "mistTex", 2);
+  ], FinalCompose.prototype, "mistTex", 2);
   __decorate([
     import_zogra_renderer3.shaderProp("uSmoothRaindrop", "vec2")
-  ], RaindropCompose.prototype, "smoothRaindrop", 2);
+  ], FinalCompose.prototype, "smoothRaindrop", 2);
   __decorate([
     import_zogra_renderer3.shaderProp("uRefractParams", "vec2")
-  ], RaindropCompose.prototype, "refractParams", 2);
+  ], FinalCompose.prototype, "refractParams", 2);
   __decorate([
     import_zogra_renderer3.shaderProp("uLightPos", "vec4")
-  ], RaindropCompose.prototype, "lightPos", 2);
+  ], FinalCompose.prototype, "lightPos", 2);
   __decorate([
     import_zogra_renderer3.shaderProp("uDiffuseColor", "color")
-  ], RaindropCompose.prototype, "diffuseLight", 2);
+  ], FinalCompose.prototype, "diffuseLight", 2);
   __decorate([
     import_zogra_renderer3.shaderProp("uSpecularParams", "vec4")
-  ], RaindropCompose.prototype, "specularParams", 2);
+  ], FinalCompose.prototype, "specularParams", 2);
   __decorate([
     import_zogra_renderer3.shaderProp("uBump", "float")
-  ], RaindropCompose.prototype, "bump", 2);
+  ], FinalCompose.prototype, "bump", 2);
   var RaindropErase = class extends import_zogra_renderer3.SimpleTexturedMaterial(new import_zogra_renderer3.Shader(d_vert_default, erase_default, {
     blendRGB: [import_zogra_renderer3.Blending.Zero, import_zogra_renderer3.Blending.OneMinusSrcAlpha],
     blendAlpha: [import_zogra_renderer3.Blending.Zero, import_zogra_renderer3.Blending.OneMinusSrcAlpha]
@@ -9972,7 +9984,7 @@ void main()
   var MistAccumulate = import_zogra_renderer3.SimpleTexturedMaterial(new import_zogra_renderer3.Shader(d_vert_default, d_frag_default, {
     blend: [import_zogra_renderer3.Blending.One, import_zogra_renderer3.Blending.One]
   }));
-  var MistBackground = class extends import_zogra_renderer3.SimpleTexturedMaterial(new import_zogra_renderer3.Shader(d_vert_default, bg_mist_default, {
+  var MistBackgroundCompose = class extends import_zogra_renderer3.SimpleTexturedMaterial(new import_zogra_renderer3.Shader(d_vert_default, bg_mist_default, {
     blend: [import_zogra_renderer3.Blending.SrcAlpha, import_zogra_renderer3.Blending.OneMinusSrcAlpha]
   })) {
     constructor() {
@@ -9983,20 +9995,20 @@ void main()
   };
   __decorate([
     import_zogra_renderer3.shaderProp("uMistColor", "color")
-  ], MistBackground.prototype, "mistColor", 2);
+  ], MistBackgroundCompose.prototype, "mistColor", 2);
   __decorate([
     import_zogra_renderer3.shaderProp("uMistTex", "tex2d")
-  ], MistBackground.prototype, "mistTex", 2);
+  ], MistBackgroundCompose.prototype, "mistTex", 2);
   var RaindropRenderer = class {
     constructor(options) {
       this.raindropTex = null;
       this.originalBackground = null;
-      this.matRefract = new RaindropCompose();
-      this.matRaindrop = new RaindropMaterial();
-      this.matDroplet = new DropletMaterial();
-      this.matRaindropErase = new RaindropErase();
-      this.matMist = new MistAccumulate();
-      this.matMistBackground = new MistBackground();
+      this.matrlCompose = new FinalCompose();
+      this.matrlRaindrop = new RaindropMaterial();
+      this.matrlDroplet = new DropletMaterial();
+      this.matrlErase = new RaindropErase();
+      this.matrlMist = new MistAccumulate();
+      this.matrlMistCompose = new MistBackgroundCompose();
       this.mesh = import_zogra_renderer3.MeshBuilder.quad();
       this.raindropBuffer = new import_zogra_renderer3.RenderBuffer({
         size: "float",
@@ -10011,14 +10023,14 @@ void main()
       this.dropletTexture = new import_zogra_renderer3.RenderTexture(options.width, options.height, false);
       this.blurryBackground = new import_zogra_renderer3.RenderTexture(options.width, options.height, false);
       this.mistBackground = new import_zogra_renderer3.RenderTexture(options.width, options.height, false);
-      this.mistTexture = new import_zogra_renderer3.RenderTexture(options.width, options.height, false, import_texture_format2.TextureFormat.R16F);
+      this.mistTexture = new import_zogra_renderer3.RenderTexture(options.width, options.height, false, import_zogra_renderer3.TextureFormat.R16F);
       this.blurRenderer = new BlurRenderer(this.renderer);
       this.renderer.setViewProjection(import_zogra_renderer3.mat4.identity(), this.projectionMatrix);
     }
     async loadAssets() {
       this.raindropTex = await import_zogra_renderer3.TextureImporter.url(raindrop_default).then((t) => t.tex2d());
-      this.matRaindrop.texture = this.raindropTex;
-      this.matDroplet.texture = this.raindropTex;
+      this.matrlRaindrop.texture = this.raindropTex;
+      this.matrlDroplet.texture = this.raindropTex;
       await this.reloadBackground();
     }
     async reloadBackground() {
@@ -10031,7 +10043,7 @@ void main()
         this.originalBackground.setData(this.options.background);
         this.originalBackground.updateParameters();
       }
-      const [srcRect, dstRect] = import_zogra_renderer3.Utils.imageResize(this.originalBackground.size, this.background.size, import_utils.ImageSizing.Cover);
+      const [srcRect, dstRect] = import_zogra_renderer3.Utils.imageResize(this.originalBackground.size, this.background.size, import_zogra_renderer3.Utils.ImageSizing.Cover);
       this.renderer.blit(this.originalBackground, this.background, this.renderer.assets.materials.blitCopy, srcRect, dstRect);
       this.background.generateMipmap();
       this.blurBackground();
@@ -10046,32 +10058,30 @@ void main()
       this.blurryBackground.resize(this.options.width, this.options.height);
       this.mistBackground.resize(this.options.width, this.options.height);
       this.mistTexture.resize(this.options.width, this.options.height);
-      const [srcRect, dstRect] = import_zogra_renderer3.Utils.imageResize(this.originalBackground.size, this.background.size, import_utils.ImageSizing.Cover);
+      const [srcRect, dstRect] = import_zogra_renderer3.Utils.imageResize(this.originalBackground.size, this.background.size, import_zogra_renderer3.Utils.ImageSizing.Cover);
       this.renderer.blit(this.originalBackground, this.background, this.renderer.assets.materials.blitCopy, srcRect, dstRect);
       this.background.generateMipmap();
       this.blurBackground();
-    }
-    resetOptions() {
     }
     render(raindrops, time) {
       this.drawDroplet(time);
       this.drawMist(time.dt);
       this.drawRaindrops(raindrops);
-      this.renderer.setRenderTarget(import_render_target.RenderTarget.CanvasTarget);
+      this.renderer.setRenderTarget(import_zogra_renderer3.RenderTarget.CanvasTarget);
       this.renderer.clear(import_zogra_renderer3.Color.black);
       this.drawBackground();
-      this.matRefract.background = this.blurryBackground;
-      this.matRefract.backgroundSize = import_zogra_renderer3.vec4(this.options.width, this.options.height, 1 / this.options.width, 1 / this.options.height);
-      this.matRefract.raindropTex = this.raindropComposeTex;
-      this.matRefract.dropletTex = this.dropletTexture;
-      this.matRefract.mistTex = this.mistTexture;
-      this.matRefract.smoothRaindrop = import_zogra_renderer3.vec2(...this.options.smoothRaindrop);
-      this.matRefract.refractParams = import_zogra_renderer3.vec2(this.options.refractBase, this.options.refractScale);
-      this.matRefract.lightPos = import_zogra_renderer3.vec4(...this.options.raindropLightPos);
-      this.matRefract.diffuseLight = new import_zogra_renderer3.Color(...this.options.raindropDiffuseLight, this.options.raindropShadowOffset);
-      this.matRefract.specularParams = import_zogra_renderer3.vec4(...this.options.raindropSpecularLight, this.options.raindropSpecularShininess);
-      this.matRefract.bump = this.options.raindropLightBump;
-      this.renderer.blit(null, import_render_target.RenderTarget.CanvasTarget, this.matRefract);
+      this.matrlCompose.background = this.blurryBackground;
+      this.matrlCompose.backgroundSize = import_zogra_renderer3.vec4(this.options.width, this.options.height, 1 / this.options.width, 1 / this.options.height);
+      this.matrlCompose.raindropTex = this.raindropComposeTex;
+      this.matrlCompose.dropletTex = this.dropletTexture;
+      this.matrlCompose.mistTex = this.mistTexture;
+      this.matrlCompose.smoothRaindrop = import_zogra_renderer3.vec2(...this.options.smoothRaindrop);
+      this.matrlCompose.refractParams = import_zogra_renderer3.vec2(this.options.refractBase, this.options.refractScale);
+      this.matrlCompose.lightPos = import_zogra_renderer3.vec4(...this.options.raindropLightPos);
+      this.matrlCompose.diffuseLight = new import_zogra_renderer3.Color(...this.options.raindropDiffuseLight, this.options.raindropShadowOffset);
+      this.matrlCompose.specularParams = import_zogra_renderer3.vec4(...this.options.raindropSpecularLight, this.options.raindropSpecularShininess);
+      this.matrlCompose.bump = this.options.raindropLightBump;
+      this.renderer.blit(null, import_zogra_renderer3.RenderTarget.CanvasTarget, this.matrlCompose);
     }
     blurBackground() {
       if (!this.options.mist) {
@@ -10094,16 +10104,16 @@ void main()
     drawMist(dt) {
       if (!this.options.mist)
         return;
-      this.matMist.color.r = dt / this.options.mistTime;
-      this.renderer.blit(this.renderer.assets.textures.default, this.mistTexture, this.matMist);
+      this.matrlMist.color.r = dt / this.options.mistTime;
+      this.renderer.blit(this.renderer.assets.textures.default, this.mistTexture, this.matrlMist);
     }
     drawBackground() {
-      this.renderer.blit(this.blurryBackground, import_render_target.RenderTarget.CanvasTarget);
+      this.renderer.blit(this.blurryBackground, import_zogra_renderer3.RenderTarget.CanvasTarget);
       if (this.options.mist) {
-        this.matMistBackground.mistTex = this.mistTexture;
-        this.matMistBackground.texture = this.mistBackground;
-        this.matMistBackground.mistColor = new import_zogra_renderer3.Color(...this.options.mistColor);
-        this.renderer.blit(this.mistBackground, import_render_target.RenderTarget.CanvasTarget, this.matMistBackground);
+        this.matrlMistCompose.mistTex = this.mistTexture;
+        this.matrlMistCompose.texture = this.mistBackground;
+        this.matrlMistCompose.mistColor = new import_zogra_renderer3.Color(...this.options.mistColor);
+        this.renderer.blit(this.mistBackground, import_zogra_renderer3.RenderTarget.CanvasTarget, this.matrlMistCompose);
       }
     }
     drawRaindrops(raindrops) {
@@ -10117,19 +10127,37 @@ void main()
         this.raindropBuffer[i].modelMatrix.set(model);
         this.raindropBuffer[i].size[0] = raindrop.size.x / 100;
       }
-      this.renderer.drawMeshInstance(this.mesh, this.raindropBuffer, this.matRaindrop, raindrops.length);
-      this.matRaindropErase.eraserSize = import_zogra_renderer3.vec2(...this.options.raindropEraserSize);
-      this.renderer.blit(this.raindropComposeTex, this.dropletTexture, this.matRaindropErase);
+      switch (this.options.raindropCompose) {
+        case "smoother":
+          this.matrlRaindrop.shader.setPipelineStates({
+            blendRGB: [import_zogra_renderer3.Blending.OneMinusDstColor, import_zogra_renderer3.Blending.OneMinusSrcColor]
+          });
+          this.matrlDroplet.shader.setPipelineStates({
+            blendRGB: [import_zogra_renderer3.Blending.OneMinusDstColor, import_zogra_renderer3.Blending.OneMinusSrcColor]
+          });
+          break;
+        case "harder":
+          this.matrlRaindrop.shader.setPipelineStates({
+            blendRGB: [import_zogra_renderer3.Blending.One, import_zogra_renderer3.Blending.OneMinusSrcAlpha]
+          });
+          this.matrlDroplet.shader.setPipelineStates({
+            blendRGB: [import_zogra_renderer3.Blending.One, import_zogra_renderer3.Blending.OneMinusSrcAlpha]
+          });
+          break;
+      }
+      this.renderer.drawMeshInstance(this.mesh, this.raindropBuffer, this.matrlRaindrop, raindrops.length);
+      this.matrlErase.eraserSize = import_zogra_renderer3.vec2(...this.options.raindropEraserSize);
+      this.renderer.blit(this.raindropComposeTex, this.dropletTexture, this.matrlErase);
       if (this.options.mist)
-        this.renderer.blit(this.raindropComposeTex, this.mistTexture, this.matRaindropErase);
+        this.renderer.blit(this.raindropComposeTex, this.mistTexture, this.matrlErase);
     }
     drawDroplet(time) {
       this.renderer.setRenderTarget(this.dropletTexture);
       const count = this.options.dropletsPerSeconds * time.dt;
-      this.matDroplet.spawnRect = import_zogra_renderer3.vec4(0, 0, this.options.width, this.options.height);
-      this.matDroplet.sizeRange = import_zogra_renderer3.vec2(...this.options.dropletSize);
-      this.matDroplet.seed = randomRange(0, 133);
-      this.renderer.drawMeshProceduralInstance(this.mesh, this.matDroplet, count);
+      this.matrlDroplet.spawnRect = import_zogra_renderer3.vec4(0, 0, this.options.width, this.options.height);
+      this.matrlDroplet.sizeRange = import_zogra_renderer3.vec2(...this.options.dropletSize);
+      this.matrlDroplet.seed = randomRange(0, 133);
+      this.renderer.drawMeshProceduralInstance(this.mesh, this.matrlDroplet, count);
     }
   };
 
