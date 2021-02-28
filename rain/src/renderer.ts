@@ -290,8 +290,8 @@ export class RaindropRenderer
     {
         // this.renderer.blit(null, RenderTarget.CanvasTarget);
         this.raindropTex = await TextureImporter
-            .url(raindropTexture)
-            .then(t => t.tex2d());
+            .buffer(raindropTexture)
+            .then(t=>t.tex2d());
 
         this.matrlRaindrop.texture = this.raindropTex;
         this.matrlDroplet.texture = this.raindropTex;
@@ -301,6 +301,7 @@ export class RaindropRenderer
     }
     async reloadBackground()
     {
+        this.originalBackground?.destroy();
         if (typeof (this.options.background) === "string")
         {
             this.originalBackground = await TextureImporter

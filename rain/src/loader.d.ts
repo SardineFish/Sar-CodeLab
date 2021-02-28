@@ -1,9 +1,9 @@
 declare module '*.png' {
-    const contents: string
+    const contents: Uint8Array
     export = contents
 }
 declare module '*.jpg' {
-    const contents: string
+    const contents: Uint8Array
     export = contents
 }
 declare module '*.fbx' {

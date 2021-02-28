@@ -8,13 +8,14 @@ require("esbuild").build({
     ],
     bundle: true,
     loader: {
-        ".png": "file",
-        ".jpg": "file",
+        ".png": "binary",
+        ".jpg": "binary",
         ".glsl": "text",
     },
     minify: !dev,
     watch: watch,
     sourcemap: true,
-    outdir: "./dist",
-    publicPath: "dist"
+    outdir: "./bundle",
+    publicPath: "bundle",
+    globalName: "RaindropFX",
 })

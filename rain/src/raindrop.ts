@@ -1,8 +1,7 @@
-import { trimEnd } from "*.png";
-import { div, minus, mul, plus, vec2, Vector2 } from "zogra-renderer";
-import { goldNoise, random, randomRange } from "./random";
+import { div, mul, plus, vec2, Vector2 } from "zogra-renderer";
+import { random, randomRange } from "./random";
 import { RaindropSimulator } from "./simulator";
-import { clamp, lerp, Time } from "./utils";
+import { lerp, Time } from "./utils";
 
 export class RainDrop
 {

@@ -1,5 +1,5 @@
 /**
- * @typedef {import("./src/index")}
+ * @typedef {import("./bundle")}
  */
 
 const canvas = document.querySelector("#canvas");
@@ -7,9 +7,9 @@ const rect = canvas.getBoundingClientRect();
 canvas.width = rect.width;
 canvas.height = rect.height;
 
-const raindropFx = new SarRaindropFX({
+const raindropFx = new RaindropFX({
     canvas: canvas,
-    background: "./assets/img/84765992_p0.jpg"
+    background: "./assets/img/84765992_p0.jpg",
 });
 
 window.onresize = () =>
@@ -17,13 +17,5 @@ window.onresize = () =>
     const rect = canvas.getBoundingClientRect();
     raindropFx.resize(rect.width, rect.height);
 }
-
-// raindropFx.setBackground("./assets/img/84765992_p0.jpg");
-// raindropFx.start();
-// (async () =>
-// {
-//     await raindropFx.load();
-//     raindropFx.start();
-// })();
 
 raindropFx.start();

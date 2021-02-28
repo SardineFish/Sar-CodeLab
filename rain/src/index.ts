@@ -1,24 +1,25 @@
-import { Rect, vec2 } from "zogra-renderer";
+import { Rect, TextureData, vec2 } from "zogra-renderer";
 import { RaindropRenderer, RenderOptions } from "./renderer";
 import { RaindropSimulator, SimulatorOptions } from "./simulator";
 import { Time } from "./utils";
 
-export interface Options extends SimulatorOptions, RenderOptions
+interface Options extends SimulatorOptions, RenderOptions
 {
 }
 
-export class RaindropFX
+class RaindropFX
 {
     public options: Options;
     public renderer: RaindropRenderer;
     public simulator: RaindropSimulator;
 
-    private animFrameId: number = -1;
+    private animHandle = 0;
 
     constructor(options: Partial<Options> & {canvas: HTMLCanvasElement})
     {
         const canvas = options.canvas;
         const defaultOptions: Options = {
+            // Simulator options
             spawnInterval: [0.1, 0.1],
             spawnSize: [60, 100],
             spawnLimit: 2000,
@@ -41,6 +42,7 @@ export class RaindropFX
             evaporate: 10,
             xShifting: [0, 0.1],
 
+            // Rendering options
             backgroundBlurSteps: 3,
             mist: true,
             mistColor: [0.01, 0.01, 0.01, 1],
@@ -82,10 +84,15 @@ export class RaindropFX
 
             this.update(time);
 
-            this.animFrameId = requestAnimationFrame(update);
+            this.animHandle = requestAnimationFrame(update);
         };
 
-        this.animFrameId =  requestAnimationFrame(update);
+        this.animHandle =  requestAnimationFrame(update);
+    }
+    
+    stop()
+    {
+        cancelAnimationFrame(this.animHandle);
     }
 
     resize(width: number, height: number)
@@ -94,6 +101,12 @@ export class RaindropFX
         this.options.height = height;
         this.options.viewport = new Rect(vec2.zero(), vec2(width, height));
         this.renderer.resize();
+    }
+
+    async setBackground(background: string | TextureData)
+    {
+        this.renderer.options.background = background;
+        await this.renderer.reloadBackground();
     }
     
     private update(time: Time)
@@ -105,9 +118,4 @@ export class RaindropFX
 
 }
 
-(window as any).SarRaindropFX = RaindropFX;
-
-declare global
-{
-    const SarRaindropFX: typeof RaindropFX;
-}
+export = RaindropFX;
