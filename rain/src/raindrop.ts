@@ -1,6 +1,6 @@
 import { div, mul, plus, vec2, Vector2 } from "zogra-renderer";
 import { random, randomRange } from "./random";
-import { RaindropSimulator } from "./simulator";
+import { CollisionGrid, RaindropSimulator } from "./simulator";
 import { lerp, Time } from "./utils";
 
 export class RainDrop
@@ -11,7 +11,8 @@ export class RainDrop
     spread: vec2;
     destroied = false;
     parent?: RainDrop;
-    grid?: Set<RainDrop>;
+    grid?: CollisionGrid;
+    gridIdx?: number;
 
     private _mass: number = 0;
     private _size: vec2 = vec2.zero();

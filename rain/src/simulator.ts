@@ -79,12 +79,35 @@ export interface SimulatorOptions
     gravity: number;
 }
 
+export class CollisionGrid extends Array<RainDrop>
+{
+    /**@deprecated */
+    push(...item :RainDrop[])
+    {
+        return super.push(...item);
+    }
+    add(raindrop: RainDrop)
+    {
+        const len = super.push(raindrop);
+        raindrop.gridIdx = len - 1;
+        raindrop.grid = this;
+    }
+    delete(raindrop: RainDrop)
+    {
+        this[raindrop.gridIdx as number] = this[this.length - 1];
+        this[raindrop.gridIdx as number].gridIdx = raindrop.gridIdx;
+        this.length--;
+        raindrop.gridIdx = -1;
+        raindrop.grid = undefined;
+    }
+}
+
 export class RaindropSimulator
 {
     options: SimulatorOptions;
     spawner: Spawner;
     raindrops: RainDrop[] = [];
-    grid: Set<RainDrop>[] = [];
+    grid: CollisionGrid[] = [];
     constructor(options: SimulatorOptions)
     {
         this.options = options;
@@ -106,7 +129,7 @@ export class RaindropSimulator
             this.grid.length = w * h;
         }
         for (let i = base; i < this.grid.length; i++)
-            this.grid[i] = new Set();
+            this.grid[i] = new CollisionGrid();
     }
     gridAt(gridX: number, gridY: number)
     {
@@ -133,8 +156,11 @@ export class RaindropSimulator
 
         this.raindrops.push(raindrop);
         let grid = this.gridAtWorldPos(raindrop.pos.x, raindrop.pos.y);
-        grid?.add(raindrop);
-        raindrop.grid = grid;
+        if (grid)
+        {
+            grid.add(raindrop);
+            raindrop.gridIdx = grid.length - 1;
+        }
     }
 
     update(time: Time)

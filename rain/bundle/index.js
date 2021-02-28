@@ -10394,6 +10394,23 @@ void main()
   };
 
   // src/simulator.ts
+  var CollisionGrid = class extends Array {
+    push(...item) {
+      return super.push(...item);
+    }
+    add(raindrop) {
+      const len = super.push(raindrop);
+      raindrop.gridIdx = len - 1;
+      raindrop.grid = this;
+    }
+    delete(raindrop) {
+      this[raindrop.gridIdx] = this[this.length - 1];
+      this[raindrop.gridIdx].gridIdx = raindrop.gridIdx;
+      this.length--;
+      raindrop.gridIdx = -1;
+      raindrop.grid = void 0;
+    }
+  };
   var RaindropSimulator = class {
     constructor(options) {
       this.raindrops = [];
@@ -10414,7 +10431,7 @@ void main()
         this.grid.length = w * h;
       }
       for (let i = base; i < this.grid.length; i++)
-        this.grid[i] = new Set();
+        this.grid[i] = new CollisionGrid();
     }
     gridAt(gridX, gridY) {
       if (gridX < 0 || gridY < 0)
@@ -10436,8 +10453,10 @@ void main()
     add(raindrop) {
       this.raindrops.push(raindrop);
       let grid = this.gridAtWorldPos(raindrop.pos.x, raindrop.pos.y);
-      grid?.add(raindrop);
-      raindrop.grid = grid;
+      if (grid) {
+        grid.add(raindrop);
+        raindrop.gridIdx = grid.length - 1;
+      }
     }
     update(time) {
       if (this.raindrops.length <= this.options.spawnLimit) {

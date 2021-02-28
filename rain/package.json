@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node ./build.js",
     "build:watch": "node ./build.js --dev -w",
-    "start": "npx esbuild --servedir=./",
+    "start": "npx esbuild --serve=0.0.0.0:8000 --servedir=./",
     "check": "npx tsc",
     "check:watch": "npx tsc -w"
   },
