@@ -27,15 +27,18 @@ export class Spawner
         this.currentTime += dt;
         return this;
     }
-    trySpawn(): RainDrop | undefined
+    *trySpawn(): Iterable<RainDrop>
     {
-        if (this.currentTime >= this.nextSpawn)
+        while (this.currentTime >= this.nextSpawn)
         {
-            this.nextSpawn = this.currentTime + randomRange(...this.interval);
-
             const size = randomRange(...this.size);
             const pos = randomInRect(this.spawnRect);
-            return new RainDrop(this.simulator, pos, size);
+            this.nextSpawn += randomRange(...this.interval);
+            yield new RainDrop(this.simulator, pos, size);
+        }
+        if (this.currentTime >= this.nextSpawn)
+        {
+
         }
         return undefined;
     }

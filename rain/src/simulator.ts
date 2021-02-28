@@ -16,6 +16,11 @@ export interface SimulatorOptions
      */
     spawnSize: [number, number];
     /**
+     * Maximal amount of spawned raindrops.
+     * Recommend less than 2000
+     */
+    spawnLimit: number;
+    /**
      * Recommend in range (0..1), other value should be ok.
      */
     slipRate: number;
@@ -134,11 +139,12 @@ export class RaindropSimulator
 
     update(time: Time)
     {
-        if (this.raindrops.length < 2000)
+        if (this.raindrops.length <= this.options.spawnLimit)
         {
-            let newDrop = this.spawner.update(time.dt).trySpawn();
-            if (newDrop)
+            for (const newDrop of this.spawner.update(time.dt).trySpawn())
+            {
                 this.raindrops.push(newDrop); 
+            }
         }
 
         this.raindropUpdate(time);

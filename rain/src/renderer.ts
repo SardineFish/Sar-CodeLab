@@ -10,7 +10,8 @@ import defaultFrag from "./shader/2d-frag.glsl";
 import raindropNormal from "./shader/raindrop-normal.glsl";
 import raindropVert from "./shader/raindrop-vert.glsl";
 import raindropReflect from "./shader/reflect.glsl";
-import dropletNormal from "./shader/droplet.glsl";
+import dropletFrag from "./shader/droplet.glsl";
+import dropletVert from "./shader/droplet-vert.glsl";
 import raindropErase from "./shader/erase.glsl";
 import mistBackground from "./shader/bg-mist.glsl";
 import { ImageSizing } from "zogra-renderer/dist/utils";
@@ -34,7 +35,7 @@ class RaindropMaterial extends MaterialFromShader(new Shader(raindropVert, raind
     size: number = 0;
 }
 
-class DropletMaterial extends MaterialFromShader(new Shader(raindropVert, dropletNormal, {
+class DropletMaterial extends MaterialFromShader(new Shader(dropletVert, dropletFrag, {
     blendRGB: [Blending.OneMinusDstColor, Blending.OneMinusSrcColor],
     depth: DepthTest.Disable,
     zWrite: false,
@@ -46,6 +47,15 @@ class DropletMaterial extends MaterialFromShader(new Shader(raindropVert, drople
 {
     @shaderProp("uMainTex", "tex2d")
     texture: Texture | null = null;
+
+    @shaderProp("uSpawnRect", "vec4")
+    spawnRect: vec4 = vec4(0, 0, 1, 1);
+
+    @shaderProp("uSizeRange", "vec2")
+    sizeRange: vec2 = vec2(10, 20);
+
+    @shaderProp("uSeed", "float")
+    seed: number = 1;
 }
 
 class RaindropCompose extends MaterialFromShader(new Shader(defaultVert, raindropReflect, {
@@ -119,7 +129,6 @@ export interface RenderOptions
     canvas: HTMLCanvasElement;
     width: number;
     height: number;
-    dropletSize: [number, number];
     background: TextureData | string;
     /**
      * Background blur steps used for background & raindrop refract image.
@@ -147,6 +156,15 @@ export interface RenderOptions
      * Recommended value = backgroundBlurSteps + 1
      */
     mistBlurStep: number;
+    /**
+     * Tiny droplet spawn rate.
+     */
+    dropletsPerSeconds: number;
+    /**
+     * Random size range of tiny drplets.
+     * Recommend [10, 30]
+     */
+    dropletSize: [number, number];
     /**
      * Smooth range [a, b] of raindrop edge.
      * Recommend [0.96, 1.0]
@@ -245,9 +263,6 @@ export class RaindropRenderer
         size: "float",
         modelMatrix: "mat4",
     }, 3000);
-    private dropletBuffer = new RenderBuffer({
-        modelMatrix: "mat4",
-    }, 100);
 
     // deubg: DebugLayerRenderer = new DebugLayerRenderer();
 
@@ -330,7 +345,7 @@ export class RaindropRenderer
     }
     render(raindrops: RainDrop[], time: Time)
     {
-        this.drawDroplet();
+        this.drawDroplet(time);
         this.drawMist(time.dt);
         this.drawRaindrops(raindrops);
 
@@ -433,18 +448,13 @@ export class RaindropRenderer
             this.renderer.blit(this.raindropComposeTex, this.mistTexture, this.matRaindropErase);
     }
 
-    private drawDroplet()
+    private drawDroplet(time: Time)
     {
         this.renderer.setRenderTarget(this.dropletTexture);
-        for (let i = 0; i < 10; i++)
-        {
-            const pos = vec3(randomRange(0, this.options.width), randomRange(0, this.options.height), 0);
-            let size = vec3(randomRange(...this.options.dropletSize), randomRange(...this.options.dropletSize), 1);
-            let model = mat4.rts(quat.identity(), pos, size);
-
-            this.dropletBuffer[i].modelMatrix.set(model);
-            // this.renderer.drawMesh(this.mesh, model, this.matDroplet);
-        }
-        this.renderer.drawMeshInstance(this.mesh, this.dropletBuffer, this.matDroplet, 10);
+        const count = this.options.dropletsPerSeconds * time.dt;
+        this.matDroplet.spawnRect = vec4(0, 0, this.options.width, this.options.height);
+        this.matDroplet.sizeRange = vec2(...this.options.dropletSize);
+        this.matDroplet.seed = randomRange(0, 133);
+        this.renderer.drawMeshProceduralInstance(this.mesh, this.matDroplet, count);
     }
 }

@@ -1,8 +1,6 @@
 #version 300 es
 precision mediump float;
 
-in vec4 vColor;
-in vec4 vPos;
 in vec2 vUV;
 
 uniform sampler2D uMainTex;
@@ -14,5 +12,5 @@ void main()
 {
     vec4 color = texture(uMainTex, vUV.xy).rgba;
     color.rgb *= color.a;
-    fragColor = vec4(color.rg, 0.2, color.a);
+    fragColor = vec4(color.rg, 0.0, color.a);
 }

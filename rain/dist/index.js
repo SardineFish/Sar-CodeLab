@@ -8147,6 +8147,25 @@ void main()
         buffer.cleanupInstanceDraw(material.shader);
         material.unbindRenderTextures();
       }
+      drawMeshProceduralInstance(mesh, material, count) {
+        if (!material)
+          material = this.assets.materials.error;
+        const gl = this.gl;
+        const data = {
+          assets: this.assets,
+          gl,
+          nextTextureUnit: 0,
+          size: vec2_1.vec2(this.width, this.height)
+        };
+        this.target.bind(this.ctx);
+        this.setupScissor();
+        this.useShader(material.shader);
+        material.upload(data);
+        this.setupTransforms(material.shader, mat4_1.mat4.identity());
+        mesh.bind(material.shader);
+        gl.drawElementsInstanced(gl.TRIANGLES, mesh.triangles.length, gl.UNSIGNED_INT, 0, count);
+        material.unbindRenderTextures();
+      }
       drawMesh(mesh, transform, material) {
         if (!material)
           material = this.assets.materials.error;
@@ -9822,7 +9841,10 @@ void main()
   var reflect_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uBackgroundSize; // (x, y, 1/x, 1/y)\r\nuniform sampler2D uRaindropTex;\r\nuniform sampler2D uDropletTex;\r\nuniform sampler2D uMistTex;\r\nuniform vec4 uColor;\r\nuniform vec2 uSmoothRaindrop;\r\nuniform vec2 uRefractParams; // (refractBase, refractScale)\r\nuniform vec4 uLightPos;\r\nuniform vec4 uDiffuseColor; // (color.rgb, shadowOffset)\r\nuniform vec4 uSpecularParams; // (color.rgb, exponent)\r\nuniform float uBump;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    // vec3 lightPos = vec3(0.5, 1, 1);\r\n\r\n    vec4 raindrop = texture(uRaindropTex, vUV.xy).rgba;\r\n    vec4 droplet = texture(uDropletTex, vUV.xy).rgba;\r\n    float mist = texture(uMistTex, vUV.xy).r;\r\n\r\n    vec4 compose = vec4(raindrop.rgb + droplet.rgb - vec3(2.0) * raindrop.rgb * droplet.rgb, max(droplet.a, raindrop.a));\r\n\r\n    float mask = smoothstep(uSmoothRaindrop.x, uSmoothRaindrop.y, compose.a);\r\n    \r\n    vec2 uv = vUV.xy + -(compose.xy - vec2(0.5)) * vec2(compose.b * uRefractParams.y + uRefractParams.x);\r\n    vec3 normal = normalize(vec3((compose.xy - vec2(0.5)) * vec2(2), 1.0));\r\n\r\n    // vec3 lightDir = lightPos - vec3(vUV, 0);\r\n    vec3 lightDir = uLightPos.xyz - uLightPos.w * vec3(vUV.xy, 0.0);\r\n    vec3 viewDir = vec3(0, 0, 1);\r\n    vec3 halfDir = normalize(lightDir + viewDir);\r\n    float lambertian = clamp(dot(normalize(lightDir), normal), 0.0, 1.0);\r\n    float blinnPhon = pow(max(dot(normal, halfDir), 0.0), uSpecularParams.a);\r\n\r\n\r\n    // offset = pow(offset, vec2(2));\r\n    vec4 color = texture(uMainTex, uv.xy).rgba;\r\n    vec3 diffuse = vec3((lambertian - uDiffuseColor.a) * uDiffuseColor.rgb);\r\n\r\n    color.rgb += vec3((lambertian - uDiffuseColor.a) * uDiffuseColor.rgb);\r\n    color.rgb += vec3(blinnPhon) * uSpecularParams.rgb;\r\n    \r\n\r\n    // fragColor = vec4(mask, mask, mask, 1);\r\n    // color = color * vec3(uColor);\r\n\r\n    fragColor = vec4(color.rgb, mask);// vec4(color.rgb, mask);\r\n}";
 
   // src/shader/droplet.glsl
-  var droplet_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.rgb *= color.a;\r\n    fragColor = vec4(color.rg, 0.2, color.a);\r\n}";
+  var droplet_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uColor;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.rgb *= color.a;\r\n    fragColor = vec4(color.rg, 0.0, color.a);\r\n}";
+
+  // src/shader/droplet-vert.glsl
+  var droplet_vert_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec3 aPos;\r\nin vec2 aUV;\r\n\r\nuniform mat4 uTransformVP;\r\n\r\nuniform float uSeed;\r\nuniform vec4 uSpawnRect; // (xmin, ymin, xsize, ysize)\r\nuniform vec2 uSizeRange; \r\n\r\nout vec2 vUV;\r\n\r\n// Gold Noise \xA92015 dcerisano@standard3d.com\r\n// - based on the Golden Ratio\r\n// - uniform normalized distribution\r\n// - fastest static noise generator function (also runs at low precision)\r\n// Ref: https://www.shadertoy.com/view/ltB3zD\r\nconst float PHI = 1.61803398874989484820459; // \u03A6 = Golden Ratio \r\n\r\nfloat gold_noise(in vec2 xy, in float seed)\r\n{\r\n    return fract(tan(distance(xy*PHI, xy)*seed)*xy.x);\r\n}\r\n\r\nvec2 lerp(vec2 a, vec2 b, vec2 t)\r\n{\r\n    return a + (b - a) * t;\r\n}\r\n\r\nvoid main()\r\n{\r\n    int id = gl_InstanceID + 1;\r\n    vec2 pos = uSpawnRect.xy + uSpawnRect.zw * vec2(\r\n        gold_noise(vec2(1, id), uSeed + 1.0),\r\n        gold_noise(vec2(id, 1), uSeed + 2.0));\r\n\r\n    vec2 size = vec2(\r\n        gold_noise(vec2(1, id), uSeed + 3.0),\r\n        gold_noise(vec2(id, 1), uSeed + 4.0));\r\n    size = lerp(vec2(uSizeRange.x), vec2(uSizeRange.y), size);\r\n    \r\n    mat4 model = mat4(size.x, 0.0, 0.0, 0.0,  \r\n                      0.0, size.x, 0.0, 0.0,  \r\n                      0.0, 0.0, 1, 0.0,  \r\n                      pos.x, pos.y, 0.0, 1.0); \r\n    mat4 mvp = uTransformVP * model;\r\n    gl_Position = mvp * vec4(aPos, 1);\r\n    vUV = aUV;\r\n}";
 
   // src/shader/erase.glsl
   var erase_default = "#version 300 es\r\nprecision mediump float;\r\n\r\nin vec4 vColor;\r\nin vec4 vPos;\r\nin vec2 vUV;\r\n\r\nuniform sampler2D uMainTex;\r\nuniform vec4 uColor;\r\nuniform vec2 uEraserSmooth;\r\n\r\nout vec4 fragColor;\r\n\r\nvoid main()\r\n{\r\n    vec4 color = texture(uMainTex, vUV.xy).rgba;\r\n    color.a = smoothstep(uEraserSmooth.x, uEraserSmooth.y, color.a);\r\n    fragColor = color.rgba;\r\n}";
@@ -9853,7 +9875,7 @@ void main()
   __decorate([
     import_zogra_renderer3.shaderProp("uSize", "float")
   ], RaindropMaterial.prototype, "size", 2);
-  var DropletMaterial = class extends import_zogra_renderer3.MaterialFromShader(new import_zogra_renderer3.Shader(raindrop_vert_default, droplet_default, {
+  var DropletMaterial = class extends import_zogra_renderer3.MaterialFromShader(new import_zogra_renderer3.Shader(droplet_vert_default, droplet_default, {
     blendRGB: [import_zogra_renderer3.Blending.OneMinusDstColor, import_zogra_renderer3.Blending.OneMinusSrcColor],
     depth: import_zogra_renderer3.DepthTest.Disable,
     zWrite: false,
@@ -9865,11 +9887,23 @@ void main()
     constructor() {
       super(...arguments);
       this.texture = null;
+      this.spawnRect = import_zogra_renderer3.vec4(0, 0, 1, 1);
+      this.sizeRange = import_zogra_renderer3.vec2(10, 20);
+      this.seed = 1;
     }
   };
   __decorate([
     import_zogra_renderer3.shaderProp("uMainTex", "tex2d")
   ], DropletMaterial.prototype, "texture", 2);
+  __decorate([
+    import_zogra_renderer3.shaderProp("uSpawnRect", "vec4")
+  ], DropletMaterial.prototype, "spawnRect", 2);
+  __decorate([
+    import_zogra_renderer3.shaderProp("uSizeRange", "vec2")
+  ], DropletMaterial.prototype, "sizeRange", 2);
+  __decorate([
+    import_zogra_renderer3.shaderProp("uSeed", "float")
+  ], DropletMaterial.prototype, "seed", 2);
   var RaindropCompose = class extends import_zogra_renderer3.MaterialFromShader(new import_zogra_renderer3.Shader(d_vert_default, reflect_default, {
     blend: [import_zogra_renderer3.Blending.SrcAlpha, import_zogra_renderer3.Blending.OneMinusSrcAlpha],
     depth: import_zogra_renderer3.DepthTest.Disable,
@@ -9968,9 +10002,6 @@ void main()
         size: "float",
         modelMatrix: "mat4"
       }, 3e3);
-      this.dropletBuffer = new import_zogra_renderer3.RenderBuffer({
-        modelMatrix: "mat4"
-      }, 100);
       this.renderer = new import_zogra_renderer3.ZograRenderer(options.canvas);
       this.renderer.gl.getExtension("EXT_color_buffer_float");
       this.options = options;
@@ -10023,7 +10054,7 @@ void main()
     resetOptions() {
     }
     render(raindrops, time) {
-      this.drawDroplet();
+      this.drawDroplet(time);
       this.drawMist(time.dt);
       this.drawRaindrops(raindrops);
       this.renderer.setRenderTarget(import_render_target.RenderTarget.CanvasTarget);
@@ -10092,15 +10123,13 @@ void main()
       if (this.options.mist)
         this.renderer.blit(this.raindropComposeTex, this.mistTexture, this.matRaindropErase);
     }
-    drawDroplet() {
+    drawDroplet(time) {
       this.renderer.setRenderTarget(this.dropletTexture);
-      for (let i = 0; i < 10; i++) {
-        const pos = import_zogra_renderer3.vec3(randomRange(0, this.options.width), randomRange(0, this.options.height), 0);
-        let size = import_zogra_renderer3.vec3(randomRange(...this.options.dropletSize), randomRange(...this.options.dropletSize), 1);
-        let model = import_zogra_renderer3.mat4.rts(import_zogra_renderer3.quat.identity(), pos, size);
-        this.dropletBuffer[i].modelMatrix.set(model);
-      }
-      this.renderer.drawMeshInstance(this.mesh, this.dropletBuffer, this.matDroplet, 10);
+      const count = this.options.dropletsPerSeconds * time.dt;
+      this.matDroplet.spawnRect = import_zogra_renderer3.vec4(0, 0, this.options.width, this.options.height);
+      this.matDroplet.sizeRange = import_zogra_renderer3.vec2(...this.options.dropletSize);
+      this.matDroplet.seed = randomRange(0, 133);
+      this.renderer.drawMeshProceduralInstance(this.mesh, this.matDroplet, count);
     }
   };
 
@@ -10218,12 +10247,14 @@ void main()
       this.currentTime += dt;
       return this;
     }
-    trySpawn() {
-      if (this.currentTime >= this.nextSpawn) {
-        this.nextSpawn = this.currentTime + randomRange(...this.interval);
+    *trySpawn() {
+      while (this.currentTime >= this.nextSpawn) {
         const size = randomRange(...this.size);
         const pos = randomInRect(this.spawnRect);
-        return new RainDrop(this.simulator, pos, size);
+        this.nextSpawn += randomRange(...this.interval);
+        yield new RainDrop(this.simulator, pos, size);
+      }
+      if (this.currentTime >= this.nextSpawn) {
       }
       return void 0;
     }
@@ -10279,10 +10310,10 @@ void main()
       raindrop.grid = grid;
     }
     update(time) {
-      if (this.raindrops.length < 2e3) {
-        let newDrop = this.spawner.update(time.dt).trySpawn();
-        if (newDrop)
+      if (this.raindrops.length <= this.options.spawnLimit) {
+        for (const newDrop of this.spawner.update(time.dt).trySpawn()) {
           this.raindrops.push(newDrop);
+        }
       }
       this.raindropUpdate(time);
       this.collisionUpdate();
@@ -10357,13 +10388,13 @@ void main()
       const defaultOptions = {
         spawnInterval: [0.1, 0.1],
         spawnSize: [60, 100],
+        spawnLimit: 2e3,
         viewport: new import_zogra_renderer5.Rect(import_zogra_renderer5.vec2.zero(), import_zogra_renderer5.vec2(canvas.width, canvas.height)),
         canvas,
         width: canvas.width,
         height: canvas.height,
         background: "",
         gravity: 2400,
-        dropletSize: [10, 30],
         slipRate: 0,
         motionInterval: [0.1, 0.4],
         colliderSize: 1,
@@ -10381,6 +10412,8 @@ void main()
         mistColor: [0.01, 0.01, 0.01, 1],
         mistBlurStep: 4,
         mistTime: 10,
+        dropletsPerSeconds: 500,
+        dropletSize: [10, 30],
         smoothRaindrop: [0.96, 0.99],
         refractBase: 0.4,
         refractScale: 0.6,
