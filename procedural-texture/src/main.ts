@@ -1,11 +1,13 @@
-import * as ace from "../lib/ace-builds";
-import "../lib/ace-builds/src-noconflict/ext-language_tools";
+// import * as ace from "../lib/ace-builds";
+// import "../lib/ace-builds/src-noconflict/ext-language_tools";
 import { Color, vec2 } from "./lib";
+import * as monaco from "monaco-editor";
 
 const $ = (selector: string) => <HTMLElement>document.querySelector(selector);
 
 type RenderFn = (x: number, y: number) => Color | [number, number, number, number] | number;
 let userlib: string;
+let livePreview = false;
 
 interface Config
 {
@@ -26,8 +28,8 @@ const onEditorChanged = () =>
 {
 	setTimeout(() =>
 	{
-		const code = editor.session.getDocument().getValue();
-		renderCaller(userlib + code);
+		// const code = editor.session.getDocument().getValue();
+		// renderCaller(userlib + code);
 	});
 }
 function renderCaller(code: string)
@@ -46,14 +48,7 @@ function renderCaller(code: string)
 	{
 		_userConfig = config;
 		initCanvas(config);
-		if (config.livePreview)
-		{
-			editor.on("change", onEditorChanged);
-		}
-		else
-		{
-			editor.off("change", onEditorChanged);
-		}
+		livePreview = livePreview;
 	}
 	function render(func: RenderFn)
 	{
@@ -102,44 +97,90 @@ function renderCaller(code: string)
 
 
 }
-ace.config.set("basePath", "lib/ace-builds/src-min-noconflict");
-const editor = ace.edit($("#editor-wrapper"));
-editor.setOptions({
-	enableBasicAutocompletion: true,
-	enableLiveAutocompletion: true,
-	autoScrollEditorIntoView: true,
-	hScrollBarAlwaysVisible: true,
-	vScrollBarAlwaysVisible: true,
-	fontSize: "11pt",
-	fontFamily: "consolas",
-});
-editor.setTheme("ace/theme/monokai");
-editor.session.setMode("ace/mode/javascript");
-fetch("lib/user-lib/build/demo.js")
-	.then(response => response.text())
-	.then(code =>
+// ace.config.set("basePath", "lib/ace-builds/src-min-noconflict");
+// const editor = ace.edit($("#editor-wrapper"));
+// editor.setOptions({
+// 	enableBasicAutocompletion: true,
+// 	enableLiveAutocompletion: true,
+// 	autoScrollEditorIntoView: true,
+// 	hScrollBarAlwaysVisible: true,
+// 	vScrollBarAlwaysVisible: true,
+// 	fontSize: "11pt",
+// 	fontFamily: "consolas",
+// });
+// editor.setTheme("ace/theme/monokai");
+// editor.session.setMode("ace/mode/javascript");
+function renderOnType(code: string)
+{
+	let timeout: number;
+	if (timeout)
 	{
-		editor.session.getDocument().setValue(code);
-		fetch("lib/user-lib/build/user-lib.js")
-			.then((response) => response.text())
-			.then((lib) =>
-			{
-				$("#button-render").addEventListener("click", () =>
-				{
-					const code = editor.session.getDocument().getValue();
-					renderCaller(lib + code);
-				});
-				userlib = lib;
-				// editor.on("change", (e) =>
-				// {
-				// 	setTimeout(() =>
-				// 	{
-				// 		const code = editor.session.getDocument().getValue();
-				// 		renderCaller(lib + code);
-				// 	});
-				// });
+		clearTimeout(timeout);
+		timeout = 0;
+	}
+	timeout = setTimeout(() =>
+	{
+		renderCaller(userlib + code);
+	}, 500);
 
-				var code = editor.session.getDocument().getValue();
-				renderCaller(lib + code);
-			});
+}
+async function load()
+{
+	const demo = await fetch("lib/user-lib/build/demo.js").then(r => r.text());
+	userlib = await fetch("lib/user-lib/build/user-lib.js").then(r => r.text());
+	const libDeclaration = await fetch("lib/user-lib/build/user-lib.d.ts").then(r => r.text());
+
+	monaco.languages.typescript.javascriptDefaults.addExtraLib(libDeclaration, "ts:lib/user-lib/build/user-lib.d.ts");
+
+	const editor = monaco.editor.create($("#editor-wrapper"), {
+		value: demo,
+		language: "javascript",
+		theme: "vs-dark",
 	});
+	editor.onDidChangeModelContent((e) =>
+	{
+		if (livePreview)
+			renderOnType(editor.getValue());
+	});
+	$("#button-render").addEventListener("click", () =>
+	{
+		const code = editor.getValue();
+		renderCaller(userlib + code);
+	});
+	renderCaller(userlib + demo);
+}
+load();
+// fetch("lib/user-lib/build/demo.js")
+// 	.then(response => response.text())
+// 	.then(code =>
+// 	{
+// 		monaco.editor.create($("#editor-wrapper"), {
+// 			value: code,
+// 			language: "javascript",
+// 			theme: "vs-dark",
+// 		});
+// 		// editor.session.getDocument().setValue(code);
+
+// 		fetch("lib/user-lib/build/user-lib.js")
+// 			.then((response) => response.text())
+// 			.then((lib) =>
+// 			{
+// 				$("#button-render").addEventListener("click", () =>
+// 				{
+// 					// const code = editor.session.getDocument().getValue();
+// 					renderCaller(lib + code);
+// 				});
+// 				userlib = lib;
+// 				// editor.on("change", (e) =>
+// 				// {
+// 				// 	setTimeout(() =>
+// 				// 	{
+// 				// 		const code = editor.session.getDocument().getValue();
+// 				// 		renderCaller(lib + code);
+// 				// 	});
+// 				// });
+
+// 				// var code = editor.session.getDocument().getValue();
+// 				renderCaller(lib + code);
+// 			});
+// 	});

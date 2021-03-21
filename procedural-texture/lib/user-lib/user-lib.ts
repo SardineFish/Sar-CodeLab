@@ -1,3 +1,13 @@
+interface Config
+{
+    width?: number,
+    height?: number,
+    background?: string | Color,
+    normalizedInput?: boolean,
+    livePreview?: boolean,
+}
+declare function config(options: Config): void;
+
 interface Vector
 {
     magnitude: number;
