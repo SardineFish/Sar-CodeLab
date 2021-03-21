@@ -1,5 +1,17 @@
 [
     {
+        "name": "Raindrop FX",
+        "description": "Raindrop effect on glass with WebGL2",
+        "img": "static/img/raindrop-fx.png",
+        "url": "https://sardinefish.github.io/raindrop-fx/"
+    },
+    {
+        "name": "Procedural Texture",
+        "description": "A framework to generate procedural texture with JS and HTMLCanvas",
+        "img": "static/img/procedural-texture.png",
+        "url": "procedural-texture"
+    },
+    {
         "name": "Life by WebGL",
         "description": "Game of Life implement with WebGL",
         "img": "static/img/life-gl.png",
