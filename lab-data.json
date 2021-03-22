@@ -102,7 +102,7 @@
         "description":"Just a Gomoku chessboard.",
         "img":"http://img.sardinefish.com/NTE1NTc=",
         "url":"Gomoku/Gomoku.html",
-        "time": "2016-8"
+        "time": "2016-12-11"
     },
     {
         "name":"Circle Collision",
@@ -123,20 +123,20 @@
         "description":"Draw a Koch snowflake with HTML Canvas.",
         "img":"http://img.sardinefish.com/NTEzODA=",
         "url":"SnowFlower/snowFlower.html",
-        "time": "2015"
+        "time": "2016-2-28"
     },
     {
         "name":"Random Lines",
         "description":"Draw lines and arcs randomly with HTML Canvas.",
         "img":"http://img.sardinefish.com/NTEyODg2",
         "url":"ArcNLine/arcNline.html",
-        "time": "2015"
+        "time": "2016-3-15"
     },
     {
         "name":"Dragon Curve",
         "description":"Draw an infinite dragon curve with HTML Canvas.",
         "img":"http://img.sardinefish.com/NTE0OTQ0",
         "url":"DragonCurve/DragonCurve.html",
-        "time": "2015"
+        "time": "2016-3-12"
     }
 ]
