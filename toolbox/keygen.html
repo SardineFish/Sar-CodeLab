@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no,target-densitydpi=device-dpi" />
     <title>Keygen</title>
     <link rel="stylesheet" href="./keygen.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/openpgp/4.6.2/openpgp.min.js"></script>
@@ -12,7 +13,8 @@
     <main class="root">
         <section class="rand-key">
             <div class="wrapper">
-                <div class="key">test</div>
+                <!-- <input type="text" class="key"> -->
+                <div class="key" contenteditable="false">key</div>
                 <div class="button button-update">
                     <div class="icon">
                         <svg viewBox="0 0 24 24">
@@ -21,6 +23,14 @@
                         </svg>
                     </div>
                 </div>
+            </div>
+            <div class="select-hint hide">
+                <span class="range">
+                    <span class="start">0</span>..<span class="end">0</span>
+                </span>
+                <span class="length">
+                    length=<span class="value">0</span>
+                </span>
             </div>
         </section>
     </main>

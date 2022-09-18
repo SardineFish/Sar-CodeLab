@@ -13,7 +13,7 @@ body {
 }
 
 .root {
-    margin-top: 40vh;
+    margin-top: 35vh;
     width: 100%;
     display: flex;
     flex-flow: column nowrap;
@@ -39,6 +39,10 @@ body {
     cursor: text;
     overflow: hidden;
     text-overflow: ellipsis;
+    border: none;
+    margin: 0;
+    font-size: 1em;
+    outline: none;
     
     font-family: "Roboto Mono", Consolas, Courier New, Courier, monospace;
 }
@@ -60,6 +64,18 @@ body {
     height: 1.6em;
     width: 1.6em;
 
+}
+
+.rand-key .select-hint {
+    font-family: "Roboto Mono", Consolas, Courier New, Courier, monospace;
+    user-select: none;
+    margin-left: 1em;
+    color: #aaa;
+    margin-top: 0.5em;
+}
+
+.rand-key .select-hint.hide {
+    opacity: 0;
 }
 
 .icon svg {
