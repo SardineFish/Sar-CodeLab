@@ -1,0 +1,80 @@
+@import url(../static/font/Roboto_Mono/RobotoMono.css);
+
+body {
+    font-family: "OpenSans",
+    Segoe UI,
+    Tahoma,
+    Geneva,
+    Verdana,
+    sans-serif;
+    background-color: #eee;
+    margin: 0;
+    padding: 0;
+}
+
+.root {
+    margin-top: 40vh;
+    width: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+}
+
+.rand-key .wrapper {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    width: 40vw;
+    min-width: 600px;
+    background-color: white;
+    border-radius: 2em;
+    height: 3em;
+    overflow: hidden;
+    box-shadow: 0 0 2em rgba(0, 0, 0, 0.04);
+}
+
+.rand-key .key {
+    flex: 1 0;
+    padding: .5em 1.5em;
+    cursor: text;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    font-family: "Roboto Mono", Consolas, Courier New, Courier, monospace;
+}
+
+.rand-key .button {
+    height: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: center;
+    width: 4em;
+    background-color: #21a6ff;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+}
+
+.rand-key .button .icon {
+    height: 1.6em;
+    width: 1.6em;
+
+}
+
+.icon svg {
+    height: 100%;
+    width: 100%;
+}
+
+@media (max-width: 800px) {
+    .rand-key .wrapper {
+        width: calc(100vw - 2em);
+        margin: auto;
+        min-width: unset;
+    }
+
+    .rand-key .button {
+        width: 3em;
+    }
+}
